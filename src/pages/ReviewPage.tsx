@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle, Edit2, Trophy } from 'lucide-react';
 import { AnimatedTransition } from '../components/AnimatedTransition';
