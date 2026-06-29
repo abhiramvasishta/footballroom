@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Admins are authenticated via Firebase Auth
+    function isAdmin() {
+      return request.auth != null;
+    }
+    
+    // Normal users use unguessable UUIDs (entryId).
+    // They can read/update their own document by ID, but cannot list all.
+    
+    match /users/{entryId} {
+      allow get, create, update: if true;
+      allow list, delete: if isAdmin();
+    }
+    
+    match /predictions/{entryId} {
+      allow get, create, update: if true;
+      allow list, delete: if isAdmin();
+    }
+
+    // Public Collections (Leaderboard, Stats, Tournament Data)
+    match /leaderboard/{entryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /statistics/{statId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /teams/{teamId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /matches/{matchId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-primary: #05070A;
+  --color-bg-secondary: #0B1118;
+  --color-card-bg: #101722;
+  --color-card-hover: #172232;
+  --color-cyan-primary: #00D9FF;
+  --color-cyan-secondary: #53F5FF;
+  
+  --color-status-success: #00FF9D;
+  --color-status-warning: #FFB800;
+  --color-status-danger: #FF4B6E;
+  
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: rgba(255, 255, 255, 0.72);
+  --color-text-muted: rgba(255, 255, 255, 0.42);
+  
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Bebas Neue', system-ui, sans-serif;
+  --font-mono: 'Space Grotesk', monospace;
+}
+
+@layer base {
+  :root {
+    --background: var(--color-bg-primary);
+    --foreground: var(--color-text-primary);
+  }
+  
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    letter-spacing: 0.05em;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-card-bg/60 backdrop-blur-md border border-[rgba(0,217,255,0.18)];
+  }
+  
+  .glass-card {
+    @apply bg-card-bg backdrop-blur-md border border-[rgba(0,217,255,0.18)] shadow-[0_4px_30px_rgba(0,0,0,0.5)] rounded-[20px] transition-all duration-300;
+  }
+  
+  .glass-card:hover {
+    @apply bg-card-hover shadow-[0_0_20px_rgba(0,217,255,0.12)] -translate-y-[2px];
+  }
+  
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-cyan-primary to-cyan-secondary;
+  }
+  
+  .btn-primary {
+    @apply bg-cyan-primary text-bg-primary font-semibold py-3 px-6 rounded-[20px] shadow-[0_0_15px_rgba(0,217,255,0.3)] hover:shadow-[0_0_25px_rgba(0,217,255,0.5)] transition-all hover:-translate-y-[2px] disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[0_0_15px_rgba(0,217,255,0.3)];
+  }
+  
+  .btn-secondary {
+    @apply bg-card-bg border border-cyan-primary text-cyan-primary font-semibold py-3 px-6 rounded-[20px] backdrop-blur hover:bg-cyan-primary/10 transition-all hover:-translate-y-[2px] disabled:opacity-50 disabled:hover:translate-y-0;
+  }
+
+  .btn-danger {
+    @apply bg-transparent border border-status-danger text-status-danger font-semibold py-3 px-6 rounded-[20px] hover:bg-status-danger/10 transition-all hover:-translate-y-[2px];
+  }
+}

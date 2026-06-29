@@ -1,0 +1,22 @@
+export const PLAYER_IMAGES: Record<string, string> = {
+  "Lionel Messi": "/players/lionel_messi.png",
+  "Kylian Mbappé": "/players/kylian_mbapp_.png",
+  "Vinícius Júnior": "/players/vin_cius_j_nior.png",
+  "Ousmane Dembélé": "/players/ousmane_demb_l_.png",
+  "Erling Haaland": "/players/erling_haaland.png",
+  "Harry Kane": "/players/harry_kane.png",
+  "Ismaïla Sarr": "/players/isma_la_sarr.png",
+  "Jonathan David": "/players/jonathan_david.png",
+  "Matheus Cunha": "/players/matheus_cunha.png",
+  "Brian Brobbey": "/players/brian_brobbey.png",
+  "Deniz Undav": "/players/deniz_undav.png",
+  "Yoane Wissa": "/players/yoane_wissa.png",
+  "Daichi Kamada": "/players/daichi_kamada.png",
+  "Ayase Ueda": "/players/ayase_ueda.png",
+  "Cristiano Ronaldo": "/players/cristiano_ronaldo.png",
+  "Jude Bellingham": "/players/jude_bellingham.png",
+  "Cody Gakpo": "/players/cody_gakpo.png",
+  "Elijah Just": "/players/elijah_just.png",
+  "Ismael Saibari": "/players/ismael_saibari.png",
+  "Johan Manzambi": "/players/johan_manzambi.png"
+};
