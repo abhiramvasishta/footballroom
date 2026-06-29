@@ -185,6 +185,18 @@ export default function Dashboard() {
                 />
               </div>
             </div>
+
+            {/* Mobile Only: Leaderboard & Share */}
+            <div className="flex md:hidden w-full gap-3 mt-6 pt-5 border-t border-white/10 relative z-10">
+              <button onClick={() => setIsLeaderboardOpen(true)} className="flex-1 flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-cyan-primary/10 border border-cyan-primary/30 text-cyan-primary hover:bg-cyan-primary/20">
+                <Trophy size={18} />
+                <span className="text-[10px] uppercase font-bold tracking-widest">Leaderboard</span>
+              </button>
+              <button onClick={handleShare} disabled={isSharing} className="flex-1 flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-cyan-primary text-bg-primary font-bold hover:bg-cyan-primary/90 disabled:opacity-50 shadow-[0_0_15px_rgba(0,217,255,0.3)]">
+                {isSharing ? <Loader2 size={18} className="animate-spin" /> : <Share2 size={18} />}
+                <span className="text-[10px] uppercase font-bold tracking-widest">Share</span>
+              </button>
+            </div>
           </div>
 
           {/* Champion & Player Prediction */}
@@ -237,30 +249,69 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Statistics Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-          <motion.div 
-            layoutId="leaderboard-card"
-            onClick={() => setIsLeaderboardOpen(true)}
-            className="glass-card p-6 flex flex-col items-center justify-center text-center gap-3 border-cyan-primary/30 cursor-pointer hover:bg-cyan-primary/5 transition-colors relative group col-span-2 lg:col-span-1 shadow-[0_0_20px_rgba(0,217,255,0.05)]"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-primary/10 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
-            <Trophy className="text-cyan-primary group-hover:scale-110 transition-transform duration-500" size={32} />
-            {userData.rank ? (
-              <span className="text-5xl font-bold font-mono text-cyan-primary drop-shadow-[0_0_10px_rgba(0,217,255,0.5)]">
-                #{userData.rank}
-              </span>
-            ) : (
-              <span className="text-[10px] text-cyan-primary/70 font-bold uppercase tracking-widest px-2 my-2 leading-relaxed">
-                Rank will be available once matches begin.
-              </span>
-            )}
-            <div className="flex flex-col">
-              <span className="text-xs text-text-secondary font-bold tracking-widest uppercase">Your Rank</span>
-              <span className="text-[10px] text-cyan-primary/60 uppercase mt-1 opacity-0 group-hover:opacity-100 transition-opacity">View Leaderboard →</span>
-            </div>
-          </motion.div>
+        {/* Top Actions: Leaderboard & Share Banner */}
+        <div className="hidden md:grid grid-cols-1 lg:grid-cols-2 gap-6">
           
+          {/* Leaderboard Banner */}
+          <div 
+            onClick={() => setIsLeaderboardOpen(true)}
+            className="glass-card p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between border-[rgba(0,217,255,0.18)] shadow-[0_0_20px_rgba(0,217,255,0.05)] bg-gradient-to-r from-bg-primary via-cyan-primary/5 to-bg-primary group overflow-hidden relative cursor-pointer"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-primary/0 via-cyan-primary/10 to-cyan-primary/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+            <div className="flex items-center gap-4 mb-4 sm:mb-0 relative z-10">
+              <div className="w-12 h-12 rounded-full bg-cyan-primary/10 flex items-center justify-center text-cyan-primary shadow-[0_0_15px_rgba(0,217,255,0.2)]">
+                <Trophy size={24} />
+              </div>
+              <div>
+                <h3 className="font-bold font-display text-xl tracking-wide text-text-primary uppercase">Leaderboard</h3>
+                <p className="text-sm text-text-secondary font-medium">See how you rank globally</p>
+              </div>
+            </div>
+            <div className="flex items-center justify-center text-cyan-primary font-bold font-display tracking-widest relative z-10 shrink-0">
+              {userData.rank ? (
+                <span className="text-3xl drop-shadow-[0_0_10px_rgba(0,217,255,0.5)]">
+                  #{userData.rank}
+                </span>
+              ) : (
+                <span className="text-sm px-6 py-3 border border-cyan-primary/30 rounded-xl hover:bg-cyan-primary/10 transition-colors uppercase tracking-widest bg-bg-secondary/50">View Rank</span>
+              )}
+            </div>
+          </div>
+
+          {/* Share Banner */}
+          <div className="glass-card p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between border-[rgba(0,217,255,0.18)] shadow-[0_0_20px_rgba(0,217,255,0.05)] bg-gradient-to-r from-bg-primary via-cyan-primary/5 to-bg-primary group overflow-hidden relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-primary/0 via-cyan-primary/10 to-cyan-primary/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+            <div className="flex items-center gap-4 mb-4 sm:mb-0 relative z-10">
+              <div className="w-12 h-12 rounded-full bg-cyan-primary/10 flex items-center justify-center text-cyan-primary shadow-[0_0_15px_rgba(0,217,255,0.2)]">
+                <Share2 size={24} />
+              </div>
+              <div>
+                <h3 className="font-bold font-display text-xl tracking-wide text-text-primary uppercase">Share Bracket</h3>
+                <p className="text-sm text-text-secondary font-medium">Generate a prediction poster</p>
+              </div>
+            </div>
+            <button 
+              onClick={handleShare}
+              disabled={isSharing}
+              className="w-full sm:w-auto py-3 px-6 bg-cyan-primary text-bg-primary font-bold font-display tracking-widest text-sm rounded-xl hover:bg-cyan-primary/90 hover:scale-[1.02] transition-all disabled:opacity-50 shadow-[0_0_20px_rgba(0,217,255,0.4)] flex items-center justify-center gap-2 relative z-10 shrink-0"
+            >
+              {isSharing ? (
+                <>
+                  <Loader2 className="animate-spin" size={18} />
+                  <span>Generating...</span>
+                </>
+              ) : (
+                <>
+                  <Share2 size={16} />
+                  <span>Generate</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Statistics Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="glass-card p-6 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)] group">
             <span className="text-4xl font-bold font-mono text-white group-hover:text-cyan-primary transition-colors">{userData.score || 0}</span>
             <span className="text-xs text-text-secondary uppercase tracking-widest font-semibold mt-2">Total Score</span>
@@ -288,54 +339,23 @@ export default function Dashboard() {
         </div>
 
         {/* Action Bottom Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-4">
-          <div className="glass-card p-6 flex flex-col justify-center border-[rgba(0,217,255,0.18)]">
-            <h3 className="font-bold font-display text-xl tracking-wide mb-2 flex items-center gap-2 text-text-primary">
+        <div className="max-w-2xl mx-auto w-full mt-4">
+          <div className="glass-card p-6 flex flex-col justify-center border-[rgba(0,217,255,0.18)] items-center text-center">
+            <h3 className="font-bold font-display text-xl tracking-wide mb-2 flex items-center justify-center gap-2 text-text-primary w-full">
               Recovery Code
             </h3>
             <p className="text-sm text-text-secondary mb-4">
               Save this code to restore your predictions on another device.
             </p>
-            <div className="flex items-center gap-3 bg-bg-secondary p-4 rounded-xl border border-white/5">
+            <div className="flex items-center gap-3 bg-bg-secondary p-4 rounded-xl border border-white/5 w-full max-w-md">
               <code className="flex-1 font-mono text-xl text-center text-cyan-primary tracking-[0.25em]">{userData.recoveryCode}</code>
               <button 
                 onClick={handleCopyCode}
-                className="p-3 bg-cyan-primary/10 hover:bg-cyan-primary/20 rounded-lg transition-colors text-cyan-primary"
+                className="p-3 bg-cyan-primary/10 hover:bg-cyan-primary/20 rounded-lg transition-colors text-cyan-primary shrink-0"
               >
                 {copied ? <span className="text-status-success text-xs font-bold uppercase tracking-widest">Copied</span> : <Copy size={20} />}
               </button>
             </div>
-          </div>
-
-          <div className="glass-card p-8 flex flex-col justify-center items-center text-center border-[rgba(0,217,255,0.18)] relative overflow-hidden group shadow-[0_0_20px_rgba(0,217,255,0.05)]">
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-primary/5 via-transparent to-transparent pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity" />
-            
-            <div className="w-16 h-16 rounded-full bg-cyan-primary/10 flex items-center justify-center text-cyan-primary mb-4 shadow-[0_0_15px_rgba(0,217,255,0.2)] group-hover:scale-110 transition-transform duration-500 relative z-10">
-              <Share2 size={28} />
-            </div>
-            
-            <h3 className="font-bold font-display text-2xl md:text-3xl tracking-wide mb-2 text-text-primary relative z-10 uppercase">
-              SHARE MY BRACKET
-            </h3>
-            
-            <p className="text-sm text-text-secondary mb-8 relative z-10 font-medium">
-              Generate a broadcast-quality prediction poster
-            </p>
-            
-            <button 
-              onClick={handleShare}
-              disabled={isSharing}
-              className="w-full max-w-sm py-4 px-6 bg-cyan-primary text-bg-primary font-bold font-display tracking-widest text-lg rounded-xl hover:bg-cyan-primary/90 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(0,217,255,0.4)] hover:shadow-[0_0_30px_rgba(0,217,255,0.6)] relative z-10 flex items-center justify-center gap-2"
-            >
-              {isSharing ? (
-                <>
-                  <Loader2 className="animate-spin" size={24} />
-                  <span>Generating...</span>
-                </>
-              ) : (
-                'Generate Poster'
-              )}
-            </button>
           </div>
         </div>
       </div>
