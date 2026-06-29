@@ -34,7 +34,7 @@ export default function PredictionFlow() {
   }, [isRegistered, navigate]);
 
   useEffect(() => {
-    store.initialize();
+    store.initialize(entryId || undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

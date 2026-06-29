@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { fetchTeams, fetchMatches, savePredictionToFirebase } from '../lib/services';
+import { fetchTeams, fetchMatches, savePredictionToFirebase, getPredictionData } from '../lib/services';
 import type { Team, Match, PredictionDoc } from '../types';
 
 interface PredictionState {
@@ -16,7 +16,7 @@ interface PredictionState {
   isSubmitting: boolean;
   isLoading: boolean;
   
-  initialize: () => Promise<void>;
+  initialize: (entryId?: string) => Promise<void>;
   setWinner: (matchId: string, teamId: string) => void;
   setGoldenBallPlayerId: (playerId: string) => void;
   setSelectingGoldenBall: (isSelecting: boolean) => void;
@@ -39,11 +39,27 @@ export const usePredictionStore = create<PredictionState>((set, get) => ({
   isSubmitting: false,
   isLoading: true,
 
-  initialize: async () => {
+  initialize: async (entryId?: string) => {
     set({ isLoading: true });
     try {
-      const [teams, matches] = await Promise.all([fetchTeams(), fetchMatches()]);
-      set({ teams, matches, isLoading: false });
+      const [teams, matches, existingPred] = await Promise.all([
+        fetchTeams(), 
+        fetchMatches(),
+        entryId ? getPredictionData(entryId) : Promise.resolve(null)
+      ]);
+
+      if (existingPred) {
+        set({ 
+          teams, 
+          matches, 
+          picks: existingPred.picks || {},
+          champion: existingPred.predictedChampion || null,
+          goldenBallPlayerId: existingPred.goldenBallPlayerId || null,
+          isLoading: false 
+        });
+      } else {
+        set({ teams, matches, isLoading: false });
+      }
     } catch (err) {
       console.error('Failed to load tournament data', err);
       set({ isLoading: false });

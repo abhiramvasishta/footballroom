@@ -20,6 +20,9 @@ export default function ReviewPage() {
       getUserData(entryId).then(u => {
         if (u?.photoURL) setPhotoURL(u.photoURL);
       });
+      if (store.teams.length === 0) {
+        store.initialize(entryId);
+      }
     }
   }, [entryId]);
 
