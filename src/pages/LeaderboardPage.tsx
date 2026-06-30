@@ -6,6 +6,7 @@ import { AnimatedTransition } from '../components/AnimatedTransition';
 import { db } from '../lib/firebase';
 import { getPredictionData, fetchTeams } from '../lib/services';
 import type { UserData, Team } from '../types';
+import { Avatar } from '../components/Avatar';
 
 interface LeaderboardEntry extends UserData {
   championTeam?: Team;
@@ -100,9 +101,7 @@ export default function LeaderboardPage() {
             {/* 2nd Place */}
             {top3[1] && (
               <div className="flex flex-col items-center w-1/4 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-bg-secondary flex items-center justify-center text-text-primary font-bold text-xl md:text-2xl mb-2 z-10 border-2 border-[rgba(0,217,255,0.3)] shadow-[0_0_15px_rgba(0,217,255,0.1)]">
-                  {top3[1].avatar && top3[1].avatar.startsWith('http') ? <img src={top3[1].avatar} alt="" className="w-full h-full object-cover rounded-full" /> : top3[1].avatar || top3[1].name.charAt(0).toUpperCase()}
-                </div>
+                <Avatar photoURL={top3[1].photoURL} avatar={top3[1].avatar} name={top3[1].name} className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-bg-secondary text-text-primary font-bold text-xl md:text-2xl mb-2 z-10 border-2 border-[rgba(0,217,255,0.3)] shadow-[0_0_15px_rgba(0,217,255,0.1)]" />
                 <div className="w-full bg-gradient-to-t from-cyan-primary/5 to-bg-primary rounded-t-lg border-t border-x border-[rgba(0,217,255,0.18)] flex flex-col items-center justify-end pb-4 relative overflow-hidden" style={{ height: '120px' }}>
                   <span className="text-text-primary font-bold font-mono text-2xl drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">#2</span>
                   <span className="text-xs text-text-secondary truncate w-full text-center px-1 mt-1">{top3[1].name}</span>
@@ -113,9 +112,9 @@ export default function LeaderboardPage() {
             
             {/* 1st Place */}
             <div className="flex flex-col items-center w-1/3 animate-fade-in-up z-20">
-              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-bg-primary flex items-center justify-center text-cyan-primary font-bold text-2xl md:text-3xl mb-2 shadow-[0_0_25px_rgba(0,217,255,0.6)] border-2 border-cyan-primary relative">
-                <Trophy className="absolute -top-7 text-cyan-primary drop-shadow-[0_0_10px_rgba(0,217,255,0.8)]" size={28} />
-                {top3[0].avatar && top3[0].avatar.startsWith('http') ? <img src={top3[0].avatar} alt="" className="w-full h-full object-cover rounded-full" /> : top3[0].avatar || top3[0].name.charAt(0).toUpperCase()}
+              <div className="relative mb-2">
+                <Trophy className="absolute -top-7 left-1/2 -translate-x-1/2 text-cyan-primary drop-shadow-[0_0_10px_rgba(0,217,255,0.8)] z-20" size={28} />
+                <Avatar photoURL={top3[0].photoURL} avatar={top3[0].avatar} name={top3[0].name} className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-bg-primary text-cyan-primary font-bold text-2xl md:text-3xl shadow-[0_0_25px_rgba(0,217,255,0.6)] border-2 border-cyan-primary" />
               </div>
               <div className="w-full bg-gradient-to-t from-cyan-primary/20 to-bg-primary rounded-t-lg border-t border-x border-cyan-primary/70 flex flex-col items-center justify-end pb-6 relative overflow-hidden" style={{ height: '160px' }}>
                 <div className="absolute inset-0 bg-gradient-to-t from-cyan-primary/10 to-transparent pointer-events-none" />
@@ -128,9 +127,7 @@ export default function LeaderboardPage() {
             {/* 3rd Place */}
             {top3[2] && (
               <div className="flex flex-col items-center w-1/4 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-bg-secondary flex items-center justify-center text-text-primary font-bold text-xl md:text-2xl mb-2 z-10 border-2 border-white/10">
-                  {top3[2].avatar && top3[2].avatar.startsWith('http') ? <img src={top3[2].avatar} alt="" className="w-full h-full object-cover rounded-full" /> : top3[2].avatar || top3[2].name.charAt(0).toUpperCase()}
-                </div>
+                <Avatar photoURL={top3[2].photoURL} avatar={top3[2].avatar} name={top3[2].name} className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-bg-secondary text-text-primary font-bold text-xl md:text-2xl mb-2 z-10 border-2 border-white/10" />
                 <div className="w-full bg-gradient-to-t from-white/5 to-bg-primary rounded-t-lg border-t border-x border-white/10 flex flex-col items-center justify-end pb-2 relative overflow-hidden" style={{ height: '90px' }}>
                   <span className="text-text-secondary font-bold font-mono text-xl">#3</span>
                   <span className="text-xs text-text-secondary truncate w-full text-center px-1 mt-1">{top3[2].name}</span>
@@ -161,9 +158,7 @@ export default function LeaderboardPage() {
                     <td className="p-4 text-center font-bold text-text-muted">#{user.rank}</td>
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-card-hover flex items-center justify-center text-xs font-bold border border-[rgba(0,217,255,0.18)]">
-                          {user.avatar && user.avatar.startsWith('http') ? <img src={user.avatar} alt="" className="w-full h-full object-cover rounded-full" /> : user.avatar || user.name.charAt(0).toUpperCase()}
-                        </div>
+                        <Avatar photoURL={user.photoURL} avatar={user.avatar} name={user.name} className="w-8 h-8 rounded-full bg-card-hover text-xs font-bold border border-[rgba(0,217,255,0.18)]" />
                         <span className="font-bold">{user.name}</span>
                       </div>
                     </td>

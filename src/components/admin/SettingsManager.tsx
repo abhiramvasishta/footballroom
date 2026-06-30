@@ -10,10 +10,21 @@ export const SettingsManager = () => {
     setLoading(true);
     const data = await fetchSettings();
     if (data) {
-      // Migrate from old contestPhase or default to Registration Open
-      if (!data.contestStatus) {
-        data.contestStatus = 'Registration Open';
+      // Migrate from old contestStatus/predictionLocked
+      if (data.registrationOpen === undefined) {
+        data.registrationOpen = (data as any).contestStatus === 'Registration Open' || !(data as any).contestStatus;
       }
+      if (data.predictionsOpen === undefined) {
+        data.predictionsOpen = (data as any).predictionLocked === undefined ? true : !(data as any).predictionLocked;
+      }
+      if (data.websiteStatus === undefined) {
+        data.websiteStatus = 'Open';
+      }
+      
+      // Cleanup legacy fields for clean save
+      delete (data as any).contestStatus;
+      delete (data as any).predictionLocked;
+      
       setSettings(data);
     }
     setLoading(false);
@@ -29,6 +40,36 @@ export const SettingsManager = () => {
       await saveSettings(settings);
       alert('Settings saved!');
     }
+  };
+
+  const [syncing, setSyncing] = useState(false);
+  const handleSyncPhotos = async () => {
+    setSyncing(true);
+    try {
+      // Dynamic import to avoid circular dependencies or cluttering the top of the file
+      const { collection, getDocs, writeBatch, doc } = await import('firebase/firestore');
+      const { db } = await import('../../lib/firebase');
+      
+      const usersSnap = await getDocs(collection(db, 'users'));
+      const batch = writeBatch(db);
+      
+      let count = 0;
+      usersSnap.docs.forEach(userDoc => {
+        const userData = userDoc.data();
+        if (userData.photoURL) {
+          const lbRef = doc(db, 'leaderboard', userDoc.id);
+          batch.set(lbRef, { photoURL: userData.photoURL }, { merge: true });
+          count++;
+        }
+      });
+      
+      await batch.commit();
+      alert(`Successfully synced ${count} photos to the leaderboard!`);
+    } catch (error) {
+      console.error("Error syncing photos:", error);
+      alert('Error syncing photos. Check console.');
+    }
+    setSyncing(false);
   };
 
   if (loading) return <p>Loading settings...</p>;
@@ -49,21 +90,55 @@ export const SettingsManager = () => {
               onChange={e => setSettings({...settings, contestName: e.target.value})} 
             />
           </label>
-          <div className="bg-bg-primary/50 p-6 rounded-xl border border-white/5">
-            <h3 className="text-xl font-bold mb-4 font-display text-cyan-primary">Contest Status</h3>
+          <div className="bg-bg-primary/50 p-6 rounded-xl border border-white/5 flex flex-col gap-4">
+            <h3 className="text-xl font-bold font-display text-cyan-primary">Access Controls</h3>
             
-            <div className="flex flex-col gap-4">
+            <label className="flex items-center justify-between p-3 bg-bg-primary border border-white/10 rounded-lg cursor-pointer hover:border-white/30 transition-colors">
+              <div>
+                <span className="block font-bold">Registration</span>
+                <span className="text-xs text-text-secondary">Allow new users to sign up</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className={`text-xs font-bold ${settings.registrationOpen ? 'text-green-400' : 'text-red-400'}`}>{settings.registrationOpen ? 'OPEN' : 'CLOSED'}</span>
+                <input 
+                  type="checkbox" 
+                  checked={settings.registrationOpen}
+                  onChange={e => setSettings({...settings, registrationOpen: e.target.checked})} 
+                  className="w-5 h-5 accent-cyan-primary cursor-pointer"
+                />
+              </div>
+            </label>
+
+            <label className="flex items-center justify-between p-3 bg-bg-primary border border-white/10 rounded-lg cursor-pointer hover:border-white/30 transition-colors">
+              <div>
+                <span className="block font-bold">Predictions</span>
+                <span className="text-xs text-text-secondary">Allow users to make or edit picks</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className={`text-xs font-bold ${settings.predictionsOpen ? 'text-green-400' : 'text-red-400'}`}>{settings.predictionsOpen ? 'OPEN' : 'CLOSED'}</span>
+                <input 
+                  type="checkbox" 
+                  checked={settings.predictionsOpen}
+                  onChange={e => setSettings({...settings, predictionsOpen: e.target.checked})} 
+                  className="w-5 h-5 accent-cyan-primary cursor-pointer"
+                />
+              </div>
+            </label>
+
+            <label className="flex flex-col gap-2 p-3 bg-bg-primary border border-white/10 rounded-lg">
+              <div>
+                <span className="block font-bold text-red-400">Website Access</span>
+                <span className="text-xs text-text-secondary">Global site access (Admin always bypasses)</span>
+              </div>
               <select
-                value={settings.contestStatus || 'Registration Open'}
-                onChange={e => setSettings({...settings, contestStatus: e.target.value as TournamentSettings['contestStatus']})}
-                className="bg-bg-primary border border-white/20 rounded-lg p-3 text-white focus:border-cyan-primary outline-none w-full max-w-md"
+                value={settings.websiteStatus || 'Open'}
+                onChange={e => setSettings({...settings, websiteStatus: e.target.value as 'Open' | 'Maintenance'})}
+                className="bg-bg-secondary border border-white/20 rounded text-white p-2 w-full mt-1 focus:border-cyan-primary outline-none"
               >
-                <option value="Registration Open">Registration Open (Users can sign up & predict)</option>
-                <option value="Registration Closed">Registration Closed (No new signups, dashboard available)</option>
-                <option value="Tournament Live">Tournament Live (Matches lock at kickoff)</option>
-                <option value="Tournament Finished">Tournament Finished (Read-only mode)</option>
+                <option value="Open">OPEN</option>
+                <option value="Maintenance">MAINTENANCE (Blocks all non-admin users)</option>
               </select>
-            </div>
+            </label>
           </div>
           <label>
             <span className="block text-sm text-text-secondary mb-1">Current Round</span>
@@ -73,14 +148,7 @@ export const SettingsManager = () => {
               onChange={e => setSettings({...settings, currentRound: e.target.value})} 
             />
           </label>
-          <label className="flex items-center gap-2 mt-2">
-            <input 
-              type="checkbox" 
-              checked={settings.predictionLocked}
-              onChange={e => setSettings({...settings, predictionLocked: e.target.checked})} 
-            />
-            Predictions Locked?
-          </label>
+
           <label className="flex items-center gap-2">
             <input 
               type="checkbox" 
@@ -110,7 +178,15 @@ export const SettingsManager = () => {
           <p className="text-xs text-text-muted mt-4 text-center">Note: Changing the scoring system does not automatically recalculate scores. You must trigger a recalculation by saving a match.</p>
         </div>
 
-        <div className="md:col-span-2 flex justify-end">
+        <div className="md:col-span-2 flex justify-end gap-4">
+          <button 
+            type="button" 
+            onClick={handleSyncPhotos}
+            disabled={syncing}
+            className="bg-bg-secondary text-white border border-cyan-primary/50 font-bold px-8 py-3 rounded-lg hover:bg-white/5 disabled:opacity-50"
+          >
+            {syncing ? 'Syncing...' : 'Sync Missing Photos'}
+          </button>
           <button type="submit" className="bg-cyan-primary text-navy-900 font-bold px-8 py-3 rounded-lg">
             Save Settings
           </button>

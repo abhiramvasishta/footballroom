@@ -32,6 +32,23 @@ export interface Match {
   nextSlot: 'home' | 'away' | null;
   loserNextMatchId: string | null;
   loserNextSlot: 'home' | 'away' | null;
+  highlightUrl?: string;
+  homeScore?: number;
+  awayScore?: number;
+  homePenaltyScore?: number;
+  awayPenaltyScore?: number;
+  extraTime?: boolean;
+  penalties?: boolean;
+  goals?: GoalEvent[];
+}
+
+export interface GoalEvent {
+  id: string;
+  playerName: string;
+  minute: string;
+  isHomeTeam: boolean;
+  isOwnGoal?: boolean;
+  isPenalty?: boolean;
 }
 
 export interface UserData {
@@ -65,10 +82,11 @@ export interface PredictionDoc {
 
 export interface TournamentSettings {
   contestName: string;
-  predictionLocked: boolean;
+  registrationOpen: boolean;
+  predictionsOpen: boolean;
+  websiteStatus: 'Open' | 'Maintenance';
   leaderboardVisible: boolean;
   currentRound: string;
-  contestStatus: 'Registration Open' | 'Registration Closed' | 'Tournament Live' | 'Tournament Finished';
   scoringSystem: {
     round32: number;
     round16: number;

@@ -16,7 +16,13 @@ export const getUserData = async (entryId: string): Promise<UserData | null> => 
 
 export const updateUserPhoto = async (entryId: string, photoURL: string | null) => {
   const userRef = doc(db, 'users', entryId);
-  await setDoc(userRef, { photoURL }, { merge: true });
+  const leaderboardRef = doc(db, 'leaderboard', entryId);
+  
+  const batch = writeBatch(db);
+  batch.set(userRef, { photoURL }, { merge: true });
+  batch.set(leaderboardRef, { photoURL }, { merge: true });
+  
+  await batch.commit();
 };
 
 export const recoverUser = async (recoveryCode: string): Promise<UserData | null> => {
@@ -29,6 +35,12 @@ export const recoverUser = async (recoveryCode: string): Promise<UserData | null
   return null;
 };
 
+export const fetchAllUsers = async (): Promise<UserData[]> => {
+  const usersRef = collection(db, 'users');
+  const snap = await getDocs(usersRef);
+  return snap.docs.map(doc => doc.data() as UserData);
+};
+
 // PREDICTION SERVICES
 export const savePredictionToFirebase = async (predictionData: PredictionDoc) => {
   const predRef = doc(db, 'predictions', predictionData.entryId);
@@ -39,6 +51,12 @@ export const getPredictionData = async (entryId: string): Promise<PredictionDoc 
   const predRef = doc(db, 'predictions', entryId);
   const snap = await getDoc(predRef);
   return snap.exists() ? (snap.data() as PredictionDoc) : null;
+};
+
+export const fetchAllPredictions = async (): Promise<PredictionDoc[]> => {
+  const predictionsRef = collection(db, 'predictions');
+  const snap = await getDocs(predictionsRef);
+  return snap.docs.map(doc => doc.data() as PredictionDoc);
 };
 
 // TOURNAMENT SERVICES (TEAMS, MATCHES, SETTINGS)

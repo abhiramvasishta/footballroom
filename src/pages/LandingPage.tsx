@@ -82,7 +82,7 @@ export default function LandingPage() {
           <div className="w-full space-y-4">
             {settings === null ? (
               <div className="w-full h-16 animate-pulse bg-white/10 rounded-xl"></div>
-            ) : (settings.contestStatus === 'Registration Open' || !settings.contestStatus) ? (
+            ) : settings.registrationOpen ? (
               <button 
                 onClick={() => navigate('/register')}
                 className="w-full group relative overflow-hidden rounded-xl bg-gradient-to-r from-cyan-primary to-cyan-secondary p-[2px] transition-all hover:shadow-[0_0_20px_rgba(0,217,255,0.3)]"

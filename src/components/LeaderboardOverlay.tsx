@@ -6,6 +6,7 @@ import { db } from '../lib/firebase';
 import { fetchTeams, fetchMatches } from '../lib/services';
 import type { Team } from '../types';
 import { cn } from '../utils/cn';
+import { Avatar } from './Avatar';
 
 interface LeaderboardEntry {
   entryId: string;
@@ -226,15 +227,7 @@ export const LeaderboardOverlay = ({ currentEntryId, onClose }: Props) => {
                           </td>
                           <td className="p-4">
                             <div className="flex items-center gap-3">
-                              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold border-2 overflow-hidden ${isCurrentUser ? 'border-cyan-primary bg-gold-900/50' : 'border-[rgba(0,217,255,0.18)] bg-card-hover'}`}>
-                                {user.photoURL ? (
-                                  <img src={user.photoURL} alt="" className="w-full h-full object-cover" loading="lazy" />
-                                ) : user.avatar && user.avatar.startsWith('http') ? (
-                                  <img src={user.avatar} alt="" className="w-full h-full object-cover" loading="lazy" />
-                                ) : (
-                                  user.avatar || user.name.charAt(0).toUpperCase()
-                                )}
-                              </div>
+                              <Avatar photoURL={user.photoURL} avatar={user.avatar} name={user.name} className={`w-10 h-10 rounded-full text-sm font-bold border-2 ${isCurrentUser ? 'border-cyan-primary bg-gold-900/50' : 'border-[rgba(0,217,255,0.18)] bg-card-hover'}`} />
                               <div className="flex flex-col">
                                 <span className={`font-bold ${isCurrentUser ? 'text-cyan-primary' : 'text-white'}`}>
                                   {user.name} {isCurrentUser && <span className="ml-2 text-xs bg-cyan-primary text-navy-900 px-2 py-0.5 rounded-full uppercase tracking-wider">You</span>}

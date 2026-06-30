@@ -15,7 +15,13 @@ export default function ReviewPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [photoURL, setPhotoURL] = useState<string | undefined>();
+  const [settings, setSettings] = useState<any>(null);
+
   useEffect(() => {
+    import('../lib/services').then(({ fetchSettings }) => {
+      fetchSettings().then(setSettings);
+    });
+    
     if (entryId) {
       getUserData(entryId).then(u => {
         if (u?.photoURL) setPhotoURL(u.photoURL);
@@ -131,30 +137,36 @@ export default function ReviewPage() {
         {error && <p className="text-status-danger text-center mb-6 font-bold bg-status-danger/10 p-3 rounded-lg border border-status-danger/20">{error}</p>}
 
 
-        <div className="flex flex-col sm:flex-row gap-4">
-          <button 
-            onClick={() => {
-              navigate('/predict');
-            }}
-            className="flex-1 glass-card p-4 rounded-xl flex items-center justify-center gap-2 hover:bg-white/5 transition-colors border-[rgba(255,255,255,0.1)] text-text-primary font-bold uppercase tracking-widest text-sm"
-          >
-            <Edit2 size={18} />
-            <span>Edit Predictions</span>
-          </button>
-          
-          <button 
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className="flex-1 bg-cyan-primary text-navy-900 font-bold p-4 rounded-xl flex items-center justify-center gap-2 hover:shadow-[0_0_25px_rgba(0,217,255,0.4)] hover:scale-[1.02] transition-all disabled:opacity-50 uppercase tracking-widest text-sm"
-          >
-            {isSubmitting ? 'Submitting...' : (
-              <>
-                <CheckCircle size={20} />
-                <span>Confirm Submission</span>
-              </>
-            )}
-          </button>
-        </div>
+        {(!settings || settings.predictionsOpen) ? (
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button 
+              onClick={() => {
+                navigate('/predict');
+              }}
+              className="flex-1 glass-card p-4 rounded-xl flex items-center justify-center gap-2 hover:bg-white/5 transition-colors border-[rgba(255,255,255,0.1)] text-text-primary font-bold uppercase tracking-widest text-sm"
+            >
+              <Edit2 size={18} />
+              <span>Edit Predictions</span>
+            </button>
+            
+            <button 
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="flex-1 bg-cyan-primary text-navy-900 font-bold p-4 rounded-xl flex items-center justify-center gap-2 hover:shadow-[0_0_25px_rgba(0,217,255,0.4)] hover:scale-[1.02] transition-all disabled:opacity-50 uppercase tracking-widest text-sm"
+            >
+              {isSubmitting ? 'Submitting...' : (
+                <>
+                  <CheckCircle size={20} />
+                  <span>Confirm Submission</span>
+                </>
+              )}
+            </button>
+          </div>
+        ) : (
+          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-center justify-center gap-2">
+            <span className="text-red-400 font-bold">Predictions are now closed. Thank you for participating!</span>
+          </div>
+        )}
       </div>
 
 

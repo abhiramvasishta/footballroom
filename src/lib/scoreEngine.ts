@@ -177,6 +177,7 @@ export const recalculateAllScores = async () => {
       entryId: user.entryId,
       name: user.name,
       avatar: user.avatar,
+      photoURL: user.photoURL || null,
       score: user.score,
       accuracy: user.accuracy,
       correctPicks: user.correctPicks,

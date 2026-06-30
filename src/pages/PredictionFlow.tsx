@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronRight, ChevronLeft, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { ChevronRight, ChevronLeft, AlertCircle, CheckCircle2, Lock } from 'lucide-react';
 import { AnimatedTransition } from '../components/AnimatedTransition';
 import { MatchCard } from '../components/MatchCard';
 import { MatchCardSkeleton, Skeleton } from '../components/Skeleton';
@@ -27,11 +27,19 @@ export default function PredictionFlow() {
   const [saveStatus, setSaveStatus] = useState<'saved' | 'saving'>('saved');
   const [playerSearchQuery, setPlayerSearchQuery] = useState('');
 
+  const [settings, setSettings] = useState<any>(null);
+
   useEffect(() => {
     if (!isRegistered) {
       navigate('/');
     }
   }, [isRegistered, navigate]);
+
+  useEffect(() => {
+    import('../lib/services').then(({ fetchSettings }) => {
+      fetchSettings().then(setSettings);
+    });
+  }, []);
 
   useEffect(() => {
     store.initialize(entryId || undefined);
@@ -224,14 +232,16 @@ export default function PredictionFlow() {
               </div>
             </div>
             
-            <button
-              onClick={handleNext}
-              disabled={(!store.isSelectingGoldenBall && !isRoundComplete) || (store.isSelectingGoldenBall && !store.goldenBallPlayerId)}
-              className="flex items-center gap-2 bg-cyan-primary text-navy-900 px-4 py-2 rounded-full font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-cyan-primary transition-colors flex-shrink-0"
-            >
-              <span className="hidden sm:inline">{store.isSelectingGoldenBall ? 'Review' : 'Next Round'}</span>
-              <ChevronRight size={18} />
-            </button>
+            {(!settings || settings.predictionsOpen) && (
+              <button
+                onClick={handleNext}
+                disabled={(!store.isSelectingGoldenBall && !isRoundComplete) || (store.isSelectingGoldenBall && !store.goldenBallPlayerId)}
+                className="flex items-center gap-2 bg-cyan-primary text-navy-900 px-4 py-2 rounded-full font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-cyan-primary transition-colors flex-shrink-0"
+              >
+                <span className="hidden sm:inline">{store.isSelectingGoldenBall ? 'Review' : 'Next Round'}</span>
+                <ChevronRight size={18} />
+              </button>
+            )}
           </div>
           
           <div className="h-1.5 w-full bg-bg-secondary rounded-full overflow-hidden">
@@ -246,6 +256,13 @@ export default function PredictionFlow() {
       </div>
 
       <div className="max-w-4xl mx-auto p-4 md:p-6 mt-4">
+        {settings && !settings.predictionsOpen && (
+          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6 flex items-center justify-center gap-2">
+            <Lock size={18} className="text-red-400" />
+            <span className="text-red-400 font-bold">Predictions are now closed. Thank you for participating!</span>
+          </div>
+        )}
+
         {store.isSelectingGoldenBall ? (
           <div className="animate-fade-in flex flex-col gap-6">
             <div className="text-center mb-4">
@@ -272,9 +289,14 @@ export default function PredictionFlow() {
                 return (
                   <div
                     key={player.id}
-                    onClick={() => handleSelectPlayer(player.id)}
-                    className={`relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 group
-                      ${isSelected ? 'border-2 border-cyan-primary shadow-[0_0_25px_rgba(0,217,255,0.5)] scale-105' : 'border border-[rgba(255,255,255,0.1)] hover:border-cyan-primary/50 hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(0,217,255,0.15)] bg-card-bg'}`}
+                    onClick={() => {
+                      if (!settings || settings.predictionsOpen) {
+                        handleSelectPlayer(player.id);
+                      }
+                    }}
+                    className={`relative rounded-2xl overflow-hidden transition-all duration-300 group
+                      ${isSelected ? 'border-2 border-cyan-primary shadow-[0_0_25px_rgba(0,217,255,0.5)] scale-105' : 'border border-[rgba(255,255,255,0.1)] hover:border-cyan-primary/50 hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(0,217,255,0.15)] bg-card-bg'}
+                      ${settings && !settings.predictionsOpen ? 'cursor-not-allowed opacity-75' : 'cursor-pointer'}`}
                   >
                     {isSelected && (
                       <div className="absolute top-2 right-2 z-20 bg-cyan-primary rounded-full p-1 shadow-[0_0_10px_rgba(0,217,255,0.8)]">
@@ -326,6 +348,7 @@ export default function PredictionFlow() {
                     selectedTeamId={store.picks[match.id] || null}
                     onSelectTeam={(teamId) => handleSelectTeam(match.id, teamId)}
                     index={index}
+                    isLockedOverride={settings && !settings.predictionsOpen}
                   />
                 </div>
               );

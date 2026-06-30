@@ -12,6 +12,7 @@ import { MatchesManager } from '../components/admin/MatchesManager';
 import { SettingsManager } from '../components/admin/SettingsManager';
 import { SeedControls } from '../components/admin/SeedControls';
 import { PredictionAnalytics } from '../components/admin/PredictionAnalytics';
+import { UsersManager } from '../components/admin/UsersManager';
 
 type Tab = 'dashboard' | 'teams' | 'matches' | 'settings' | 'users' | 'analytics';
 
@@ -122,10 +123,9 @@ export default function AdminDashboard() {
               <Settings size={20} className={activeTab === 'settings' ? 'text-cyan-primary' : ''} />
               <span className="font-bold">Settings</span>
             </button>
-            {/* Users & Analytics can be added later if needed */}
-            <button disabled className="flex items-center gap-3 bg-bg-secondary/20 p-4 rounded-xl text-left text-gray-600 cursor-not-allowed">
-              <Users size={20} />
-              <span className="font-bold">Users (WIP)</span>
+            <button onClick={() => setActiveTab('users')} className={`flex items-center gap-3 p-4 rounded-xl text-left transition-colors border ${activeTab === 'users' ? 'bg-bg-secondary border-cyan-primary/50 text-white' : 'bg-bg-secondary/50 border-transparent text-text-secondary hover:bg-card-hover'}`}>
+              <Users size={20} className={activeTab === 'users' ? 'text-cyan-primary' : ''} />
+              <span className="font-bold">Users</span>
             </button>
             <button onClick={() => setActiveTab('analytics')} className={`flex items-center gap-3 p-4 rounded-xl text-left transition-colors border ${activeTab === 'analytics' ? 'bg-bg-secondary border-cyan-primary/50 text-white' : 'bg-bg-secondary/50 border-transparent text-text-secondary hover:bg-card-hover'}`}>
               <BarChart3 size={20} className={activeTab === 'analytics' ? 'text-cyan-primary' : ''} />
@@ -168,6 +168,7 @@ export default function AdminDashboard() {
             {activeTab === 'teams' && <TeamsManager />}
             {activeTab === 'matches' && <MatchesManager />}
             {activeTab === 'settings' && <SettingsManager />}
+            {activeTab === 'users' && <UsersManager />}
             {activeTab === 'analytics' && <PredictionAnalytics />}
           </div>
         </div>

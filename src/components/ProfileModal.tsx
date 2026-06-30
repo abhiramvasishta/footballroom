@@ -251,7 +251,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-[rgba(0,217,255,0.18)]">
             <div className="glass-card p-4 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)]">
               <span className="text-3xl font-bold font-mono text-cyan-primary drop-shadow-[0_0_10px_rgba(0,217,255,0.5)]">{user.rank ? `#${user.rank}` : '—'}</span>
-              <span className="text-xs text-text-secondary uppercase font-bold tracking-widest">Global Rank</span>
+              <span className="text-xs text-text-secondary uppercase font-bold tracking-widest">Your Rank</span>
             </div>
             <div className="glass-card p-4 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)]">
               <span className="text-3xl font-bold font-mono text-white">{user.score}</span>

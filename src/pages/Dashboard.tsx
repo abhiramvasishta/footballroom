@@ -23,8 +23,6 @@ export default function Dashboard() {
   const [championTeam, setChampionTeam] = useState<Team | null>(null);
   const [goldenBallPlayerId, setGoldenBallPlayerId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
   
   const [predictionsCount, setPredictionsCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -141,7 +139,7 @@ export default function Dashboard() {
             <div className="absolute top-[-20%] right-[-10%] w-48 h-48 bg-cyan-primary/10 rounded-full blur-[80px] pointer-events-none transition-all group-hover:bg-cyan-primary/20" />
             
             <button 
-              onClick={() => setIsProfileOpen(true)}
+              onClick={() => window.dispatchEvent(new Event('openProfile'))}
               className="w-24 h-24 rounded-full bg-bg-secondary flex items-center justify-center text-4xl shadow-[0_0_25px_rgba(0,217,255,0.4)] ring-2 ring-cyan-primary/30 ring-offset-2 ring-offset-bg-primary overflow-hidden hover:scale-105 transition-all group cursor-pointer relative shrink-0 mb-4 z-10"
             >
               {userData.photoURL ? (
@@ -188,7 +186,7 @@ export default function Dashboard() {
 
             {/* Mobile Only: Leaderboard & Share */}
             <div className="flex md:hidden w-full gap-3 mt-6 pt-5 border-t border-white/10 relative z-10">
-              <button onClick={() => setIsLeaderboardOpen(true)} className="flex-1 flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-cyan-primary/10 border border-cyan-primary/30 text-cyan-primary hover:bg-cyan-primary/20">
+              <button onClick={() => window.dispatchEvent(new Event('openLeaderboard'))} className="flex-1 flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl bg-cyan-primary/10 border border-cyan-primary/30 text-cyan-primary hover:bg-cyan-primary/20">
                 <Trophy size={18} />
                 <span className="text-[10px] uppercase font-bold tracking-widest">Leaderboard</span>
               </button>
@@ -254,7 +252,7 @@ export default function Dashboard() {
           
           {/* Leaderboard Banner */}
           <div 
-            onClick={() => setIsLeaderboardOpen(true)}
+            onClick={() => window.dispatchEvent(new Event('openLeaderboard'))}
             className="glass-card p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between border-[rgba(0,217,255,0.18)] shadow-[0_0_20px_rgba(0,217,255,0.05)] bg-gradient-to-r from-bg-primary via-cyan-primary/5 to-bg-primary group overflow-hidden relative cursor-pointer"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-primary/0 via-cyan-primary/10 to-cyan-primary/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
@@ -361,21 +359,6 @@ export default function Dashboard() {
       </div>
 
       <AnimatePresence>
-        {isLeaderboardOpen && (
-          <LeaderboardOverlay 
-            currentEntryId={entryId || undefined}
-            onClose={() => setIsLeaderboardOpen(false)}
-          />
-        )}
-        {isProfileOpen && (
-          <ProfileModal 
-            user={userData}
-            predictionsCount={predictionsCount}
-            totalMatches={TOTAL_MATCHES}
-            championTeam={championTeam}
-            onClose={() => setIsProfileOpen(false)}
-          />
-        )}
       </AnimatePresence>
       <ShareBracket 
         ref={shareRef}

@@ -14,10 +14,11 @@ interface Props {
   selectedTeamId: string | null;
   onSelectTeam: (teamId: string) => void;
   index: number;
+  isLockedOverride?: boolean;
 }
 
-export const MatchCard = ({ match, teamA, teamB, selectedTeamId, onSelectTeam, index }: Props) => {
-  const isLocked = match.isLocked || false;
+export const MatchCard = ({ match, teamA, teamB, selectedTeamId, onSelectTeam, index, isLockedOverride }: Props) => {
+  const isLocked = isLockedOverride || match.isLocked || false;
   const [showModal, setShowModal] = useState(false);
 
   return (

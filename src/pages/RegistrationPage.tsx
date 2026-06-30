@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Camera, ChevronRight, Loader2, CheckCircle2 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
@@ -19,6 +19,14 @@ export default function RegistrationPage() {
   const [error, setError] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [settings, setSettings] = useState<any>(null);
+
+  useEffect(() => {
+    import('../lib/services').then(({ fetchSettings }) => {
+      fetchSettings().then(setSettings);
+    });
+  }, []);
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -107,6 +115,18 @@ export default function RegistrationPage() {
       setLoading(false);
     }
   };
+
+  if (settings && !settings.registrationOpen) {
+    return (
+      <AnimatedTransition className="min-h-screen flex flex-col items-center justify-center p-6 bg-bg-primary">
+        <div className="z-10 w-full max-w-md text-center glass-card p-8">
+          <h1 className="text-3xl font-bold mb-4 text-red-400">Registration Closed</h1>
+          <p className="text-text-secondary mb-8">Registrations are currently closed. New entries are no longer being accepted.</p>
+          <button onClick={() => navigate('/')} className="text-cyan-primary hover:underline">Return to Home</button>
+        </div>
+      </AnimatedTransition>
+    );
+  }
 
   return (
     <AnimatedTransition className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
