@@ -26,8 +26,9 @@ export const seedTournament = async () => {
   // 3. Seed Settings
   const defaultSettings: TournamentSettings = {
     contestName: 'THE FOOTBALL ROOM - World Cup 2026 Predictor',
-    contestStatus: 'Registration Open',
-    predictionLocked: false,
+    registrationOpen: true,
+    predictionsOpen: true,
+    websiteStatus: 'Open',
     leaderboardVisible: true,
     currentRound: 'Round of 32',
     scoringSystem: {

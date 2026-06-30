@@ -5,8 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { AnimatedTransition } from '../components/AnimatedTransition';
-import { LeaderboardOverlay } from '../components/LeaderboardOverlay';
-import { ProfileModal } from '../components/ProfileModal';
 import { NextMatchCountdown } from '../components/NextMatchCountdown';
 import { ShareBracket, type ShareBracketRef } from '../components/ShareBracket';
 

@@ -1,18 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { Navigation } from './Navigation';
 import { LeaderboardOverlay } from './LeaderboardOverlay';
 import { ProfileModal } from './ProfileModal';
 import { useUserStore } from '../store/useUserStore';
-import { getUserData, fetchTeams, fetchMatches } from '../lib/services';
-import type { UserData, Team, Match } from '../types';
+import { fetchTeams, fetchMatches } from '../lib/services';
+import type { UserData, Team } from '../types';
 import { AnimatePresence } from 'framer-motion';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
 export const AppLayout = () => {
   const { entryId } = useUserStore();
-  const location = useLocation();
   
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -34,7 +33,7 @@ export const AppLayout = () => {
 
     const loadStaticData = async () => {
       try {
-        const [teams, matches] = await Promise.all([
+        const [teams] = await Promise.all([
           fetchTeams(),
           fetchMatches()
         ]);
