@@ -165,7 +165,7 @@ export const LeaderboardOverlay = ({ currentEntryId, onClose }: Props) => {
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto overflow-x-auto custom-scrollbar relative z-10">
+        <div className="flex-1 overflow-y-auto custom-scrollbar relative z-10">
           {loading ? (
             <div className="flex justify-center py-20">
               <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-cyan-primary" />
@@ -179,16 +179,16 @@ export const LeaderboardOverlay = ({ currentEntryId, onClose }: Props) => {
               </p>
             </div>
           ) : (
-            <div className="min-w-[600px] w-full pb-6">
+            <div className="w-full pb-6">
               <table className="w-full text-left border-collapse">
                 <thead className="bg-bg-secondary/80 sticky top-0 z-10 shadow-sm border-b border-[rgba(0,217,255,0.18)]">
                   <tr>
-                    <th className="p-4 text-text-secondary font-medium whitespace-nowrap">Rank</th>
-                    <th className="p-4 text-text-secondary font-medium w-full">Player</th>
-                    <th className="p-4 text-text-secondary font-medium text-center whitespace-nowrap">Score</th>
-                    <th className="p-4 text-text-secondary font-medium text-center whitespace-nowrap">Accuracy</th>
-                    <th className="p-4 text-text-secondary font-medium text-center whitespace-nowrap">Champion</th>
-                    <th className="p-4 text-text-secondary font-medium text-right whitespace-nowrap">Status</th>
+                    <th className="p-2 sm:p-4 text-text-secondary font-medium whitespace-nowrap text-sm sm:text-base">Rank</th>
+                    <th className="p-2 sm:p-4 text-text-secondary font-medium w-full text-sm sm:text-base">Player</th>
+                    <th className="p-2 sm:p-4 text-text-secondary font-medium text-center whitespace-nowrap text-sm sm:text-base">Score</th>
+                    <th className="p-2 sm:p-4 text-text-secondary font-medium text-center whitespace-nowrap hidden sm:table-cell">Accuracy</th>
+                    <th className="p-2 sm:p-4 text-text-secondary font-medium text-center whitespace-nowrap hidden md:table-cell">Champion</th>
+                    <th className="p-2 sm:p-4 text-text-secondary font-medium text-right whitespace-nowrap hidden sm:table-cell">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
@@ -209,10 +209,10 @@ export const LeaderboardOverlay = ({ currentEntryId, onClose }: Props) => {
                               : 'hover:bg-white/5'
                             }`}
                         >
-                          <td className="p-4 whitespace-nowrap">
-                            <div className="flex items-center gap-3">
+                          <td className="p-2 sm:p-4 whitespace-nowrap">
+                            <div className="flex items-center gap-1 sm:gap-3">
                               <span className={cn(
-                                "font-bold text-2xl font-mono",
+                                "font-bold text-xl sm:text-2xl font-mono",
                                 user.rank === 1 ? "text-cyan-primary drop-shadow-[0_0_15px_rgba(0,217,255,0.6)]" :
                                 user.rank === 2 ? "text-white" :
                                 user.rank === 3 ? "text-text-secondary" :
@@ -225,12 +225,12 @@ export const LeaderboardOverlay = ({ currentEntryId, onClose }: Props) => {
                               </div>
                             </div>
                           </td>
-                          <td className="p-4">
-                            <div className="flex items-center gap-3">
-                              <Avatar photoURL={user.photoURL} avatar={user.avatar} name={user.name} className={`w-10 h-10 rounded-full text-sm font-bold border-2 ${isCurrentUser ? 'border-cyan-primary bg-gold-900/50' : 'border-[rgba(0,217,255,0.18)] bg-card-hover'}`} />
-                              <div className="flex flex-col">
-                                <span className={`font-bold ${isCurrentUser ? 'text-cyan-primary' : 'text-white'}`}>
-                                  {user.name} {isCurrentUser && <span className="ml-2 text-xs bg-cyan-primary text-navy-900 px-2 py-0.5 rounded-full uppercase tracking-wider">You</span>}
+                          <td className="p-2 sm:p-4">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                              <Avatar photoURL={user.photoURL} avatar={user.avatar} name={user.name} className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full text-xs sm:text-sm font-bold border-2 ${isCurrentUser ? 'border-cyan-primary bg-gold-900/50' : 'border-[rgba(0,217,255,0.18)] bg-card-hover'}`} />
+                              <div className="flex flex-col min-w-0">
+                                <span className={`font-bold truncate text-sm sm:text-base ${isCurrentUser ? 'text-cyan-primary' : 'text-white'}`}>
+                                  {user.name} {isCurrentUser && <span className="ml-1 sm:ml-2 text-[10px] sm:text-xs bg-cyan-primary text-navy-900 px-1.5 py-0.5 rounded-full uppercase tracking-wider">You</span>}
                                 </span>
                                 <span className="text-xs text-text-secondary hidden sm:inline">
                                   {user.correctPicks}W / {user.wrongPicks}L
@@ -238,7 +238,7 @@ export const LeaderboardOverlay = ({ currentEntryId, onClose }: Props) => {
                               </div>
                             </div>
                           </td>
-                          <td className="p-4 text-center whitespace-nowrap font-bold text-lg text-white">
+                          <td className="p-2 sm:p-4 text-center whitespace-nowrap font-bold text-base sm:text-lg text-white">
                             <motion.div
                               key={user.score}
                               initial={{ scale: 1.5, color: '#00D9FF' }}
@@ -248,10 +248,10 @@ export const LeaderboardOverlay = ({ currentEntryId, onClose }: Props) => {
                               {user.score}
                             </motion.div>
                           </td>
-                          <td className="p-4 text-center whitespace-nowrap text-gray-300">
+                          <td className="p-2 sm:p-4 text-center whitespace-nowrap text-gray-300 hidden sm:table-cell">
                             {user.accuracy}%
                           </td>
-                          <td className="p-4 text-center whitespace-nowrap">
+                          <td className="p-2 sm:p-4 text-center whitespace-nowrap hidden md:table-cell">
                             {user.championTeam ? (
                               <div className="flex flex-col items-center gap-1">
                                 <div className="w-8 h-5 rounded overflow-hidden shadow-sm border border-white/20">
@@ -263,7 +263,7 @@ export const LeaderboardOverlay = ({ currentEntryId, onClose }: Props) => {
                               <span className="text-text-muted">-</span>
                             )}
                           </td>
-                          <td className="p-4 text-right whitespace-nowrap">
+                          <td className="p-2 sm:p-4 text-right whitespace-nowrap hidden sm:table-cell">
                             <span className={`text-xs px-2 py-1 rounded-full font-medium ${user.status === 'Eliminated' ? 'bg-red-500/20 text-red-400 border border-red-500/20' :
                                 user.status === 'Champion' ? 'bg-cyan-primary/20 text-cyan-primary border border-cyan-primary/20' :
                                   'bg-blue-500/20 text-blue-400 border border-blue-500/20'

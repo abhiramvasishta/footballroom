@@ -13,6 +13,17 @@ interface Props {
 export const VideoPlayerModal = ({ match, homeTeam, awayTeam, onClose }: Props) => {
   if (!match.highlightUrl) return null;
 
+  const getStreamUrl = (url: string) => {
+    const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+    if (driveMatch) {
+      return `https://drive.google.com/uc?export=download&id=${driveMatch[1]}`;
+    }
+    return url;
+  };
+
+  const streamUrl = getStreamUrl(match.highlightUrl);
+  const isYouTube = match.highlightUrl.includes('youtube.com') || match.highlightUrl.includes('youtu.be');
+
   return (
     <div className="fixed inset-0 z-[100] flex flex-col bg-bg-primary overflow-hidden">
       
@@ -47,13 +58,23 @@ export const VideoPlayerModal = ({ match, homeTeam, awayTeam, onClose }: Props) 
         transition={{ duration: 0.3 }}
         className="flex-1 w-full relative bg-black flex items-center justify-center"
       >
-        <iframe 
-          src={match.highlightUrl} 
-          className="w-full h-full md:w-[85%] md:h-[85%] rounded-lg shadow-[0_0_50px_rgba(0,217,255,0.15)]"
-          allow="autoplay; fullscreen; picture-in-picture"
-          allowFullScreen
-          title={`Highlights: ${homeTeam?.name} vs ${awayTeam?.name}`}
-        ></iframe>
+        {isYouTube ? (
+          <iframe 
+            src={streamUrl} 
+            className="w-full h-full md:w-[85%] md:h-[85%] rounded-lg shadow-[0_0_50px_rgba(0,217,255,0.15)]"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowFullScreen
+            title={`Highlights: ${homeTeam?.name} vs ${awayTeam?.name}`}
+          ></iframe>
+        ) : (
+          <video 
+            src={streamUrl} 
+            className="w-full h-full md:w-[85%] md:h-[85%] rounded-lg shadow-[0_0_50px_rgba(0,217,255,0.15)] object-contain"
+            controls
+            autoPlay
+            playsInline
+          />
+        )}
       </motion.div>
 
       {/* Stats Footer */}

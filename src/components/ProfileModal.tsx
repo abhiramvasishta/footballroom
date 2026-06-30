@@ -140,10 +140,10 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-8 custom-scrollbar">
           
           {/* Avatar Section */}
-          <div className="flex flex-col md:flex-row gap-8 items-center justify-center">
+          <div className="flex flex-col md:flex-row gap-4 sm:gap-8 items-center justify-center">
             
             <div 
               className="relative group"
@@ -158,18 +158,18 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                 }}
                 animate={uploadSuccess ? { scale: [0.8, 1.08, 1] } : { scale: 1 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                className={`w-40 h-40 rounded-full border-4 border-cyan-primary/50 bg-bg-secondary flex flex-col items-center justify-center overflow-hidden shadow-[0_0_30px_rgba(0,217,255,0.2)] relative cursor-pointer ${isUploading ? 'pointer-events-none' : ''}`}
+                className={`w-28 h-28 sm:w-40 sm:h-40 rounded-full border-4 border-cyan-primary/50 bg-bg-secondary flex flex-col items-center justify-center overflow-hidden shadow-[0_0_30px_rgba(0,217,255,0.2)] relative cursor-pointer ${isUploading ? 'pointer-events-none' : ''}`}
               >
                 {isUploading ? (
                   <div className="absolute inset-0 bg-bg-primary/80 flex flex-col items-center justify-center backdrop-blur-sm z-10">
-                    <Loader2 size={32} className="text-cyan-primary animate-spin mb-2" />
+                    <Loader2 size={24} className="text-cyan-primary animate-spin mb-2 sm:w-8 sm:h-8" />
                   </div>
                 ) : null}
 
                 {currentPhoto ? (
                   <img src={currentPhoto} alt="Profile" className="w-full h-full object-cover" loading="lazy" />
                 ) : (
-                  <span className="text-5xl font-bold text-cyan-primary">
+                  <span className="text-4xl sm:text-5xl font-bold text-cyan-primary">
                     {user.avatar || user.name.charAt(0).toUpperCase()}
                   </span>
                 )}
@@ -197,17 +197,17 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                     fileInputRef.current?.click();
                   }}
                   disabled={isUploading}
-                  className="w-full flex items-center justify-center gap-2 bg-cyan-primary/10 hover:bg-cyan-primary/20 text-cyan-primary border border-cyan-primary/30 px-4 py-2 rounded-lg transition-colors text-sm font-bold cursor-pointer"
+                  className="w-full flex items-center justify-center gap-1.5 sm:gap-2 bg-cyan-primary/10 hover:bg-cyan-primary/20 text-cyan-primary border border-cyan-primary/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm font-bold cursor-pointer"
                 >
-                  <Upload size={16} /> Change Photo
+                  <Upload size={14} className="sm:w-4 sm:h-4" /> Change Photo
                 </button>
                 {currentPhoto && (
                   <button 
                     onClick={handleRemovePhoto}
                     disabled={isUploading}
-                    className="w-full flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-4 py-2 rounded-lg transition-colors text-sm font-bold"
+                    className="w-full flex items-center justify-center gap-1.5 sm:gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm font-bold"
                   >
-                    <Trash2 size={16} /> Remove Photo
+                    <Trash2 size={14} className="sm:w-4 sm:h-4" /> Remove Photo
                   </button>
                 )}
               </div>
@@ -215,7 +215,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
 
             <div className="flex-1 flex flex-col gap-4 text-center md:text-left w-full">
               <div>
-                <h3 className="text-3xl font-bold font-display text-white">{user.name}</h3>
+                <h3 className="text-2xl sm:text-3xl font-bold font-display text-white">{user.name}</h3>
                 <div className="flex items-center justify-center md:justify-start gap-2 mt-1">
                   <span className="bg-white/10 px-2 py-0.5 rounded text-xs text-text-secondary font-mono">
                     Code: {user.recoveryCode}
@@ -248,32 +248,32 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-[rgba(0,217,255,0.18)]">
-            <div className="glass-card p-4 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)]">
-              <span className="text-3xl font-bold font-mono text-cyan-primary drop-shadow-[0_0_10px_rgba(0,217,255,0.5)]">{user.rank ? `#${user.rank}` : '—'}</span>
-              <span className="text-xs text-text-secondary uppercase font-bold tracking-widest">Your Rank</span>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 pt-2 sm:pt-4 border-t border-[rgba(0,217,255,0.18)]">
+            <div className="glass-card p-2 sm:p-4 flex flex-col items-center justify-center text-center gap-1 sm:gap-2 border-[rgba(0,217,255,0.18)]">
+              <span className="text-2xl sm:text-3xl font-bold font-mono text-cyan-primary drop-shadow-[0_0_10px_rgba(0,217,255,0.5)]">{user.rank ? `#${user.rank}` : '—'}</span>
+              <span className="text-[10px] sm:text-xs text-text-secondary uppercase font-bold tracking-wider sm:tracking-widest">Your Rank</span>
             </div>
-            <div className="glass-card p-4 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)]">
-              <span className="text-3xl font-bold font-mono text-white">{user.score}</span>
-              <span className="text-xs text-text-secondary uppercase font-bold tracking-widest">Total Score</span>
+            <div className="glass-card p-2 sm:p-4 flex flex-col items-center justify-center text-center gap-1 sm:gap-2 border-[rgba(0,217,255,0.18)]">
+              <span className="text-2xl sm:text-3xl font-bold font-mono text-white">{user.score}</span>
+              <span className="text-[10px] sm:text-xs text-text-secondary uppercase font-bold tracking-wider sm:tracking-widest">Total Score</span>
             </div>
-            <div className="glass-card p-4 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)]">
-              <span className="text-3xl font-bold font-mono text-white">{user.accuracy}%</span>
-              <span className="text-xs text-text-secondary uppercase font-bold tracking-widest">Accuracy</span>
+            <div className="glass-card p-2 sm:p-4 flex flex-col items-center justify-center text-center gap-1 sm:gap-2 border-[rgba(0,217,255,0.18)]">
+              <span className="text-2xl sm:text-3xl font-bold font-mono text-white">{user.accuracy}%</span>
+              <span className="text-[10px] sm:text-xs text-text-secondary uppercase font-bold tracking-wider sm:tracking-widest">Accuracy</span>
             </div>
-            <div className="glass-card p-4 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)]">
-              <span className="text-3xl font-bold font-mono text-white">{predictionsCount}/{totalMatches}</span>
-              <span className="text-xs text-text-secondary uppercase font-bold tracking-widest">Predicted</span>
+            <div className="glass-card p-2 sm:p-4 flex flex-col items-center justify-center text-center gap-1 sm:gap-2 border-[rgba(0,217,255,0.18)]">
+              <span className="text-2xl sm:text-3xl font-bold font-mono text-white">{predictionsCount}/{totalMatches}</span>
+              <span className="text-[10px] sm:text-xs text-text-secondary uppercase font-bold tracking-wider sm:tracking-widest">Predicted</span>
             </div>
-            <div className="glass-card p-4 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)]">
-              <span className="text-3xl font-bold font-mono text-status-success">{user.correctPicks}</span>
-              <span className="text-xs text-text-secondary uppercase font-bold tracking-widest">Correct</span>
+            <div className="glass-card p-2 sm:p-4 flex flex-col items-center justify-center text-center gap-1 sm:gap-2 border-[rgba(0,217,255,0.18)]">
+              <span className="text-2xl sm:text-3xl font-bold font-mono text-status-success">{user.correctPicks}</span>
+              <span className="text-[10px] sm:text-xs text-text-secondary uppercase font-bold tracking-wider sm:tracking-widest">Correct</span>
             </div>
-            <div className="glass-card p-4 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)]">
-              <span className="text-3xl font-bold font-mono text-status-danger">{user.wrongPicks}</span>
-              <span className="text-xs text-text-secondary uppercase font-bold tracking-widest">Wrong</span>
+            <div className="glass-card p-2 sm:p-4 flex flex-col items-center justify-center text-center gap-1 sm:gap-2 border-[rgba(0,217,255,0.18)]">
+              <span className="text-2xl sm:text-3xl font-bold font-mono text-status-danger">{user.wrongPicks}</span>
+              <span className="text-[10px] sm:text-xs text-text-secondary uppercase font-bold tracking-wider sm:tracking-widest">Wrong</span>
             </div>
-            <div className="glass-card p-4 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.3)] md:col-span-2 shadow-[0_0_15px_rgba(0,217,255,0.05)]">
+            <div className="glass-card p-3 sm:p-4 flex flex-col items-center justify-center text-center gap-1 sm:gap-2 border-[rgba(0,217,255,0.3)] col-span-2 md:col-span-2 shadow-[0_0_15px_rgba(0,217,255,0.05)]">
               {championTeam ? (
                 <div className="flex flex-col items-center gap-2">
                   <img src={championTeam.flagUrl} alt={championTeam.name} className="h-6 object-cover rounded border border-[rgba(0,217,255,0.3)] shadow-sm" />
