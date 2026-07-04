@@ -36,6 +36,12 @@ export const MatchesManager = () => {
   const [highlightUrl, setHighlightUrl] = useState('');
   const [goals, setGoals] = useState<GoalEvent[]>([]);
 
+  // Telegram Link Resolver State
+  const [telegramLink, setTelegramLink] = useState('');
+  const [resolving, setResolving] = useState(false);
+  const [videoMetadata, setVideoMetadata] = useState<any>(null);
+  const [resolveError, setResolveError] = useState('');
+
   const loadData = async () => {
     setLoading(true);
     const [matchesData, teamsData] = await Promise.all([fetchMatches(), fetchTeams()]);
@@ -57,12 +63,6 @@ export const MatchesManager = () => {
     e.preventDefault();
 
     let processedHighlightUrl = highlightUrl;
-    if (processedHighlightUrl) {
-      const driveMatch = processedHighlightUrl.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
-      if (driveMatch && driveMatch[1]) {
-        processedHighlightUrl = `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
-      }
-    }
 
     const matchToSave: any = {
       id, round, homeTeamId: homeTeamId || null, awayTeamId: awayTeamId || null,
@@ -160,6 +160,11 @@ export const MatchesManager = () => {
     setHomePenaltyScore(''); setAwayPenaltyScore('');
     setExtraTime(false); setPenalties(false);
     setHighlightUrl(''); setGoals([]);
+    
+    // Reset resolver state
+    setTelegramLink('');
+    setVideoMetadata(null);
+    setResolveError('');
   };
 
   const handleEdit = (m: Match) => {
@@ -178,12 +183,42 @@ export const MatchesManager = () => {
     setPenalties(m.penalties || false);
     setHighlightUrl(m.highlightUrl || '');
     setGoals(m.goals || []);
+    
+    // Set resolver state for edit
+    setTelegramLink('');
+    setVideoMetadata(null);
+    setResolveError('');
   };
 
   const handleDelete = async (deleteId: string) => {
     if (window.confirm('Delete match?')) {
       await deleteMatch(deleteId);
       loadData();
+    }
+  };
+
+  const handleResolve = async () => {
+    if (!telegramLink) return;
+    setResolving(true);
+    setResolveError('');
+    try {
+      const apiUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+      const res = await fetch(`${apiUrl}/api/telegram/resolve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ link: telegramLink })
+      });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to resolve link');
+      }
+      const data = await res.json();
+      setHighlightUrl(data.videoId); // internal videoId
+      setVideoMetadata(data.metadata);
+    } catch (err: any) {
+      setResolveError(err.message);
+    } finally {
+      setResolving(false);
     }
   };
 
@@ -270,7 +305,54 @@ export const MatchesManager = () => {
           <input type="number" placeholder="Away Score" value={awayScore} onChange={e=>setAwayScore(e.target.value === '' ? '' : Number(e.target.value))} className="bg-bg-secondary p-2 rounded w-full" />
         </div>
         
-        <input placeholder="Google Drive Highlight Link" value={highlightUrl} onChange={e=>setHighlightUrl(e.target.value)} className="bg-bg-secondary p-2 rounded md:col-span-2 border border-purple-500/30" />
+        {/* Telegram Video Link Section */}
+        <div className="md:col-span-4 bg-bg-secondary p-4 rounded border border-purple-500/30 space-y-4">
+          <h3 className="text-sm font-bold uppercase tracking-widest text-purple-400">Telegram Video Link</h3>
+          <div className="flex gap-2 items-center">
+            <input 
+              placeholder="Paste Telegram message link... (e.g. https://t.me/c/12345/25)" 
+              value={telegramLink} 
+              onChange={e=>setTelegramLink(e.target.value)} 
+              className="bg-bg-primary p-2 rounded flex-1 border border-white/10" 
+            />
+            <button 
+              type="button" 
+              onClick={handleResolve} 
+              disabled={resolving || !telegramLink}
+              className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded font-bold disabled:opacity-50 whitespace-nowrap transition-colors"
+            >
+              {resolving ? 'Resolving...' : 'Resolve'}
+            </button>
+          </div>
+          
+          {resolveError && <p className="text-status-danger text-sm font-medium">{resolveError}</p>}
+          
+          {videoMetadata && (
+            <div className="bg-bg-primary p-4 rounded border border-green-500/30 flex gap-4 items-start">
+              {videoMetadata.thumbnail ? (
+                 <img src={`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001'}${videoMetadata.thumbnail}`} alt="Thumbnail" className="w-32 h-20 object-cover rounded bg-black" />
+              ) : (
+                 <div className="w-32 h-20 bg-white/5 rounded flex items-center justify-center text-xs text-text-muted">No Thumb</div>
+              )}
+              <div className="flex flex-col gap-1 text-sm">
+                 <p><span className="font-bold text-text-secondary">Resolution:</span> {videoMetadata.resolution || 'Unknown'}</p>
+                 <p><span className="font-bold text-text-secondary">Duration:</span> {videoMetadata.duration ? `${Math.floor(videoMetadata.duration/60)}:${(videoMetadata.duration%60).toString().padStart(2, '0')}` : 'Unknown'}</p>
+                 <p><span className="font-bold text-text-secondary">Size:</span> {(videoMetadata.size / 1024 / 1024).toFixed(2)} MB</p>
+                 <p><span className="font-bold text-text-secondary">Type:</span> {videoMetadata.mimeType}</p>
+                 <div className="flex gap-2 mt-2">
+                   <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs font-bold rounded flex items-center gap-1">✔ Video Verified</span>
+                   <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs font-bold rounded flex items-center gap-1">✔ Telegram Link Verified</span>
+                 </div>
+              </div>
+            </div>
+          )}
+          
+          {highlightUrl && !videoMetadata && (
+            <div className="bg-white/5 p-3 rounded text-sm text-text-secondary italic">
+              Existing Highlight URL / Video ID: <span className="font-mono text-cyan-primary">{highlightUrl}</span>
+            </div>
+          )}
+        </div>
         
         <div className="flex flex-col gap-4 md:col-span-4 bg-bg-secondary p-4 rounded border border-white/5">
           <div className="flex flex-wrap items-center gap-4">
@@ -338,7 +420,13 @@ export const MatchesManager = () => {
           )}
         </div>
 
-        <button type="submit" className="bg-cyan-primary text-navy-900 font-bold p-2 rounded md:col-span-4 mt-2">Save Match & Recalculate</button>
+        <button 
+          type="submit" 
+          disabled={telegramLink.length > 0 && !videoMetadata}
+          className="bg-cyan-primary text-navy-900 font-bold p-2 rounded md:col-span-4 mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Save Match & Recalculate
+        </button>
       </form>
 
       {loading ? <p>Loading matches...</p> : (

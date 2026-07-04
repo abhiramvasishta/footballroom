@@ -2,6 +2,7 @@ import { X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { Match, Team } from '../types';
 import { formatISTDateOnly } from '../utils/date';
+import { SmartVideoPlayer } from './SmartVideoPlayer';
 
 interface Props {
   match: Match;
@@ -13,17 +14,7 @@ interface Props {
 export const VideoPlayerModal = ({ match, homeTeam, awayTeam, onClose }: Props) => {
   if (!match.highlightUrl) return null;
 
-  const getStreamUrl = (url: string) => {
-    // We cannot use uc?export=download for Google Drive because Google blocks direct streaming
-    // for many files, causing a 0:00 error. We must use the /preview player for Drive links.
-    const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (driveMatch) {
-      return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
-    }
-    return url;
-  };
-
-  const streamUrl = getStreamUrl(match.highlightUrl);
+  const streamUrl = match.highlightUrl;
 
   return (
     <div className="fixed inset-0 z-[100] flex flex-col bg-bg-primary overflow-hidden">
@@ -51,26 +42,17 @@ export const VideoPlayerModal = ({ match, homeTeam, awayTeam, onClose }: Props) 
         </button>
       </div>
 
-      {/* Notice Banner */}
-      <div className="bg-cyan-primary/10 border-b border-cyan-primary/20 p-2 text-center text-xs sm:text-sm text-cyan-primary/90 font-medium px-4 shrink-0 flex items-center justify-center gap-2">
-        <span>Ikkada controls baagalekapothe, arrow nokki direct ga drive loki velli chudu mowaaa</span>
-      </div>
-
       {/* Video Container */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.3 }}
-        className="flex-1 w-full relative bg-black flex items-center justify-center"
+        className="flex-1 w-full relative flex items-center justify-center p-4 md:p-8"
       >
-        <iframe
-          src={streamUrl}
-          className="w-full h-full md:w-[85%] md:h-[85%] rounded-lg shadow-[0_0_50px_rgba(0,217,255,0.15)]"
-          allow="autoplay; fullscreen; picture-in-picture"
-          allowFullScreen
-          title={`Highlights: ${homeTeam?.name} vs ${awayTeam?.name}`}
-        ></iframe>
+        <div className="w-full h-full max-w-5xl mx-auto flex items-center justify-center">
+          <SmartVideoPlayer src={streamUrl} markers={match.goals || []} />
+        </div>
       </motion.div>
 
       {/* Stats Footer */}

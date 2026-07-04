@@ -49,6 +49,7 @@ export interface GoalEvent {
   isHomeTeam: boolean;
   isOwnGoal?: boolean;
   isPenalty?: boolean;
+  videoTimestampSeconds?: number;
 }
 
 export interface UserData {
