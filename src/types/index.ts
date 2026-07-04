@@ -87,6 +87,7 @@ export interface TournamentSettings {
   websiteStatus: 'Open' | 'Maintenance';
   leaderboardVisible: boolean;
   currentRound: string;
+  actualMvpPlayerId?: string | null;
   scoringSystem: {
     round32: number;
     round16: number;
@@ -95,5 +96,6 @@ export interface TournamentSettings {
     thirdPlace: number;
     final: number;
     champion: number;
+    mvp: number;
   };
 }

@@ -58,12 +58,24 @@ export const LeaderboardOverlay = ({ currentEntryId, onClose }: Props) => {
 
           const enhancedUsers: LeaderboardEntry[] = lbData.map(entry => {
             const champTeam = entry.championTeamId ? teamsData.find(t => t.id === entry.championTeamId) : undefined;
-            return { ...entry, championTeam: champTeam };
+            const isEliminated = entry.status === 'Eliminated';
+            return { 
+              ...entry, 
+              championTeam: champTeam,
+              score: isEliminated ? 0 : entry.score,
+              rank: isEliminated ? 0 : entry.rank
+            };
           });
 
           // Sort users properly according to stored rank
           // If rank is missing (0), fallback to score sort.
           enhancedUsers.sort((a, b) => {
+            const aElim = a.status === 'Eliminated';
+            const bElim = b.status === 'Eliminated';
+            
+            if (aElim && !bElim) return 1;
+            if (!aElim && bElim) return -1;
+
             if (a.rank && b.rank) return a.rank - b.rank;
             if (b.score !== a.score) return b.score - a.score;
             return b.accuracy - a.accuracy;
@@ -229,9 +241,17 @@ export const LeaderboardOverlay = ({ currentEntryId, onClose }: Props) => {
                             <div className="flex items-center gap-2 sm:gap-3">
                               <Avatar photoURL={user.photoURL} avatar={user.avatar} name={user.name} className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full text-xs sm:text-sm font-bold border-2 ${isCurrentUser ? 'border-cyan-primary bg-gold-900/50' : 'border-[rgba(0,217,255,0.18)] bg-card-hover'}`} />
                               <div className="flex flex-col min-w-0">
-                                <span className={`font-bold truncate text-sm sm:text-base ${isCurrentUser ? 'text-cyan-primary' : 'text-white'}`}>
-                                  {user.name} {isCurrentUser && <span className="ml-1 sm:ml-2 text-[10px] sm:text-xs bg-cyan-primary text-navy-900 px-1.5 py-0.5 rounded-full uppercase tracking-wider">You</span>}
-                                </span>
+                                <div className="flex items-center gap-1.5 min-w-0">
+                                  <span className={`font-bold truncate text-sm sm:text-base ${user.status === 'Eliminated' ? 'text-red-400' : isCurrentUser ? 'text-cyan-primary' : 'text-white'}`}>
+                                    {user.name}
+                                  </span>
+                                  {isCurrentUser && <span className="shrink-0 text-[10px] sm:text-xs bg-cyan-primary text-navy-900 px-1.5 py-0.5 rounded-full uppercase tracking-wider font-bold">You</span>}
+                                  {user.status === 'Eliminated' && (
+                                    <span className="shrink-0 sm:hidden text-[9px] bg-red-500/20 text-red-400 border border-red-500/20 px-1.5 py-0.5 rounded-full uppercase font-bold tracking-wider">
+                                      Eliminated
+                                    </span>
+                                  )}
+                                </div>
                                 <span className="text-xs text-text-secondary hidden sm:inline">
                                   {user.correctPicks}W / {user.wrongPicks}L
                                 </span>

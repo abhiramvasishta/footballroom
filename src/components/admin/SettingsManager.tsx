@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { fetchSettings, saveSettings } from '../../lib/services';
 import type { TournamentSettings } from '../../types';
+import { goldenBallPlayers } from '../../data/goldenBallPlayers';
 
 export const SettingsManager = () => {
   const [settings, setSettings] = useState<TournamentSettings | null>(null);
@@ -147,6 +148,25 @@ export const SettingsManager = () => {
               value={settings.currentRound}
               onChange={e => setSettings({...settings, currentRound: e.target.value})} 
             />
+          </label>
+
+          <label>
+            <span className="block text-sm text-text-secondary mb-1">Actual MVP (Golden Ball)</span>
+            <select
+              className="w-full bg-bg-secondary p-2 rounded text-cyan-primary border-none focus:ring-1 focus:ring-cyan-primary outline-none"
+              value={settings.actualMvpPlayerId || ''}
+              onChange={e => setSettings({...settings, actualMvpPlayerId: e.target.value || null})}
+            >
+              <option value="">-- Undecided --</option>
+              {goldenBallPlayers.map(player => (
+                <option key={player.id} value={player.id}>
+                  {player.name} ({player.countryName})
+                </option>
+              ))}
+            </select>
+            <span className="block text-[10px] text-text-muted mt-1">
+              Select the player who won the MVP to award points to users who predicted them correctly.
+            </span>
           </label>
 
           <label className="flex items-center gap-2">

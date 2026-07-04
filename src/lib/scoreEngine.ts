@@ -26,7 +26,8 @@ export const recalculateAllScores = async () => {
     2 * points.semiFinals + 
     1 * points.thirdPlace + 
     1 * points.final + 
-    points.champion;
+    points.champion +
+    (points.mvp || 0);
 
   const batch = writeBatch(db);
 
@@ -66,7 +67,6 @@ export const recalculateAllScores = async () => {
       }
     });
 
-    // Champion
     if (userPred.predictedChampion) {
       const finalMatch = completedMatches.find(m => m.round === 'Final');
       if (finalMatch) {
@@ -77,6 +77,17 @@ export const recalculateAllScores = async () => {
           wrongPicks += 1;
           pointsLost += points.champion;
         }
+      }
+    }
+
+    // MVP (Golden Ball)
+    if (settings.actualMvpPlayerId) {
+      if (userPred.goldenBallPlayerId === settings.actualMvpPlayerId) {
+        score += (points.mvp || 0);
+        correctPicks += 1;
+      } else {
+        wrongPicks += 1;
+        pointsLost += (points.mvp || 0);
       }
     }
 

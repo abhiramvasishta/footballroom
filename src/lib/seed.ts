@@ -38,7 +38,8 @@ export const seedTournament = async () => {
       semiFinals: 8,
       thirdPlace: 8,
       final: 16,
-      champion: 32
+      champion: 32,
+      mvp: 10
     }
   };
   

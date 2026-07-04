@@ -27,7 +27,7 @@ export const VideoPlayerModal = ({ match, homeTeam, awayTeam, onClose }: Props) 
 
   return (
     <div className="fixed inset-0 z-[100] flex flex-col bg-bg-primary overflow-hidden">
-      
+
       {/* Header */}
       <div className="flex items-center justify-between p-4 bg-bg-secondary/80 backdrop-blur-md border-b border-[rgba(0,217,255,0.18)] z-10 shrink-0">
         <div className="flex flex-col">
@@ -42,25 +42,30 @@ export const VideoPlayerModal = ({ match, homeTeam, awayTeam, onClose }: Props) 
             <span>📅 {formatISTDateOnly(match.kickoff)}</span>
           </div>
         </div>
-        
-        <button 
+
+        <button
           onClick={onClose}
-          className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors shrink-0"
+          className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors shrink-0 group"
         >
-          <X size={24} className="text-white" />
+          <X size={24} className="text-white group-hover:rotate-90 transition-transform duration-300" />
         </button>
       </div>
 
+      {/* Notice Banner */}
+      <div className="bg-cyan-primary/10 border-b border-cyan-primary/20 p-2 text-center text-xs sm:text-sm text-cyan-primary/90 font-medium px-4 shrink-0 flex items-center justify-center gap-2">
+        <span>Ikkada controls baagalekapothe, arrow nokki direct ga drive loki velli chudu mowaaa</span>
+      </div>
+
       {/* Video Container */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.3 }}
         className="flex-1 w-full relative bg-black flex items-center justify-center"
       >
-        <iframe 
-          src={streamUrl} 
+        <iframe
+          src={streamUrl}
           className="w-full h-full md:w-[85%] md:h-[85%] rounded-lg shadow-[0_0_50px_rgba(0,217,255,0.15)]"
           allow="autoplay; fullscreen; picture-in-picture"
           allowFullScreen
@@ -70,8 +75,8 @@ export const VideoPlayerModal = ({ match, homeTeam, awayTeam, onClose }: Props) 
 
       {/* Stats Footer */}
       <div className="shrink-0 p-4 bg-bg-secondary/80 backdrop-blur-md border-t border-[rgba(0,217,255,0.18)] max-h-48 overflow-y-auto">
-        <div className="max-w-4xl mx-auto flex flex-col md:flex-row gap-6 justify-between text-sm w-full">
-          
+        <div className="max-w-4xl mx-auto flex flex-row gap-2 sm:gap-6 justify-between text-xs sm:text-sm w-full">
+
           {/* Home Goals */}
           <div className="flex-1 flex flex-col text-left">
             <span className="text-xs text-cyan-primary uppercase tracking-widest font-bold mb-2 border-b border-white/10 pb-1">{homeTeam?.name || 'Home'}</span>
@@ -122,7 +127,7 @@ export const VideoPlayerModal = ({ match, homeTeam, awayTeam, onClose }: Props) 
 
         </div>
       </div>
-      
+
     </div>
   );
 };
