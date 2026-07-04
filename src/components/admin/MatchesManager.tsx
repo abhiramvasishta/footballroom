@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { fetchMatches, saveMatch, deleteMatch, fetchTeams } from '../../lib/services';
+import { fetchMatches, saveMatch, deleteMatch, fetchTeams, fetchSettings } from '../../lib/services';
 import { recalculateAllScores } from '../../lib/scoreEngine';
 import type { Match, Team, GoalEvent } from '../../types';
 import { formatISTDateOnly, formatISTTimeOnly } from '../../utils/date';
+import { syncMatchesFromApi } from '../../lib/apiFootball';
 
 export const MatchesManager = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
 
   // Form State
   const [id, setId] = useState('');
@@ -118,6 +120,37 @@ export const MatchesManager = () => {
     loadData();
   };
 
+  const handleApiSync = async () => {
+    try {
+      setSyncing(true);
+      const settings = await fetchSettings();
+      if (!settings?.apiFootballKey) {
+        alert("API-Football Key is missing! Add it in Settings > General.");
+        setSyncing(false);
+        return;
+      }
+      
+      const updatedMatches = await syncMatchesFromApi(settings.apiFootballKey, matches, teams);
+      
+      if (updatedMatches.length === 0) {
+        alert("No new completed matches found in the API to sync.");
+      } else {
+        // Save all updated matches
+        for (const m of updatedMatches) {
+          await saveMatch(m);
+        }
+        await recalculateAllScores();
+        alert(`Successfully synced ${updatedMatches.length} matches and recalculated scores!`);
+        loadData();
+      }
+    } catch (error: any) {
+      console.error(error);
+      alert("Error syncing from API: " + error.message);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   const resetForm = () => {
     setId(''); setRound('Round of 32'); setHomeTeamId(''); setAwayTeamId(''); 
     setDate(''); setKickoff(''); setStadium(''); setCity(''); 
@@ -180,7 +213,16 @@ export const MatchesManager = () => {
 
   return (
     <div className="bg-bg-secondary p-6 rounded-xl border border-[rgba(0,217,255,0.18)]">
-      <h2 className="text-2xl font-bold mb-6">Matches Management</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">Matches Management</h2>
+        <button 
+          onClick={handleApiSync} 
+          disabled={syncing}
+          className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded font-bold disabled:opacity-50"
+        >
+          {syncing ? 'Syncing...' : 'Sync Latest Scores from API'}
+        </button>
+      </div>
       
       <form onSubmit={handleSave} className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 bg-bg-primary p-4 rounded-lg">
         <input placeholder="Match ID (e.g. R32-1)" value={id} onChange={e=>setId(e.target.value)} required className="bg-bg-secondary p-2 rounded" />

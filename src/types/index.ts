@@ -88,6 +88,7 @@ export interface TournamentSettings {
   leaderboardVisible: boolean;
   currentRound: string;
   actualMvpPlayerId?: string | null;
+  apiFootballKey?: string | null;
   scoringSystem: {
     round32: number;
     round16: number;

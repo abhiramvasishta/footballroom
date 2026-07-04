@@ -169,6 +169,20 @@ export const SettingsManager = () => {
             </span>
           </label>
 
+          <label>
+            <span className="block text-sm text-text-secondary mb-1">API-Football Key</span>
+            <input 
+              type="password"
+              className="w-full bg-bg-secondary p-2 rounded" 
+              placeholder="e.g. 00d32d615a6538686dc..."
+              value={settings.apiFootballKey || ''}
+              onChange={e => setSettings({...settings, apiFootballKey: e.target.value || null})} 
+            />
+            <span className="block text-[10px] text-text-muted mt-1">
+              Used to automatically sync match scores. Get a free key at api-sports.io.
+            </span>
+          </label>
+
           <label className="flex items-center gap-2">
             <input 
               type="checkbox" 
