@@ -5,12 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { uploadProfilePhoto, cropAndResizeImage } from '../lib/cloudinary';
-import { updateUserPhoto, fetchTeams, getPredictionData } from '../lib/services';
+import { updateUserPhoto } from '../lib/services';
 import { useUserStore } from '../store/useUserStore';
 import { ShareBracket, type ShareBracketRef } from '../components/ShareBracket';
 import { AnimatedTransition } from '../components/AnimatedTransition';
 import { goldenBallPlayers } from '../data/goldenBallPlayers';
-import type { UserData, Team } from '../types';
+import type { UserData } from '../types';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -36,19 +36,7 @@ export default function ProfilePage() {
       return;
     }
 
-    const loadStaticData = async () => {
-      try {
-        const [teams, pred] = await Promise.all([
-          fetchTeams(),
-          getPredictionData(entryId)
-        ]);
-        // championTeam no longer used
-      } catch (err) {
-        console.error("Failed to load profile static data", err);
-      }
-    };
-    
-    loadStaticData();
+
 
     // Real-time listener for user data
     const unsubscribe = onSnapshot(doc(db, 'users', entryId), (docSnap) => {
