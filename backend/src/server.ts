@@ -226,6 +226,21 @@ fastify.get('/api/fifa/upcoming', async (request, reply) => {
   }
 });
 
+fastify.get('/api/fifa/standings', async (request, reply) => {
+  try {
+    const cached = getCached('fifa_standings');
+    if (cached) return reply.send(cached);
+
+    const standings = await fifaProvider.getStandings();
+    
+    setCache('fifa_standings', standings);
+    reply.send(standings);
+  } catch (error: any) {
+    fastify.log.error(error);
+    reply.status(500).send({ error: error.message || 'Failed to fetch standings' });
+  }
+});
+
 const start = async () => {
   try {
     console.log("Backend Firebase Project:", process.env.FIREBASE_PROJECT_ID);

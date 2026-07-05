@@ -197,4 +197,25 @@ export class EspnProvider {
       return null;
     }
   }
+
+  async getStandings(): Promise<any> {
+    try {
+      const url = 'http://site.api.espn.com/apis/v2/sports/soccer/fifa.world/standings?season=2026';
+      
+      const cached = this.cache.get('standings_2026');
+      if (cached) return cached;
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`ESPN API Standings Error: ${response.status} ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      this.cache.set('standings_2026', data);
+      return data;
+    } catch (e) {
+      console.error('Error fetching standings from ESPN:', e);
+      return null;
+    }
+  }
 }

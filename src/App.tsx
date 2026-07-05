@@ -4,7 +4,9 @@ import { useUserStore } from './store/useUserStore';
 import { getUserData, fetchSettings } from './lib/services';
 import LandingPage from './pages/LandingPage';
 import RegistrationPage from './pages/RegistrationPage';
-import Dashboard from './pages/Dashboard';
+import ProfilePage from './pages/ProfilePage';
+import BracketPage from './pages/BracketPage';
+import FixturesPage from './pages/FixturesPage';
 import PredictionFlow from './pages/PredictionFlow';
 import ReviewPage from './pages/ReviewPage';
 import LeaderboardPage from './pages/LeaderboardPage';
@@ -70,15 +72,17 @@ function App() {
       <OfflineIndicator />
       <MaintenanceGuard status={websiteStatus}>
         <Routes>
-          <Route path="/" element={!isRegistered ? <LandingPage /> : (hasSubmitted ? <Navigate to="/dashboard" replace /> : <Navigate to="/predict" replace />)} />
-          <Route path="/register" element={!isRegistered ? <RegistrationPage /> : (hasSubmitted ? <Navigate to="/dashboard" replace /> : <Navigate to="/predict" replace />)} />
-          <Route path="/predict" element={isRegistered && !hasSubmitted ? <PredictionFlow /> : (hasSubmitted ? <Navigate to="/dashboard" replace /> : <Navigate to="/" replace />)} />
-          <Route path="/review" element={isRegistered && !hasSubmitted ? <ReviewPage /> : (hasSubmitted ? <Navigate to="/dashboard" replace /> : <Navigate to="/" replace />)} />
+          <Route path="/" element={!isRegistered ? <LandingPage /> : (hasSubmitted ? <Navigate to="/profile" replace /> : <Navigate to="/predict" replace />)} />
+          <Route path="/register" element={!isRegistered ? <RegistrationPage /> : (hasSubmitted ? <Navigate to="/profile" replace /> : <Navigate to="/predict" replace />)} />
+          <Route path="/predict" element={isRegistered && !hasSubmitted ? <PredictionFlow /> : (hasSubmitted ? <Navigate to="/profile" replace /> : <Navigate to="/" replace />)} />
+          <Route path="/review" element={isRegistered && !hasSubmitted ? <ReviewPage /> : (hasSubmitted ? <Navigate to="/profile" replace /> : <Navigate to="/" replace />)} />
           <Route path="/success" element={isRegistered && hasSubmitted ? <SuccessPage /> : (isRegistered ? <Navigate to="/predict" replace /> : <Navigate to="/" replace />)} />
           
           {/* Main App Routes with Navigation */}
           <Route element={<AppLayout />}>
-            <Route path="/dashboard" element={isRegistered && hasSubmitted ? <Dashboard /> : (isRegistered ? <Navigate to="/predict" replace /> : <Navigate to="/" replace />)} />
+            <Route path="/profile" element={isRegistered && hasSubmitted ? <ProfilePage /> : (isRegistered ? <Navigate to="/predict" replace /> : <Navigate to="/" replace />)} />
+            <Route path="/bracket" element={<BracketPage />} />
+            <Route path="/fixtures" element={<FixturesPage />} />
             <Route path="/highlights" element={<HighlightsPage />} />
           </Route>
 

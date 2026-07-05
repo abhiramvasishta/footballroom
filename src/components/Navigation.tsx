@@ -1,27 +1,32 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Trophy, PlaySquare, User } from 'lucide-react';
+import { Trophy, PlaySquare, User, GitCommit, CalendarDays } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 interface Props {
   onOpenLeaderboard: () => void;
-  onOpenProfile: () => void;
 }
 
-export const Navigation = ({ onOpenLeaderboard, onOpenProfile }: Props) => {
+export const Navigation = ({ onOpenLeaderboard }: Props) => {
   const location = useLocation();
 
   const navItems = [
     {
-      label: 'Dashboard',
-      icon: <LayoutDashboard size={24} />,
-      to: '/dashboard',
+      label: 'Profile',
+      icon: <User size={24} />,
+      to: '/profile',
       action: null
     },
     {
-      label: 'Leaderboard',
-      icon: <Trophy size={24} />,
-      to: '#',
-      action: onOpenLeaderboard
+      label: 'Bracket',
+      icon: <GitCommit size={24} className="rotate-90" />,
+      to: '/bracket',
+      action: null
+    },
+    {
+      label: 'Fixtures',
+      icon: <CalendarDays size={24} />,
+      to: '/fixtures',
+      action: null
     },
     {
       label: 'Highlights',
@@ -30,10 +35,10 @@ export const Navigation = ({ onOpenLeaderboard, onOpenProfile }: Props) => {
       action: null
     },
     {
-      label: 'Profile',
-      icon: <User size={24} />,
+      label: 'Leaderboard',
+      icon: <Trophy size={24} />,
       to: '#',
-      action: onOpenProfile
+      action: onOpenLeaderboard
     }
   ];
 
