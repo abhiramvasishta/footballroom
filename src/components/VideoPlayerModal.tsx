@@ -75,7 +75,9 @@ export const VideoPlayerModal = ({ match, homeTeam, awayTeam, onClose }: Props) 
         style={{ minHeight: '30vh' }}
       >
         <div className="w-full max-w-5xl mx-auto flex items-center justify-center p-0 lg:p-8">
-          <SmartVideoPlayer src={streamUrl} markers={match.goals || []} />
+          <div className="w-full aspect-video relative">
+            <SmartVideoPlayer src={streamUrl} markers={match.goals || []} />
+          </div>
         </div>
       </motion.div>
 
