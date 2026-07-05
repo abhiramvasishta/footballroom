@@ -87,15 +87,30 @@ export const useMatchDetails = (match: Match, homeTeam: Team | null, awayTeam: T
         let dateMatches: any[] = [];
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
         
+        console.log(`[useMatchDetails] Fetching dates from API: ${apiUrl}`, datesToTry);
+
         const responses = await Promise.allSettled(
-          datesToTry.map(d => fetch(`${apiUrl}/api/fifa/date/${d}`).then(r => r.json()))
+          datesToTry.map(async (d) => {
+            const url = `${apiUrl}/api/fifa/date/${d}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status} at ${url}`);
+            return res.json();
+          })
         );
 
-        responses.forEach(res => {
-          if (res.status === 'fulfilled' && Array.isArray(res.value)) {
-            dateMatches = dateMatches.concat(res.value);
+        responses.forEach((res, i) => {
+          if (res.status === 'fulfilled') {
+            if (Array.isArray(res.value)) {
+              dateMatches = dateMatches.concat(res.value);
+            } else {
+              console.warn(`[useMatchDetails] Response for ${datesToTry[i]} was not an array:`, res.value);
+            }
+          } else {
+            console.error(`[useMatchDetails] Failed to fetch date ${datesToTry[i]}:`, res.reason);
           }
         });
+
+        console.log(`[useMatchDetails] Total match candidates from ESPN:`, dateMatches.length);
 
         // 2. Find matching ESPN match
         const normHome = normalizeTeamName(homeTeam.name);
