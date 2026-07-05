@@ -101,7 +101,6 @@ export default function HighlightsPage() {
         
         <div className="mb-4">
           <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-wide">Match Highlights</h1>
-          <p className="text-text-secondary uppercase tracking-widest text-xs">Relive the best moments of the tournament.</p>
         </div>
 
         {matches.length === 0 ? (
