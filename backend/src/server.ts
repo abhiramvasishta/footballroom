@@ -2,12 +2,14 @@ import 'dotenv/config';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import { TelegramProvider } from './providers/TelegramProvider';
+import { FifaProvider } from './providers/FifaProvider';
 import { getVideoMetadata } from './db/firestore';
 
 const fastify = Fastify({ logger: true, trustProxy: true });
 
 // Initialize provider
 const telegramProvider = new TelegramProvider();
+const fifaProvider = new FifaProvider();
 
 fastify.register(cors, {
   origin: '*', // Allow all origins for the SmartVideoPlayer
@@ -133,6 +135,52 @@ fastify.get('/api/telegram/thumbnail/:docId', async (request, reply) => {
     return;
   }
   reply.header('Content-Type', 'image/jpeg').send(thumbBuffer);
+});
+
+// --- FIFA Data Endpoints ---
+
+fastify.get('/api/fifa/live', async (request, reply) => {
+  try {
+    const matches = await fifaProvider.getLiveMatches();
+    reply.send(matches);
+  } catch (error: any) {
+    fastify.log.error(error);
+    reply.status(500).send({ error: error.message || 'Failed to fetch live matches' });
+  }
+});
+
+fastify.get('/api/fifa/match/:matchId', async (request, reply) => {
+  try {
+    const { matchId } = request.params as { matchId: string };
+    const match = await fifaProvider.getMatchDetails(matchId);
+    if (!match) {
+      return reply.status(404).send({ error: 'Match not found' });
+    }
+    reply.send(match);
+  } catch (error: any) {
+    fastify.log.error(error);
+    reply.status(500).send({ error: error.message || 'Failed to fetch match details' });
+  }
+});
+
+fastify.get('/api/fifa/today', async (request, reply) => {
+  try {
+    const matches = await fifaProvider.getTodayMatches();
+    reply.send(matches);
+  } catch (error: any) {
+    fastify.log.error(error);
+    reply.status(500).send({ error: error.message || 'Failed to fetch today matches' });
+  }
+});
+
+fastify.get('/api/fifa/upcoming', async (request, reply) => {
+  try {
+    const matches = await fifaProvider.getUpcomingMatches();
+    reply.send(matches);
+  } catch (error: any) {
+    fastify.log.error(error);
+    reply.status(500).send({ error: error.message || 'Failed to fetch upcoming matches' });
+  }
 });
 
 const start = async () => {
