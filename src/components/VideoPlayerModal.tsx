@@ -21,21 +21,15 @@ export const VideoPlayerModal = ({ match, homeTeam, awayTeam, onClose }: Props) 
 
   // Scroll Lock for iOS and Android
   useEffect(() => {
-    // Aggressive scroll lock for mobile Safari
     const originalBodyStyle = document.body.style.overflow;
     const originalHtmlStyle = document.documentElement.style.overflow;
     
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
     
-    // Prevent touch move on the background
-    const preventDefault = (e: TouchEvent) => e.preventDefault();
-    document.addEventListener('touchmove', preventDefault, { passive: false });
-    
     return () => {
       document.body.style.overflow = originalBodyStyle;
       document.documentElement.style.overflow = originalHtmlStyle;
-      document.removeEventListener('touchmove', preventDefault);
     };
   }, []);
 

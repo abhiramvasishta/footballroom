@@ -13,7 +13,7 @@ export default function HighlightsPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
-  const [selectedRound, setSelectedRound] = useState<string>('All');
+  const [selectedRound, setSelectedRound] = useState<string>('');
 
   useEffect(() => {
     const loadData = async () => {
@@ -30,6 +30,13 @@ export default function HighlightsPage() {
         
         setMatches(sortedMatches);
         setTeams(fetchedTeams);
+        
+        // Auto-select the first available round if none is selected
+        const rounds = ['Round of 32', 'Round of 16', 'Quarter Finals', 'Semi Finals', 'Third Place', 'Final'];
+        const firstAvailable = rounds.find(r => sortedMatches.some(m => m.round === r));
+        if (firstAvailable) {
+          setSelectedRound(firstAvailable);
+        }
       } catch (err) {
         console.error("Failed to fetch highlights data:", err);
       } finally {
@@ -76,16 +83,6 @@ export default function HighlightsPage() {
 
         {matches.length > 0 && (
           <div className="flex gap-2 overflow-x-auto pb-4 custom-scrollbar mb-2 border-b border-[rgba(0,217,255,0.1)]">
-            <button
-              onClick={() => setSelectedRound('All')}
-              className={`px-4 py-1.5 sm:py-2 rounded-full whitespace-nowrap text-xs sm:text-sm font-medium transition-colors ${
-                selectedRound === 'All' 
-                  ? 'bg-cyan-primary text-navy-900 shadow-[0_0_15px_rgba(0,217,255,0.4)] font-bold' 
-                  : 'bg-white/5 text-text-secondary hover:bg-white/10 hover:text-white border border-white/5'
-              }`}
-            >
-              All Matches
-            </button>
             {['Round of 32', 'Round of 16', 'Quarter Finals', 'Semi Finals', 'Third Place', 'Final']
               .filter(r => matches.some(m => m.round === r))
               .map(round => (
@@ -113,7 +110,7 @@ export default function HighlightsPage() {
         ) : (
           <div className="flex flex-col gap-10">
             {['Round of 32', 'Round of 16', 'Quarter Finals', 'Semi Finals', 'Third Place', 'Final']
-              .filter(round => selectedRound === 'All' || selectedRound === round)
+              .filter(round => selectedRound === round)
               .map(round => ({
                 round,
                 roundMatches: matches.filter(m => m.round === round)
