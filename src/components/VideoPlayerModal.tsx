@@ -19,7 +19,7 @@ export const VideoPlayerModal = ({ match, homeTeam, awayTeam, onClose }: Props) 
   const { data: detailedMatch, loading, error } = useMatchDetails(match, homeTeam, awayTeam);
   const [activeTab, setActiveTab] = useState<'statistics' | 'lineups'>('statistics');
 
-  // Scroll Lock for iOS and Android
+  // Scroll Lock for iOS and Android, and Back Button Handler
   useEffect(() => {
     const originalBodyStyle = document.body.style.overflow;
     const originalHtmlStyle = document.documentElement.style.overflow;
@@ -27,11 +27,26 @@ export const VideoPlayerModal = ({ match, homeTeam, awayTeam, onClose }: Props) 
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
     
+    // Push a state to intercept back button
+    window.history.pushState({ modalOpen: true }, '');
+
+    const handlePopState = (e: PopStateEvent) => {
+      e.preventDefault();
+      onClose();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
     return () => {
       document.body.style.overflow = originalBodyStyle;
       document.documentElement.style.overflow = originalHtmlStyle;
+      window.removeEventListener('popstate', handlePopState);
     };
-  }, []);
+  }, [onClose]);
+
+  const handleClose = () => {
+    window.history.back(); // This will trigger popstate which calls onClose
+  };
 
   if (!match.highlightUrl) return null;
   const streamUrl = match.highlightUrl;
@@ -51,7 +66,7 @@ export const VideoPlayerModal = ({ match, homeTeam, awayTeam, onClose }: Props) 
         </div>
 
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors shrink-0 group"
           aria-label="Close video player"
         >

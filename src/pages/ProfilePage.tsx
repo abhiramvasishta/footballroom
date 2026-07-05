@@ -338,7 +338,37 @@ export default function DashboardPage() {
             <span className="text-4xl font-bold font-mono text-white group-hover:text-blue-400 transition-colors relative z-10">{userData.accuracy || 0}%</span>
             <span className="text-xs text-text-secondary uppercase tracking-widest font-semibold mt-1 relative z-10">Accuracy</span>
           </div>
+
+          <div className="glass-card relative overflow-hidden p-6 flex flex-col items-center justify-center text-center gap-2 border-[#e5b969]/30 group hover:border-[#e5b969]/60 transition-all">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#e5b969]/10 to-transparent pointer-events-none" />
+            {championTeam ? (
+              <div className="flex flex-col items-center gap-2 relative z-10">
+                <div className="w-20 h-20 md:w-24 md:h-24 rounded-full p-1 bg-gradient-to-b from-[#e5b969] to-[#b08d57]">
+                  <img src={championTeam.flagUrl} alt={championTeam.id} className="w-full h-full object-cover rounded-full border-2 border-bg-primary" />
+                </div>
+                <span className="font-bold text-white uppercase tracking-wider">{championTeam.id}</span>
+              </div>
+            ) : (
+              <span className="text-2xl font-bold text-white relative z-10">-</span>
+            )}
+            <span className="text-xs text-[#e5b969] uppercase tracking-widest font-black mt-2 relative z-10">Champion</span>
+          </div>
           
+          <div className="glass-card relative overflow-hidden p-6 flex flex-col items-center justify-center text-center gap-2 border-[#e5b969]/30 group hover:border-[#e5b969]/60 transition-all">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#e5b969]/10 to-transparent pointer-events-none" />
+            {mvpPlayer ? (
+              <div className="flex flex-col items-center gap-2 relative z-10">
+                <div className="w-20 h-20 md:w-20 md:h-20 rounded-full p-1 bg-gradient-to-b from-[#e5b969] to-[#b08d57]">
+                  <img src={mvpPlayer.photoUrl || mvpPlayer.flagUrl} alt={mvpPlayer.name} className="w-full h-full object-cover rounded-full border-2 border-bg-primary bg-bg-secondary" />
+                </div>
+                <span className="font-bold text-white uppercase tracking-wider text-base md:text-lg mt-2">{mvpPlayer.name}</span>
+              </div>
+            ) : (
+              <span className="text-2xl font-bold text-white relative z-10">-</span>
+            )}
+            <span className="text-xs text-[#e5b969] uppercase tracking-widest font-black mt-2 relative z-10">MVP (Golden Ball)</span>
+          </div>
+
           <div className="glass-card p-4 md:p-6 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)] group">
             <div className="flex gap-4 items-center">
               <div className="flex flex-col items-center">
@@ -359,36 +389,6 @@ export default function DashboardPage() {
               />
             </div>
             <span className="text-[10px] text-text-secondary uppercase tracking-widest font-semibold mt-1">Win Rate</span>
-          </div>
-
-          <div className="glass-card relative overflow-hidden p-6 flex flex-col items-center justify-center text-center gap-2 border-[#e5b969]/30 group hover:border-[#e5b969]/60 transition-all">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#e5b969]/10 to-transparent pointer-events-none" />
-            {mvpPlayer ? (
-              <div className="flex flex-col items-center gap-2 relative z-10">
-                <div className="w-20 h-20 md:w-20 md:h-20 rounded-full p-1 bg-gradient-to-b from-[#e5b969] to-[#b08d57]">
-                  <img src={mvpPlayer.photoUrl || mvpPlayer.flagUrl} alt={mvpPlayer.name} className="w-full h-full object-cover rounded-full border-2 border-bg-primary bg-bg-secondary" />
-                </div>
-                <span className="font-bold text-white uppercase tracking-wider text-base md:text-lg mt-2">{mvpPlayer.name}</span>
-              </div>
-            ) : (
-              <span className="text-2xl font-bold text-white relative z-10">-</span>
-            )}
-            <span className="text-xs text-[#e5b969] uppercase tracking-widest font-black mt-2 relative z-10">MVP (Golden Ball)</span>
-          </div>
-          
-          <div className="glass-card relative overflow-hidden p-6 flex flex-col items-center justify-center text-center gap-2 border-[#e5b969]/30 group hover:border-[#e5b969]/60 transition-all">
-            <div className="absolute inset-0 bg-gradient-to-br from-[#e5b969]/10 to-transparent pointer-events-none" />
-            {championTeam ? (
-              <div className="flex flex-col items-center gap-2 relative z-10">
-                <div className="w-20 h-20 md:w-24 md:h-24 rounded-full p-1 bg-gradient-to-b from-[#e5b969] to-[#b08d57]">
-                  <img src={championTeam.flagUrl} alt={championTeam.id} className="w-full h-full object-cover rounded-full border-2 border-bg-primary" />
-                </div>
-                <span className="font-bold text-white uppercase tracking-wider">{championTeam.id}</span>
-              </div>
-            ) : (
-              <span className="text-2xl font-bold text-white relative z-10">-</span>
-            )}
-            <span className="text-xs text-[#e5b969] uppercase tracking-widest font-black mt-2 relative z-10">Champion</span>
           </div>
 
           <button
