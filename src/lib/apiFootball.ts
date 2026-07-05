@@ -9,10 +9,15 @@ export const syncMatchesFromApi = async (
   const apiUrl = import.meta.env.VITE_API_URL || '';
   const updatedMatches: Match[] = [];
   
-  // 1. Collect unique match dates from the incomplete Firestore matches
+  // 1. Collect unique match dates from the incomplete (or missing goals) matches
   const datesToFetch = new Set<string>();
+  
   for (const localMatch of localMatches) {
-    if (!localMatch.completed && localMatch.homeTeamId && localMatch.awayTeamId && localMatch.date) {
+    const hasScoreButNoGoals = localMatch.completed && 
+      ((localMatch.homeScore || 0) + (localMatch.awayScore || 0) > 0) &&
+      (!localMatch.goals || localMatch.goals.length === 0);
+
+    if ((!localMatch.completed || hasScoreButNoGoals) && localMatch.homeTeamId && localMatch.awayTeamId && localMatch.date) {
       // Convert 'YYYY-MM-DD' to 'YYYYMMDD' for ESPN
       datesToFetch.add(localMatch.date.replace(/-/g, ''));
     }
@@ -41,7 +46,11 @@ export const syncMatchesFromApi = async (
   let updatedCount = 0;
 
   for (const localMatch of localMatches) {
-    if (localMatch.completed) continue;
+    const hasScoreButNoGoals = localMatch.completed && 
+      ((localMatch.homeScore || 0) + (localMatch.awayScore || 0) > 0) &&
+      (!localMatch.goals || localMatch.goals.length === 0);
+
+    if (localMatch.completed && !hasScoreButNoGoals) continue;
     if (!localMatch.homeTeamId || !localMatch.awayTeamId) continue;
     
     const homeTeam = localTeams.find(t => t.id === localMatch.homeTeamId);
