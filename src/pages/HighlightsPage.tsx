@@ -122,9 +122,7 @@ export default function HighlightsPage() {
               .filter(group => group.roundMatches.length > 0)
               .map(group => (
                 <div key={group.round} className="flex flex-col gap-4">
-                  <h2 className="text-2xl font-display font-bold text-cyan-primary border-b border-[rgba(0,217,255,0.18)] pb-2">
-                    {group.round}
-                  </h2>
+
                   <div className="flex flex-col gap-6">
                     {group.roundMatches.map(match => (
                       <HighlightCard 
