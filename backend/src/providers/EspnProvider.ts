@@ -91,11 +91,14 @@ export class EspnProvider {
 
     if (data.keyEvents) {
       data.keyEvents.forEach((ev: any) => {
-        if (ev.scoringPlay) {
+        if (ev.scoringPlay && !ev.shootout) {
           goals.push({
             minute: ev.clock?.displayValue,
             player: ev.participants?.[0]?.athlete?.displayName || 'Unknown',
-            teamId: ev.team?.id
+            teamId: ev.team?.id,
+            isHomeTeam: ev.team?.id === home.team.id,
+            isPenalty: ev.type?.text?.includes('Penalty') || false,
+            isOwnGoal: ev.type?.text?.includes('Own') || ev.text?.includes('Own Goal') || false
           });
         } else if (ev.type?.text?.includes('Card')) {
           cards.push({

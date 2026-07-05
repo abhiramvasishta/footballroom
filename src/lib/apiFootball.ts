@@ -110,6 +110,33 @@ export const syncMatchesFromApi = async (
          }
       }
 
+      // Fetch match details to get goal events
+      if (apiMatch.id) {
+        try {
+          const detailRes = await fetch(`${apiUrl}/api/fifa/match/${apiMatch.id}`);
+          if (detailRes.ok) {
+            const detailData = await detailRes.json();
+            if (detailData && detailData.goals) {
+              newMatch.goals = detailData.goals.map((g: any, index: number) => {
+                // If bracket is reversed locally compared to ESPN, we must flip the isHomeTeam flag safely
+                const actualIsHomeTeam = isReversed ? !g.isHomeTeam : g.isHomeTeam;
+                
+                return {
+                  id: `${newMatch.id}-goal-${index}`,
+                  playerName: g.player,
+                  minute: g.minute,
+                  isHomeTeam: actualIsHomeTeam,
+                  isPenalty: g.isPenalty || false,
+                  isOwnGoal: g.isOwnGoal || false
+                };
+              });
+            }
+          }
+        } catch (e) {
+          console.warn(`[ESPN Sync] Failed to fetch details for match ${apiMatch.id}`);
+        }
+      }
+
       updatedMatches.push(newMatch);
       updatedCount++;
     } else {
