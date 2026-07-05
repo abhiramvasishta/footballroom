@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { fetchTeams, fetchMatches } from '../lib/services';
 import type { Team, Match } from '../types';
 import { AnimatedTransition } from '../components/AnimatedTransition';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Trophy } from 'lucide-react';
 
 const ROUND_ORDER = [
   'Round of 32',
@@ -46,12 +46,8 @@ export default function BracketPage() {
 
   const getTeam = (teamId: string | null, matchId: string, isHome: boolean, roundName?: string) => {
     if (teamId && teamMap.has(teamId)) return teamMap.get(teamId)!;
-
     const prevMatch = matches.find((m) => m.nextMatchId === matchId && m.nextSlot === (isHome ? 'home' : 'away'));
-    if (prevMatch && prevMatch.winnerTeamId) {
-      return teamMap.get(prevMatch.winnerTeamId) || null;
-    }
-
+    if (prevMatch && prevMatch.winnerTeamId) return teamMap.get(prevMatch.winnerTeamId) || null;
     if (roundName === 'Third Place') {
       const loserPrevMatch = matches.find((m) => m.loserNextMatchId === matchId && m.loserNextSlot === (isHome ? 'home' : 'away'));
       if (loserPrevMatch && loserPrevMatch.winnerTeamId) {
@@ -59,72 +55,99 @@ export default function BracketPage() {
         if (loserId) return teamMap.get(loserId) || null;
       }
     }
-
     return null;
   };
 
-  const MatchBox = ({ match, width = 140 }: { match: Match, width?: number }) => {
+  const MatchBox = ({ match, x, y, isCenter = false, isMobile = false }: { match: Match, x?: number, y?: number, isCenter?: boolean, isMobile?: boolean }) => {
     const homeTeam = getTeam(match.homeTeamId, match.id, true, match.round);
     const awayTeam = getTeam(match.awayTeamId, match.id, false, match.round);
 
-    const isHomeWinner = match.winnerTeamId === homeTeam?.id;
-    const isAwayWinner = match.winnerTeamId === awayTeam?.id;
+    const isPen = match.completed && match.penalties;
+    const isAet = match.completed && match.extraTime;
 
-    // AET & Penalty Logic
-    let statusText = match.completed ? 'FT' : (match.date ? new Date(match.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'TBD');
-    if (match.completed) {
-      if (match.penalties) statusText = 'AET (P)';
-      else if (match.extraTime) statusText = 'AET';
-    }
+    let statusText = match.completed 
+      ? (isPen ? `(${match.homePenaltyScore}) ${match.homeScore} - ${match.awayScore} (${match.awayPenaltyScore})` : `${match.homeScore} - ${match.awayScore}`)
+      : (match.date ? new Date(match.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'TBD');
 
-    const TeamRow = ({ team, score, penScore, isWinner }: { team: Team | null, score?: number, penScore?: number, isWinner: boolean }) => (
-      <div className={`flex items-center justify-between px-2 py-1.5 ${isWinner ? 'bg-cyan-primary/10' : ''}`}>
-        <div className="flex items-center gap-2 overflow-hidden flex-1">
-          {team ? (
-            <>
-              <img src={team.flagUrl} alt={team.id} className="w-5 h-5 rounded-sm object-cover border border-white/10 shrink-0" />
-              <span className={`font-bold text-[11px] truncate ${isWinner ? 'text-white' : 'text-text-secondary'}`}>{team.id}</span>
-            </>
+    const boxContent = (
+      <div className={`relative bg-[#1f2128] rounded-[12px] flex flex-col items-center justify-center p-2 text-white shadow-lg hover:bg-[#2a2d36] transition-colors w-full h-full`}>
+        <div className="flex justify-between w-full px-1 mb-2">
+          {homeTeam ? (
+            <img src={homeTeam.flagUrl} alt={homeTeam.id} className="w-[20px] h-[20px] rounded-full object-cover border border-white/10" />
           ) : (
-            <span className="text-text-secondary italic text-[11px] uppercase tracking-widest pl-1">TBD</span>
+            <div className="w-[20px] h-[20px] rounded-full bg-white/10" />
+          )}
+          {awayTeam ? (
+            <img src={awayTeam.flagUrl} alt={awayTeam.id} className="w-[20px] h-[20px] rounded-full object-cover border border-white/10" />
+          ) : (
+            <div className="w-[20px] h-[20px] rounded-full bg-white/10" />
           )}
         </div>
-        <div className="flex items-center gap-1 shrink-0">
-          {penScore !== undefined && match.penalties && (
-            <span className="text-[9px] text-cyan-primary/70">({penScore})</span>
-          )}
-          <span className={`font-bold text-[12px] ${isWinner ? 'text-cyan-primary' : 'text-white'}`}>{score ?? '-'}</span>
+        <div className="flex justify-between w-full px-1 text-[11px] font-black text-[#a0a0a0] mb-1.5 tracking-wider">
+          <span>{homeTeam ? homeTeam.id : 'TBD'}</span>
+          <span>{awayTeam ? awayTeam.id : 'TBD'}</span>
         </div>
+        <div className="text-[12px] font-black text-white whitespace-nowrap">
+          {statusText}
+        </div>
+        
+        {(isPen || isAet) && (
+          <div className="absolute -top-[10px] bg-[#00D9FF] text-[#05070A] text-[9px] px-2 py-0.5 rounded-full font-bold shadow-[0_0_10px_rgba(0,217,255,0.4)]">
+            {isPen ? 'AET (P)' : 'AET'}
+          </div>
+        )}
       </div>
     );
 
+    if (isMobile) return <div className="w-[110px] h-[90px]">{boxContent}</div>;
+
     return (
-      <div className={`bg-bg-tertiary border-[1.5px] border-cyan-primary/30 rounded-lg flex flex-col relative shadow-[0_0_15px_rgba(0,217,255,0.05)] overflow-hidden transition-transform hover:scale-105 hover:border-cyan-primary`} style={{ width: `${width}px` }}>
-        <div className="bg-bg-secondary px-2 py-1 text-[9px] font-bold text-cyan-primary/70 uppercase tracking-widest border-b border-white/5 flex justify-between items-center text-center">
-           <span className="w-full truncate">{statusText}</span>
-        </div>
-        <TeamRow team={homeTeam} score={match.homeScore} penScore={match.homePenaltyScore} isWinner={isHomeWinner} />
-        <div className="h-[1px] w-full bg-white/5" />
-        <TeamRow team={awayTeam} score={match.awayScore} penScore={match.awayPenaltyScore} isWinner={isAwayWinner} />
+      <div 
+        className="absolute z-10"
+        style={{ 
+          width: 96, 
+          height: 90, 
+          left: x, 
+          top: y, 
+          transform: 'translate(0, -50%)' 
+        }}
+      >
+        {boxContent}
+        {isCenter && (
+           <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-[9px] font-bold text-[#b08d57] uppercase tracking-[0.2em] bg-[#1a1c23] px-3 py-1 rounded-full border border-[#b08d57]/30 whitespace-nowrap shadow-md">
+             {match.round === 'Final' ? 'FINAL' : 'BRONZE FINAL'}
+           </div>
+        )}
       </div>
     );
   };
 
   const renderDesktopBracket = () => {
-    const matchWidth = 140;
-    
+    const matchWidth = 96;
+    const X_L = [0, 140, 280, 420];
+    const X_CENTER = 560;
+    const X_R = [700, 840, 980, 1120];
+
+    const getY = (colIndex: number, rowIndex: number) => {
+      if (colIndex === 0) return 50 + rowIndex * 100;
+      if (colIndex === 1) return 100 + rowIndex * 200;
+      if (colIndex === 2) return 200 + rowIndex * 400;
+      if (colIndex === 3) return 400 + rowIndex * 800; // 0
+      return 0;
+    };
+
     const leftColumns = [
-      { x: 20, ids: ['M74', 'M77', 'M73', 'M75', 'M84', 'M83', 'M82', 'M81'], title: 'ROUND OF 32' },
-      { x: 200, ids: ['M89', 'M90', 'M93', 'M94'], title: 'ROUND OF 16' },
-      { x: 380, ids: ['M97', 'M98'], title: 'QUARTER FINALS' },
-      { x: 560, ids: ['M101'], title: 'SEMI FINALS' }
+      { x: X_L[0], ids: ['M74', 'M77', 'M73', 'M75', 'M84', 'M83', 'M82', 'M81'] },
+      { x: X_L[1], ids: ['M89', 'M90', 'M93', 'M94'] },
+      { x: X_L[2], ids: ['M97', 'M98'] },
+      { x: X_L[3], ids: ['M101'] }
     ];
 
     const rightColumns = [
-      { x: 1440, ids: ['M76', 'M78', 'M79', 'M80', 'M88', 'M86', 'M85', 'M87'], title: 'ROUND OF 32' },
-      { x: 1260, ids: ['M91', 'M92', 'M95', 'M96'], title: 'ROUND OF 16' },
-      { x: 1080, ids: ['M99', 'M100'], title: 'QUARTER FINALS' },
-      { x: 900, ids: ['M102'], title: 'SEMI FINALS' }
+      { x: X_R[0], ids: ['M102'] },
+      { x: X_R[1], ids: ['M99', 'M100'] },
+      { x: X_R[2], ids: ['M91', 'M92', 'M95', 'M96'] },
+      { x: X_R[3], ids: ['M76', 'M78', 'M79', 'M80', 'M88', 'M86', 'M85', 'M87'] }
     ];
 
     const svgLines: any[] = [];
@@ -134,28 +157,23 @@ export default function BracketPage() {
     leftColumns.forEach((col, i) => {
       if (i < leftColumns.length - 1) {
         const nextCol = leftColumns[i+1];
-        const N = col.ids.length;
         col.ids.forEach((id, j) => {
           const startX = col.x + matchWidth;
-          const startY = 40 + (j + 0.5) * (1400 / N);
+          const startY = getY(i, j);
           const endX = nextCol.x;
-          const endY = 40 + (Math.floor(j/2) + 0.5) * (1400 / (N/2));
+          const endY = getY(i+1, Math.floor(j/2));
           const midX = startX + (endX - startX) / 2;
           svgLines.push(
-            <path key={`line-l-${id}`} d={`M ${startX} ${startY} H ${midX} V ${endY} H ${endX}`} fill="none" stroke="rgba(0,217,255,0.2)" strokeWidth="2" />
+            <path key={`ll-${id}`} d={`M ${startX} ${startY} C ${midX} ${startY}, ${midX} ${endY}, ${endX} ${endY}`} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />
           );
         });
       }
       
-      const N = col.ids.length;
       col.ids.forEach((id, j) => {
         const match = matches.find(m => m.id === id);
         if (match) {
-          const y = 40 + (j + 0.5) * (1400 / N);
           drawnMatches.push(
-            <div key={id} className="absolute" style={{ left: col.x, top: y, transform: 'translateY(-50%)' }}>
-              <MatchBox match={match} width={matchWidth} />
-            </div>
+            <MatchBox key={id} match={match} x={col.x} y={getY(i, j)} />
           );
         }
       });
@@ -163,95 +181,69 @@ export default function BracketPage() {
 
     // Right Lines & Matches
     rightColumns.forEach((col, i) => {
+      // i=0 is SF, i=1 is QF, i=2 is R16, i=3 is R32
+      // We want to connect i=3 to i=2, i=2 to i=1, i=1 to i=0
       if (i < rightColumns.length - 1) {
         const nextCol = rightColumns[i+1];
-        const N = col.ids.length;
-        col.ids.forEach((id, j) => {
-          const startX = col.x;
-          const startY = 40 + (j + 0.5) * (1400 / N);
-          const endX = nextCol.x + matchWidth;
-          const endY = 40 + (Math.floor(j/2) + 0.5) * (1400 / (N/2));
+        nextCol.ids.forEach((id, j) => {
+          const startX = nextCol.x;
+          const startY = getY(3 - (i+1), j); 
+          const endX = col.x + matchWidth;
+          const endY = getY(3 - i, Math.floor(j/2));
           const midX = startX - (startX - endX) / 2;
           svgLines.push(
-            <path key={`line-r-${id}`} d={`M ${startX} ${startY} H ${midX} V ${endY} H ${endX}`} fill="none" stroke="rgba(0,217,255,0.2)" strokeWidth="2" />
+            <path key={`rl-${id}`} d={`M ${startX} ${startY} C ${midX} ${startY}, ${midX} ${endY}, ${endX} ${endY}`} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />
           );
         });
       }
 
-      const N = col.ids.length;
       col.ids.forEach((id, j) => {
         const match = matches.find(m => m.id === id);
         if (match) {
-          const y = 40 + (j + 0.5) * (1400 / N);
           drawnMatches.push(
-            <div key={id} className="absolute" style={{ left: col.x, top: y, transform: 'translateY(-50%)' }}>
-              <MatchBox match={match} width={matchWidth} />
-            </div>
+            <MatchBox key={id} match={match} x={col.x} y={getY(3 - i, j)} />
           );
         }
       });
     });
 
     // Center Lines
-    const lsfStartX = leftColumns[3].x + matchWidth;
-    const lsfStartY = 40 + 700; // N=1, so (0+0.5)*(1400/1) = 700
-    const finalLeftX = 720;
-    const finalYCenter = 600;
-    const midLeftX = lsfStartX + (finalLeftX - lsfStartX) / 2;
-    svgLines.push(<path key="line-lsf-final" d={`M ${lsfStartX} ${lsfStartY} H ${midLeftX} V ${finalYCenter} H ${finalLeftX}`} fill="none" stroke="rgba(0,217,255,0.2)" strokeWidth="2" />);
+    const lsfX = leftColumns[3].x + matchWidth;
+    const lsfY = getY(3, 0);
+    const finalLeftX = X_CENTER;
+    const finalY = lsfY;
+    svgLines.push(<path key="c-l" d={`M ${lsfX} ${lsfY} L ${finalLeftX} ${finalY}`} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />);
 
-    const rsfStartX = rightColumns[3].x;
-    const rsfStartY = 40 + 700;
-    const finalRightX = 720 + 160;
-    const midRightX = finalRightX + (rsfStartX - finalRightX) / 2;
-    svgLines.push(<path key="line-rsf-final" d={`M ${rsfStartX} ${rsfStartY} H ${midRightX} V ${finalYCenter} H ${finalRightX}`} fill="none" stroke="rgba(0,217,255,0.2)" strokeWidth="2" />);
+    const rsfX = rightColumns[0].x;
+    const rsfY = getY(3, 0);
+    const finalRightX = X_CENTER + matchWidth;
+    svgLines.push(<path key="c-r" d={`M ${rsfX} ${rsfY} L ${finalRightX} ${finalY}`} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="2" />);
 
-    // Center Matches
+    // Draw Trophy and Center Matches
     const finalMatch = matches.find(m => m.id === 'M104' || m.round === 'Final');
     const thirdMatch = matches.find(m => m.id === 'M103' || m.round === 'Third Place');
 
-    if (finalMatch) {
-      drawnMatches.push(
-        <div key="final" className="absolute" style={{ left: 720, top: finalYCenter, transform: 'translateY(-50%)' }}>
-          <div className="flex flex-col items-center gap-2">
-            <h3 className="text-[10px] font-bold text-cyan-primary uppercase tracking-[0.2em] bg-bg-secondary px-3 py-1 rounded-full border border-cyan-primary/30">Final</h3>
-            <MatchBox match={finalMatch} width={160} />
-          </div>
-        </div>
-      );
-    }
-
-    if (thirdMatch) {
-      drawnMatches.push(
-        <div key="third" className="absolute" style={{ left: 720, top: finalYCenter + 150, transform: 'translateY(-50%)' }}>
-          <div className="flex flex-col items-center gap-2">
-            <h3 className="text-[9px] font-bold text-[#b08d57] uppercase tracking-[0.2em] bg-bg-secondary px-3 py-1 rounded-full border border-[#b08d57]/30">Third Place</h3>
-            <MatchBox match={thirdMatch} width={160} />
-          </div>
-        </div>
-      );
-    }
+    if (finalMatch) drawnMatches.push(<MatchBox key="final" match={finalMatch} x={X_CENTER} y={finalY} isCenter={true} />);
+    if (thirdMatch) drawnMatches.push(<MatchBox key="third" match={thirdMatch} x={X_CENTER} y={finalY + 120} isCenter={true} />);
 
     return (
-      <div className="hidden xl:block w-full overflow-x-auto custom-scrollbar pb-8 pt-4">
-        <div className="min-w-[1600px] h-[1500px] relative mx-auto bg-[#030407] rounded-3xl border border-white/5 shadow-2xl overflow-hidden">
+      <div className="hidden xl:flex w-full justify-center overflow-x-auto custom-scrollbar pb-8 pt-10 px-4">
+        <div className="w-[1296px] h-[800px] relative bg-[#131418] rounded-[24px] overflow-hidden shadow-2xl flex-shrink-0">
           
-          {/* Header Texts */}
-          {leftColumns.map(col => (
-             <div key={`header-l-${col.title}`} className="absolute top-4 w-[140px] text-center" style={{ left: col.x }}>
-                <span className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">{col.title}</span>
-             </div>
-          ))}
-          {rightColumns.map(col => (
-             <div key={`header-r-${col.title}`} className="absolute top-4 w-[140px] text-center" style={{ left: col.x }}>
-                <span className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">{col.title}</span>
-             </div>
-          ))}
+          <div className="absolute top-[180px] left-1/2 -translate-x-1/2 flex flex-col items-center opacity-80">
+             <Trophy className="w-16 h-16 text-[#e5b969] drop-shadow-[0_0_15px_rgba(229,185,105,0.4)]" strokeWidth={1.5} />
+             <span className="text-[#e5b969] text-[11px] font-black tracking-[0.25em] mt-3 uppercase">Champion</span>
+          </div>
 
-          <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-60">
+          <svg className="absolute top-0 left-0 w-full h-full pointer-events-none">
             {svgLines}
           </svg>
-          {drawnMatches}
+          
+          {/* Apply a subtle translation to perfectly center it inside the padded box */}
+          <div className="absolute top-0 left-0 w-full h-full" style={{ transform: 'translate(40px, 0)' }}>
+            {drawnMatches}
+          </div>
+
         </div>
       </div>
     );
@@ -267,17 +259,15 @@ export default function BracketPage() {
           return (
             <div key={roundName} className="flex flex-col gap-4">
               <div className="flex items-center gap-4">
-                <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-cyan-primary/30" />
-                <h3 className="text-cyan-primary font-display font-bold uppercase tracking-widest text-sm">
+                <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-white/10" />
+                <h3 className="text-white font-display font-bold uppercase tracking-widest text-xs opacity-70">
                   {roundName}
                 </h3>
-                <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-cyan-primary/30" />
+                <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-white/10" />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 justify-items-center">
                 {roundMatches.map(m => (
-                  <div key={m.id} className="flex justify-center w-full max-w-[280px] mx-auto">
-                    <MatchBox match={m} width={280} />
-                  </div>
+                  <MatchBox key={m.id} match={m} isMobile={true} />
                 ))}
               </div>
             </div>
@@ -288,16 +278,10 @@ export default function BracketPage() {
   };
 
   return (
-    <AnimatedTransition className="min-h-screen bg-bg-primary text-text-primary pt-6 pb-24 relative overflow-hidden">
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-primary/5 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
-
-      <div className="max-w-[1640px] mx-auto flex flex-col gap-8 px-4 xl:px-0">
+    <AnimatedTransition className="min-h-screen bg-[#05070A] text-text-primary pt-6 pb-24 relative overflow-hidden">
+      <div className="max-w-[1400px] mx-auto flex flex-col gap-8 px-0">
         <div className="text-center px-4">
-          <h1 className="text-3xl md:text-4xl font-display font-bold text-white mb-2">Tournament Bracket</h1>
-          <p className="text-text-secondary text-sm max-w-2xl mx-auto">
-            Follow the journey to the cup. Knockout bracket dynamically updates with latest results.
-          </p>
+          <h1 className="text-3xl md:text-4xl font-display font-black text-white mb-2 uppercase tracking-wide">Knockout Stage</h1>
         </div>
 
         {renderDesktopBracket()}
