@@ -24,12 +24,12 @@ export default function LandingPage() {
   const handleRecover = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!recoveryCode.trim()) return;
-    
+
     setLoading(true);
     setError('');
-    
+
     const user = await recoverUser(recoveryCode.trim().toUpperCase());
-    
+
     if (user) {
       const hasSub = !!user.submittedAt;
       setHasSubmitted(hasSub);
@@ -38,7 +38,7 @@ export default function LandingPage() {
     } else {
       setError('Invalid Recovery Code. Please try again.');
     }
-    
+
     setLoading(false);
   };
 
@@ -47,17 +47,17 @@ export default function LandingPage() {
       {/* Background decorations */}
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-cyan-primary/20 rounded-full blur-[120px]" />
       <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-card-hover/50 rounded-full blur-[120px]" />
-      
+
       <div className="z-10 w-full max-w-md flex flex-col items-center">
-        <motion.div 
-          initial={{ scale: 0.8, opacity: 0 }} 
-          animate={{ scale: 1, opacity: 1 }} 
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.2, type: 'spring' }}
           className="w-48 h-56 mb-8 flex items-center justify-center"
         >
-          <img 
-            src="/logo.webp" 
-            alt="FIFA World Cup 2026 Logo" 
+          <img
+            src="/logo.webp"
+            alt="FIFA World Cup 2026 Logo"
             className="w-full h-full object-contain"
           />
         </motion.div>
@@ -68,7 +68,7 @@ export default function LandingPage() {
         <h2 className="text-cyan-primary text-center mb-6 text-sm md:text-base font-bold tracking-[0.3em] uppercase drop-shadow-[0_0_8px_rgba(0,217,255,0.5)]">
           World Cup 2026 Predictor
         </h2>
-        
+
 
 
         {!isRecovering ? (
@@ -78,16 +78,16 @@ export default function LandingPage() {
             ) : !settings.predictionsOpen ? (
               <div className="bg-cyan-primary/10 border border-cyan-primary/30 p-6 rounded-xl text-center space-y-4 shadow-[0_0_20px_rgba(0,217,255,0.1)]">
                 <p className="text-cyan-primary font-bold text-lg drop-shadow-[0_0_5px_rgba(0,217,255,0.4)]">Prediction appudu register avvaledhu enti bhAAi 🤨</p>
-                <p className="text-white text-sm">Sarle velli <span className="font-bold text-cyan-primary uppercase tracking-wider">highlights</span> aina choodu 🎥</p>
-                <button 
+                <p className="text-white text-sm">Sarle velli <span className="font-bold text-cyan-primary uppercase tracking-wider">highlights</span> aina choodu</p>
+                <button
                   onClick={() => navigate('/highlights')}
                   className="mt-4 px-6 py-2 bg-cyan-primary text-navy-900 font-bold rounded-lg hover:bg-white transition-colors"
                 >
-                  Enter App
+                  Enter nokku bhAAi
                 </button>
               </div>
             ) : settings.registrationOpen ? (
-              <button 
+              <button
                 onClick={() => navigate('/register')}
                 className="w-full group relative overflow-hidden rounded-xl bg-gradient-to-r from-cyan-primary to-cyan-secondary p-[2px] transition-all hover:shadow-[0_0_20px_rgba(0,217,255,0.3)]"
               >
@@ -102,8 +102,8 @@ export default function LandingPage() {
                 <p className="text-sm text-text-secondary mt-1">New entries are no longer being accepted.</p>
               </div>
             )}
-            
-            <button 
+
+            <button
               onClick={() => setIsRecovering(true)}
               className="w-full flex items-center justify-center gap-2 py-3 text-text-secondary hover:text-white transition-colors"
             >
@@ -115,29 +115,29 @@ export default function LandingPage() {
           <form onSubmit={handleRecover} className="w-full glass-card p-6 w-full space-y-4">
             <h3 className="text-xl font-bold text-center mb-2">Recover Access</h3>
             <p className="text-sm text-cyan-primary font-bold text-center mb-4 uppercase tracking-wider drop-shadow-[0_0_8px_rgba(0,217,255,0.6)]">Enter your 6-character recovery code.</p>
-            
+
             <div>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={recoveryCode}
                 onChange={(e) => setRecoveryCode(e.target.value.toUpperCase())}
-                placeholder="e.g. A1B2C3" 
+                placeholder="e.g. A1B2C3"
                 className="w-full bg-bg-primary border border-white/20 rounded-lg px-4 py-3 text-center text-xl tracking-widest uppercase focus:outline-none focus:border-cyan-primary transition-colors"
                 maxLength={6}
               />
             </div>
-            
+
             {error && <p className="text-red-400 text-sm text-center">{error}</p>}
-            
-            <button 
+
+            <button
               type="submit"
               disabled={loading || recoveryCode.length < 6}
               className="w-full bg-cyan-primary hover:bg-cyan-primary text-navy-900 font-bold py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Recovering...' : 'Recover Account'}
             </button>
-            
-            <button 
+
+            <button
               type="button"
               onClick={() => setIsRecovering(false)}
               className="w-full text-sm text-text-secondary hover:text-white py-2"
