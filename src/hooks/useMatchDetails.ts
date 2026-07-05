@@ -85,8 +85,10 @@ export const useMatchDetails = (match: Match, homeTeam: Team | null, awayTeam: T
         ];
 
         let dateMatches: any[] = [];
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+        
         const responses = await Promise.allSettled(
-          datesToTry.map(d => fetch(`/api/fifa/date/${d}`).then(r => r.json()))
+          datesToTry.map(d => fetch(`${apiUrl}/api/fifa/date/${d}`).then(r => r.json()))
         );
 
         responses.forEach(res => {
@@ -111,7 +113,7 @@ export const useMatchDetails = (match: Match, homeTeam: Team | null, awayTeam: T
         }
 
         // 3. Fetch full match details
-        const detailsRes = await fetch(`/api/fifa/match/${espnMatch.id}`);
+        const detailsRes = await fetch(`${apiUrl}/api/fifa/match/${espnMatch.id}`);
         if (!detailsRes.ok) throw new Error('Failed to fetch detailed match data');
         
         const detailsData = await detailsRes.json();
