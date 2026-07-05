@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { fetchMatches } from '../lib/services';
-import type { Match } from '../types';
+import { fetchMatches, fetchTeams } from '../lib/services';
+import type { Match, Team } from '../types';
 import { AnimatedTransition } from '../components/AnimatedTransition';
 import { Loader2, Calendar, TableProperties } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -17,6 +17,7 @@ const ROUND_ORDER = [
 export default function FixturesPage() {
   const [activeTab, setActiveTab] = useState<'matches' | 'standings'>('standings');
   const [matches, setMatches] = useState<Match[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [standingsData, setStandingsData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -24,12 +25,14 @@ export default function FixturesPage() {
     const loadData = async () => {
       setLoading(true);
       try {
-        const [m, sReq] = await Promise.all([
+        const [m, tReq, sReq] = await Promise.all([
           fetchMatches(),
+          fetchTeams(),
           fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/fifa/standings`)
         ]);
         
         setMatches(m);
+        setTeams(tReq);
         
         if (sReq.ok) {
           const sData = await sReq.json();
@@ -77,12 +80,23 @@ export default function FixturesPage() {
               </div>
               
               <div className="flex flex-col gap-3">
-                {roundMatches.map(m => (
+                {roundMatches.map(m => {
+                  const homeTeam = teams.find(t => t.id === m.homeTeamId);
+                  const awayTeam = teams.find(t => t.id === m.awayTeamId);
+                  
+                  return (
                   <div key={m.id} className="glass-card flex flex-col md:flex-row items-center justify-between p-4 border-[rgba(0,217,255,0.1)] hover:bg-white/5 transition-colors gap-4">
                     
                     <div className="flex items-center gap-2 w-full md:w-auto md:flex-1 justify-between md:justify-end text-right">
                        <span className="font-bold text-white md:hidden">Home</span>
-                       <span className="font-bold text-white text-lg">{m.homeTeamId || 'TBD'}</span>
+                       <div className="flex items-center gap-3">
+                         <span className="font-bold text-white text-lg">{homeTeam ? homeTeam.id : 'TBD'}</span>
+                         {homeTeam ? (
+                           <img src={homeTeam.flagUrl} alt={homeTeam.id} className="w-6 h-6 rounded-full object-cover" />
+                         ) : (
+                           <div className="w-6 h-6 rounded-full bg-white/10" />
+                         )}
+                       </div>
                     </div>
 
                     <div className="flex flex-col items-center justify-center w-full md:w-32 px-4 shrink-0 bg-bg-tertiary rounded-lg py-2 border border-white/5">
@@ -99,11 +113,18 @@ export default function FixturesPage() {
 
                     <div className="flex items-center gap-2 w-full md:w-auto md:flex-1 justify-between md:justify-start">
                        <span className="font-bold text-white md:hidden">Away</span>
-                       <span className="font-bold text-white text-lg">{m.awayTeamId || 'TBD'}</span>
+                       <div className="flex items-center gap-3 flex-row-reverse md:flex-row">
+                         {awayTeam ? (
+                           <img src={awayTeam.flagUrl} alt={awayTeam.id} className="w-6 h-6 rounded-full object-cover" />
+                         ) : (
+                           <div className="w-6 h-6 rounded-full bg-white/10" />
+                         )}
+                         <span className="font-bold text-white text-lg">{awayTeam ? awayTeam.id : 'TBD'}</span>
+                       </div>
                     </div>
 
                   </div>
-                ))}
+                )})}
               </div>
             </div>
           );

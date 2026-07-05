@@ -9,12 +9,13 @@ import { updateUserPhoto, fetchTeams, getPredictionData } from '../lib/services'
 import { useUserStore } from '../store/useUserStore';
 import { ShareBracket, type ShareBracketRef } from '../components/ShareBracket';
 import { AnimatedTransition } from '../components/AnimatedTransition';
-import type { UserData } from '../types';
+import type { UserData, Team } from '../types';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { entryId } = useUserStore();
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [championTeam, setChampionTeam] = useState<Team | null>(null);
   const [loading, setLoading] = useState(true);
   
   const [isUploading, setIsUploading] = useState(false);
@@ -37,10 +38,13 @@ export default function ProfilePage() {
 
     const loadStaticData = async () => {
       try {
-        await Promise.all([
+        const [teams, pred] = await Promise.all([
           fetchTeams(),
           getPredictionData(entryId)
         ]);
+        if (pred?.predictedChampion) {
+          setChampionTeam(teams.find(t => t.id === pred.predictedChampion) || null);
+        }
       } catch (err) {
         console.error("Failed to load profile static data", err);
       }
@@ -220,6 +224,46 @@ export default function ProfilePage() {
               </motion.p>
             )}
           </AnimatePresence>
+        </div>
+
+        {/* Statistics Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="glass-card p-6 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)] group">
+            <span className="text-4xl font-bold font-mono text-white group-hover:text-cyan-primary transition-colors">{userData.score || 0}</span>
+            <span className="text-xs text-text-secondary uppercase tracking-widest font-semibold mt-2">Total Score</span>
+          </div>
+          
+          <div className="glass-card p-6 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)] group">
+            <span className="text-4xl font-bold font-mono text-white group-hover:text-cyan-primary transition-colors">{userData.accuracy || 0}%</span>
+            <span className="text-xs text-text-secondary uppercase tracking-widest font-semibold mt-2">Accuracy</span>
+          </div>
+          
+          <div className="glass-card p-6 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)] group">
+            <div className="flex gap-4 items-center">
+              <div className="flex flex-col items-center">
+                <span className="text-2xl font-bold font-mono text-status-success">{userData.correctPicks || 0}</span>
+                <span className="text-[10px] text-text-secondary uppercase mt-1">Won</span>
+              </div>
+              <div className="w-px h-8 bg-white/10" />
+              <div className="flex flex-col items-center">
+                <span className="text-2xl font-bold font-mono text-status-danger">{userData.wrongPicks || 0}</span>
+                <span className="text-[10px] text-text-secondary uppercase mt-1">Lost</span>
+              </div>
+            </div>
+            <span className="text-xs text-text-secondary uppercase tracking-widest font-semibold mt-3">Predictions</span>
+          </div>
+
+          <div className="glass-card p-6 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)] group">
+            {championTeam ? (
+              <div className="flex flex-col items-center gap-2">
+                <img src={championTeam.flagUrl} alt={championTeam.id} className="w-10 h-10 object-cover rounded-full" />
+                <span className="font-bold text-white uppercase">{championTeam.id}</span>
+              </div>
+            ) : (
+              <span className="text-2xl font-bold text-white">-</span>
+            )}
+            <span className="text-xs text-text-secondary uppercase tracking-widest font-semibold mt-2">Champion</span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
