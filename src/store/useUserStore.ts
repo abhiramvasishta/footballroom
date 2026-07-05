@@ -10,6 +10,7 @@ interface UserState {
   hasSubmitted: boolean;
   setRegistration: (name: string, avatar: string | null, entryId: string, recoveryCode: string) => void;
   setEntryId: (id: string) => void;
+  setName: (name: string) => void;
   setHasSubmitted: (status: boolean) => void;
   resetDevice: () => void;
 }
@@ -27,6 +28,7 @@ export const useUserStore = create<UserState>()(
         set({ name, avatar, entryId, recoveryCode, isRegistered: true, hasSubmitted: false });
       },
       setEntryId: (entryId) => set({ entryId, isRegistered: true }),
+      setName: (name) => set({ name }),
       setHasSubmitted: (status) => set({ hasSubmitted: status }),
       resetDevice: () => set({ entryId: null, name: null, avatar: null, recoveryCode: null, isRegistered: false, hasSubmitted: false }),
     }),

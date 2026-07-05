@@ -1,11 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, Camera, Loader2, Share2, Copy, CheckCircle2, Eye, X } from 'lucide-react';
+import { Camera, Loader2, Share2, Copy, CheckCircle2, Eye, X, Edit2, Save } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { uploadProfilePhoto, cropAndResizeImage } from '../lib/cloudinary';
-import { updateUserPhoto, fetchTeams, fetchMatches, getPredictionData } from '../lib/services';
+import { updateUserPhoto, updateUserName, fetchTeams, fetchMatches, getPredictionData } from '../lib/services';
 import { useUserStore } from '../store/useUserStore';
 import { ShareBracket, type ShareBracketRef } from '../components/ShareBracket';
 import { AnimatedTransition } from '../components/AnimatedTransition';
@@ -29,6 +29,10 @@ export default function DashboardPage() {
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [isUpdatingName, setIsUpdatingName] = useState(false);
   
   const [currentPhoto, setCurrentPhoto] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -120,18 +124,25 @@ export default function DashboardPage() {
     }
   };
 
-  const handleRemovePhoto = async () => {
-    if (!entryId) return;
-    setIsUploading(true);
+  const handleUpdateName = async () => {
+    if (!entryId || !newName.trim() || newName.trim() === userData?.name) {
+      setIsEditingName(false);
+      return;
+    }
+    
     try {
-      await updateUserPhoto(entryId, '');
-      setCurrentPhoto(null);
+      setIsUpdatingName(true);
+      setError(null);
+      await updateUserName(entryId, newName.trim());
+      useUserStore.getState().setName(newName.trim());
+      setIsEditingName(false);
       setUploadSuccess(true);
       setTimeout(() => setUploadSuccess(false), 3000);
-    } catch (err: any) {
-      setError('Failed to remove photo.');
+    } catch (err) {
+      console.error(err);
+      setError('Failed to update name.');
     } finally {
-      setIsUploading(false);
+      setIsUpdatingName(false);
     }
   };
 
@@ -246,18 +257,59 @@ export default function DashboardPage() {
             />
           </div>
 
-          <h1 className="text-3xl font-display font-bold text-white mb-2">{userData.name}</h1>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            {isEditingName ? (
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  className="bg-bg-tertiary border border-cyan-primary/30 rounded px-3 py-1 text-xl font-bold text-white outline-none focus:border-cyan-primary w-48 text-center"
+                  placeholder="Your Name"
+                  autoFocus
+                  onKeyDown={(e) => e.key === 'Enter' && handleUpdateName()}
+                />
+                <button
+                  onClick={handleUpdateName}
+                  disabled={isUpdatingName}
+                  className="p-2 bg-green-500/20 text-green-400 hover:bg-green-500/30 rounded transition-colors disabled:opacity-50"
+                >
+                  <Save size={18} />
+                </button>
+                <button
+                  onClick={() => setIsEditingName(false)}
+                  disabled={isUpdatingName}
+                  className="p-2 bg-white/5 text-text-secondary hover:bg-white/10 rounded transition-colors disabled:opacity-50"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <h1 className="text-3xl font-display font-bold text-white">{userData.name}</h1>
+                <button
+                  onClick={() => {
+                    setNewName(userData.name || '');
+                    setIsEditingName(true);
+                  }}
+                  className="p-1.5 text-text-secondary hover:text-cyan-primary transition-colors"
+                >
+                  <Edit2 size={16} />
+                </button>
+              </div>
+            )}
+          </div>
 
-          {currentPhoto && (
+          <div className="flex gap-3 mb-2">
             <button
-              onClick={handleRemovePhoto}
+              onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
-              className="mt-4 flex items-center gap-2 text-sm text-red-500 hover:text-red-400 transition-colors bg-red-500/10 px-4 py-2 rounded-lg"
+              className="flex items-center gap-2 text-sm text-cyan-primary hover:text-white transition-colors bg-cyan-primary/10 hover:bg-cyan-primary/20 px-4 py-2 rounded-lg font-bold"
             >
-              <Trash2 size={16} />
-              Remove Photo
+              <Camera size={16} />
+              Update Photo
             </button>
-          )}
+          </div>
 
           <AnimatePresence>
             {error && (

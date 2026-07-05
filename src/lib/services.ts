@@ -25,6 +25,17 @@ export const updateUserPhoto = async (entryId: string, photoURL: string | null) 
   await batch.commit();
 };
 
+export const updateUserName = async (entryId: string, name: string) => {
+  const userRef = doc(db, 'users', entryId);
+  const leaderboardRef = doc(db, 'leaderboard', entryId);
+  
+  const batch = writeBatch(db);
+  batch.set(userRef, { name }, { merge: true });
+  batch.set(leaderboardRef, { name }, { merge: true });
+  
+  await batch.commit();
+};
+
 export const recoverUser = async (recoveryCode: string): Promise<UserData | null> => {
   const usersRef = collection(db, 'users');
   const q = query(usersRef, where('recoveryCode', '==', recoveryCode));
