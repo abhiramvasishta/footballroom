@@ -69,23 +69,22 @@ export default function LandingPage() {
           World Cup 2026 Predictor
         </h2>
         
-        <motion.p 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-white text-center mb-10 text-base md:text-lg font-medium flex items-center justify-center gap-2 flex-wrap px-4"
-        >
-          ⚽ Gelisthe chivarlo <span className="text-cyan-primary animate-pulse drop-shadow-[0_0_8px_rgba(0,217,255,0.8)]">prize</span> untadhi mowaa! 🏆
-        </motion.p>
+
 
         {!isRecovering ? (
           <div className="w-full space-y-4">
             {settings === null ? (
               <div className="w-full h-16 animate-pulse bg-white/10 rounded-xl"></div>
             ) : !settings.predictionsOpen ? (
-              <div className="bg-cyan-primary/10 border border-cyan-primary/30 p-6 rounded-xl text-center space-y-3 shadow-[0_0_20px_rgba(0,217,255,0.1)]">
+              <div className="bg-cyan-primary/10 border border-cyan-primary/30 p-6 rounded-xl text-center space-y-4 shadow-[0_0_20px_rgba(0,217,255,0.1)]">
                 <p className="text-cyan-primary font-bold text-lg drop-shadow-[0_0_5px_rgba(0,217,255,0.4)]">Prediction appudu register avvaledhu enti bhAAi 🤨</p>
                 <p className="text-white text-sm">Sarle velli <span className="font-bold text-cyan-primary uppercase tracking-wider">highlights</span> aina choodu 🎥</p>
+                <button 
+                  onClick={() => navigate('/highlights')}
+                  className="mt-4 px-6 py-2 bg-cyan-primary text-navy-900 font-bold rounded-lg hover:bg-white transition-colors"
+                >
+                  Enter App
+                </button>
               </div>
             ) : settings.registrationOpen ? (
               <button 
@@ -115,7 +114,7 @@ export default function LandingPage() {
         ) : (
           <form onSubmit={handleRecover} className="w-full glass-card p-6 w-full space-y-4">
             <h3 className="text-xl font-bold text-center mb-2">Recover Access</h3>
-            <p className="text-sm text-text-secondary text-center mb-4">Enter your 6-character recovery code.</p>
+            <p className="text-sm text-cyan-primary font-bold text-center mb-4 uppercase tracking-wider drop-shadow-[0_0_8px_rgba(0,217,255,0.6)]">Enter your 6-character recovery code.</p>
             
             <div>
               <input 

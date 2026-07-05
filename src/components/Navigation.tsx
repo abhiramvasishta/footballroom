@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { Trophy, PlaySquare, LayoutDashboard, GitCommit, CalendarDays } from 'lucide-react';
+import { useUserStore } from '../store/useUserStore';
 import { cn } from '../utils/cn';
 
 interface Props {
@@ -7,15 +8,16 @@ interface Props {
 }
 
 export const Navigation = ({ onOpenLeaderboard }: Props) => {
+  const { isRegistered } = useUserStore();
   const location = useLocation();
 
   const navItems = [
-    {
+    ...(isRegistered ? [{
       label: 'Dashboard',
       icon: <LayoutDashboard size={24} />,
       to: '/dashboard',
       action: null
-    },
+    }] : []),
     {
       label: 'Bracket',
       icon: <GitCommit size={24} className="rotate-90" />,
