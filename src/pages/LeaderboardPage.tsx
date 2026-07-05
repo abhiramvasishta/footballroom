@@ -100,7 +100,7 @@ export default function LeaderboardPage() {
           </button>
           <div className="flex items-center gap-3">
             <Trophy className="text-cyan-primary" size={32} />
-            <h1 className="text-3xl font-bold font-display text-cyan-primary">Global Leaderboard</h1>
+            <h1 className="text-3xl font-bold font-display text-cyan-primary">Leaderboard</h1>
           </div>
         </div>
 
@@ -164,12 +164,12 @@ export default function LeaderboardPage() {
             <table className="w-full text-left">
               <thead className="bg-bg-secondary/80 border-b border-[rgba(0,217,255,0.18)]">
                 <tr>
-                  <th className="p-4 text-text-secondary font-medium">Rank</th>
-                  <th className="p-4 text-text-secondary font-medium">Player</th>
-                  <th className="p-4 text-text-secondary font-medium text-center">Score</th>
-                  <th className="p-4 text-text-secondary font-medium text-center">Accuracy</th>
-                  <th className="p-4 text-text-secondary font-medium text-center">Champion</th>
-                  <th className="p-4 text-text-secondary font-medium text-right">Status</th>
+                  <th className="p-2 md:p-4 text-text-secondary font-medium text-center w-12 md:w-auto">#</th>
+                  <th className="p-2 md:p-4 text-text-secondary font-medium">Player</th>
+                  <th className="p-2 md:p-4 text-text-secondary font-medium text-center">Score</th>
+                  <th className="p-2 md:p-4 text-text-secondary font-medium text-center hidden sm:table-cell">Accuracy</th>
+                  <th className="p-2 md:p-4 text-text-secondary font-medium text-center hidden md:table-cell">Champion</th>
+                  <th className="p-2 md:p-4 text-text-secondary font-medium text-right hidden sm:table-cell">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -179,16 +179,16 @@ export default function LeaderboardPage() {
                     className="hover:bg-white/5 transition-colors cursor-pointer"
                     onClick={() => setSelectedUser(user)}
                   >
-                    <td className="p-4 text-center font-bold text-text-muted">#{user.rank}</td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        <Avatar photoURL={user.photoURL} avatar={user.avatar} name={user.name} className="w-8 h-8 rounded-full bg-card-hover text-xs font-bold border border-[rgba(0,217,255,0.18)]" />
-                        <span className="font-bold">{user.name}</span>
+                    <td className="p-2 md:p-4 text-center font-bold text-text-muted">{user.rank}</td>
+                    <td className="p-2 md:p-4">
+                      <div className="flex items-center gap-2 md:gap-3">
+                        <Avatar photoURL={user.photoURL} avatar={user.avatar} name={user.name} className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-card-hover text-[10px] md:text-xs font-bold border border-[rgba(0,217,255,0.18)]" />
+                        <span className="font-bold text-sm md:text-base truncate max-w-[100px] sm:max-w-[150px] md:max-w-none">{user.name}</span>
                       </div>
                     </td>
-                    <td className="p-4 text-center font-bold text-cyan-primary">{user.score}</td>
-                    <td className="p-4 text-center">{user.accuracy}%</td>
-                    <td className="p-4 text-center">
+                    <td className="p-2 md:p-4 text-center font-bold text-cyan-primary text-sm md:text-base">{user.score}</td>
+                    <td className="p-2 md:p-4 text-center text-sm hidden sm:table-cell">{user.accuracy}%</td>
+                    <td className="p-2 md:p-4 text-center hidden md:table-cell">
                       {user.championTeam ? (
                         <div className="w-10 h-7 mx-auto rounded overflow-hidden shadow-sm border border-white/20" title={user.championTeam.name}>
                           <img src={user.championTeam.flagUrl} alt={user.championTeam.name} className="w-full h-full object-cover" />
@@ -197,8 +197,8 @@ export default function LeaderboardPage() {
                         <span className="text-text-muted">-</span>
                       )}
                     </td>
-                    <td className="p-4 text-right">
-                      <span className={`text-xs px-2 py-1 rounded-full ${
+                    <td className="p-2 md:p-4 text-right hidden sm:table-cell">
+                      <span className={`text-[10px] md:text-xs px-2 py-1 rounded-full ${
                         user.status === 'Eliminated' ? 'bg-red-500/20 text-red-400' :
                         user.status === 'Champion' ? 'bg-cyan-primary/20 text-cyan-primary' :
                         'bg-blue-500/20 text-blue-400'

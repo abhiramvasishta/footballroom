@@ -3,8 +3,10 @@ import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { fetchMatches, fetchTeams } from '../lib/services';
 import { Users, Target, Trophy, Activity, BarChart3 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const GlobalAnalytics = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<any>(null);
   const [matchesStats, setMatchesStats] = useState<any[]>([]);
@@ -72,10 +74,13 @@ export const GlobalAnalytics = () => {
     <div className="flex flex-col gap-6 animate-fade-in">
       {/* Top Level Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="glass-card p-4 rounded-xl border border-white/5 flex flex-col items-center text-center group hover:border-cyan-primary/30 transition-all">
+        <div 
+          onClick={() => navigate('/leaderboard')}
+          className="glass-card p-4 rounded-xl border border-white/5 flex flex-col items-center text-center group hover:border-cyan-primary/30 hover:bg-cyan-primary/5 transition-all cursor-pointer"
+        >
           <Users className="text-blue-400 mb-2 group-hover:scale-110 transition-transform" size={24} />
-          <span className="text-2xl font-bold font-mono text-white">{stats.registeredUsers}</span>
-          <span className="text-xs text-text-secondary uppercase tracking-wider mt-1">Users</span>
+          <span className="text-2xl font-bold font-mono text-white group-hover:text-cyan-primary transition-colors">{stats.registeredUsers}</span>
+          <span className="text-xs text-text-secondary uppercase tracking-wider mt-1 group-hover:text-white transition-colors">Users</span>
         </div>
         <div className="glass-card p-4 rounded-xl border border-white/5 flex flex-col items-center text-center group hover:border-cyan-primary/30 transition-all">
           <Activity className="text-green-400 mb-2 group-hover:scale-110 transition-transform" size={24} />
