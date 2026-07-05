@@ -119,11 +119,31 @@ export const useVideoPlayer = (videoRef: RefObject<HTMLVideoElement | null>) => 
     }
   };
 
-  const toggleFullscreen = (containerRef: RefObject<HTMLElement | null>) => {
-    if (!document.fullscreenElement) {
-      containerRef.current?.requestFullscreen().catch(console.error);
-    } else {
-      document.exitFullscreen().catch(console.error);
+  const toggleFullscreen = async (containerRef: RefObject<HTMLElement | null>) => {
+    try {
+      if (!document.fullscreenElement) {
+        await containerRef.current?.requestFullscreen();
+        // Attempt to lock screen to landscape on mobile devices
+        if (screen.orientation && 'lock' in screen.orientation) {
+          try {
+            await (screen.orientation as any).lock('landscape');
+          } catch (e) {
+            // Ignore error, may happen on desktop or unsupported devices
+          }
+        }
+      } else {
+        await document.exitFullscreen();
+        // Unlock screen orientation
+        if (screen.orientation && 'unlock' in screen.orientation) {
+          try {
+            screen.orientation.unlock();
+          } catch (e) {
+            // Ignore error
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Fullscreen error:', error);
     }
   };
 

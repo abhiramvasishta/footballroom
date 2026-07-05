@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Share2, Link, Trophy, Info, Maximize, RotateCcw, FastForward, Rewind, Settings2 } from 'lucide-react';
+import { Share2, Link, Trophy, Info, Maximize, RotateCcw, FastForward, Rewind } from 'lucide-react';
 import type { Match, GoalEvent } from '../../types';
 import { formatISTDateOnly } from '../../utils/date';
 import { toast } from 'react-hot-toast';
@@ -91,26 +91,6 @@ export const SettingsMenu = ({ isOpen, onClose, match, markers, duration, onSeek
           {/* View */}
           <div className="flex flex-col py-2 border-b border-white/5">
             <span className="px-4 py-1 text-[10px] uppercase tracking-widest text-text-secondary font-bold">📺 View</span>
-            
-            <div className="px-4 py-2 flex items-center justify-between text-sm text-white">
-              <div className="flex items-center gap-3">
-                <Settings2 className="w-4 h-4 text-cyan-primary" />
-                Quality
-              </div>
-              <select 
-                className="bg-transparent border border-white/20 rounded px-2 py-1 text-xs outline-none focus:border-cyan-primary cursor-pointer text-text-secondary"
-                onChange={(e) => {
-                  toast.success(`Video quality set to ${e.target.value}`);
-                  onClose();
-                }}
-              >
-                <option value="Auto" className="bg-bg-primary text-white">Auto</option>
-                <option value="1080p" className="bg-bg-primary text-white">1080p HD</option>
-                <option value="720p" className="bg-bg-primary text-white">720p</option>
-                <option value="480p" className="bg-bg-primary text-white">480p</option>
-              </select>
-            </div>
-
             <button onClick={() => { onToggleFullscreen(); onClose(); }} className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 text-sm text-white transition-colors text-left">
               <Maximize className="w-4 h-4 text-cyan-primary" />
               Fullscreen
