@@ -3,7 +3,7 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import { TelegramProvider } from './providers/TelegramProvider';
 
-const fastify = Fastify({ logger: true });
+const fastify = Fastify({ logger: true, trustProxy: true });
 
 // Initialize provider
 const telegramProvider = new TelegramProvider();
@@ -114,8 +114,9 @@ fastify.get('/api/telegram/thumbnail/:docId', async (request, reply) => {
 const start = async () => {
   try {
     await telegramProvider.init();
-    await fastify.listen({ port: 3001, host: '0.0.0.0' });
-    console.log('Server is running on http://localhost:3001');
+    const port = parseInt(process.env.PORT || '3001', 10);
+    await fastify.listen({ port, host: '0.0.0.0' });
+    console.log(`Server is running on http://0.0.0.0:${port}`);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

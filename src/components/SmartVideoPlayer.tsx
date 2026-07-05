@@ -34,7 +34,7 @@ export const SmartVideoPlayer = ({
     }
   }, [src, autoPlay]);
 
-  const apiUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+  const apiUrl = import.meta.env.VITE_API_URL;
   const videoSrc = src.startsWith('http') ? src : `${apiUrl}/api/stream/${src}`;
 
   return (
