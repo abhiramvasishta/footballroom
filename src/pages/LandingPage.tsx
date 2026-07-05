@@ -82,6 +82,11 @@ export default function LandingPage() {
           <div className="w-full space-y-4">
             {settings === null ? (
               <div className="w-full h-16 animate-pulse bg-white/10 rounded-xl"></div>
+            ) : !settings.predictionsOpen ? (
+              <div className="bg-cyan-primary/10 border border-cyan-primary/30 p-6 rounded-xl text-center space-y-3 shadow-[0_0_20px_rgba(0,217,255,0.1)]">
+                <p className="text-cyan-primary font-bold text-lg drop-shadow-[0_0_5px_rgba(0,217,255,0.4)]">Prediction appudu register avvaledhu enti bhAAi 🤨</p>
+                <p className="text-white text-sm">Sarle velli <span className="font-bold text-cyan-primary uppercase tracking-wider">highlights</span> aina choodu 🎥</p>
+              </div>
             ) : settings.registrationOpen ? (
               <button 
                 onClick={() => navigate('/register')}
