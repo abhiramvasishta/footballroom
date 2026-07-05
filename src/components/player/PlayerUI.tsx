@@ -1,4 +1,4 @@
-import { useState, useEffect, type RefObject } from 'react';
+import { useState, useEffect, useRef, type RefObject } from 'react';
 import type { GoalEvent, Match, Team } from '../../types';
 import { useVideoPlayer } from '../../hooks/useVideoPlayer';
 import { VideoControls } from './VideoControls';
@@ -102,19 +102,43 @@ export const PlayerUI = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [togglePlay, toggleFullscreen, toggleMute, changeVolume, volume, containerRef]);
 
-  // Mobile gesture handling
-  let lastTapTime = 0;
-  const handleTouchStart = () => {
+  // Mobile & Desktop interaction handling
+  const lastTapTimeRef = useRef(0);
+  const handleInteraction = (e: React.MouseEvent | React.TouchEvent) => {
+    // Only handle if clicking the overlay, not the controls themselves
+    if ((e.target as HTMLElement).closest('.video-controls')) return;
+
     const now = Date.now();
     const DOUBLE_TAP_DELAY = 300;
     
-    if (now - lastTapTime < DOUBLE_TAP_DELAY) {
-       // Reserved for future double tap actions
+    if (now - lastTapTimeRef.current < DOUBLE_TAP_DELAY) {
+      // Double tap detected
+      let clientX = 0;
+      if ('touches' in e) {
+        clientX = e.touches[0].clientX;
+      } else {
+        clientX = (e as React.MouseEvent).clientX;
+      }
+      
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (rect) {
+        const x = clientX - rect.left;
+        if (x < rect.width / 2) {
+          seek(Math.max(0, currentTime - 10)); // skip back 10s
+        } else {
+          seek(Math.min(duration, currentTime + 10)); // skip forward 10s
+        }
+      }
+      lastTapTimeRef.current = 0;
     } else {
-      if (isSettingsOpen) setIsSettingsOpen(false);
-      else setShowControls(!showControls);
+      // Single tap behavior
+      if (isSettingsOpen) {
+        setIsSettingsOpen(false);
+      } else {
+        setShowControls(!showControls);
+      }
+      lastTapTimeRef.current = now;
     }
-    lastTapTime = now;
   };
 
   return (
@@ -122,15 +146,7 @@ export const PlayerUI = ({
       className="absolute inset-0 z-10"
       onMouseMove={handleMouseMove}
       onMouseLeave={() => setShowControls(false)}
-      onClick={() => {
-        if (isSettingsOpen) {
-          setIsSettingsOpen(false);
-        } else {
-          togglePlay();
-        }
-      }}
-      onDoubleClick={() => toggleFullscreen(containerRef)}
-      onTouchStart={handleTouchStart}
+      onClick={handleInteraction}
     >
       <LoadingOverlay isBuffering={isBuffering} />
       <PlayerOverlay isPlaying={isPlaying} />
