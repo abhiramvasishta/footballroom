@@ -175,7 +175,7 @@ export default function LeaderboardPage() {
                   <th className="p-2 md:p-4 text-text-secondary font-medium">Player</th>
                   <th className="p-2 md:p-4 text-text-secondary font-medium text-center">Score</th>
                   <th className="p-2 md:p-4 text-text-secondary font-medium text-center hidden sm:table-cell">Accuracy</th>
-                  <th className="p-2 md:p-4 text-text-secondary font-medium text-center hidden md:table-cell">Champion</th>
+                  <th className="p-2 md:p-4 text-text-secondary font-medium text-center">Champion</th>
                   <th className="p-2 md:p-4 text-text-secondary font-medium text-right hidden sm:table-cell">Status</th>
                 </tr>
               </thead>
@@ -199,7 +199,7 @@ export default function LeaderboardPage() {
                     <td className="p-2 md:p-4 text-center text-sm hidden sm:table-cell">
                       {user.status === 'Eliminated' ? <span className="text-text-muted">-</span> : `${user.accuracy}%`}
                     </td>
-                    <td className="p-2 md:p-4 text-center hidden md:table-cell">
+                    <td className="p-2 md:p-4 text-center">
                       {user.championTeam ? (
                         <div className="w-10 h-7 mx-auto rounded overflow-hidden shadow-sm border border-white/20" title={user.championTeam.name}>
                           <img src={user.championTeam.flagUrl} alt={user.championTeam.name} className="w-full h-full object-cover" />

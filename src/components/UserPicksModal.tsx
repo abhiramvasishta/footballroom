@@ -41,6 +41,22 @@ export const UserPicksModal = ({ user, isOpen, onClose, allMatches, allTeams }: 
     ? goldenBallPlayers.find(p => p.id === predictionDoc.goldenBallPlayerId)
     : null;
 
+  // Calculate Analysis Stats
+  const correctPicks = predictionDoc ? Object.entries(predictionDoc.picks).filter(([matchId, winnerId]) => {
+    const match = allMatches.find(m => m.id === matchId);
+    return match && match.completed && match.winnerTeamId === winnerId;
+  }).length : 0;
+
+  const wrongPicks = predictionDoc ? Object.entries(predictionDoc.picks).filter(([matchId, winnerId]) => {
+    const match = allMatches.find(m => m.id === matchId);
+    return match && match.completed && match.winnerTeamId && match.winnerTeamId !== winnerId;
+  }).length : 0;
+
+  const pendingPicks = predictionDoc ? Object.entries(predictionDoc.picks).filter(([matchId]) => {
+    const match = allMatches.find(m => m.id === matchId);
+    return match && !match.completed;
+  }).length : 0;
+
   return (
     <AnimatePresence>
       <motion.div
@@ -68,7 +84,7 @@ export const UserPicksModal = ({ user, isOpen, onClose, allMatches, allTeams }: 
                 )}
               </div>
               <div className="flex flex-col">
-                <h3 className="font-bold text-white text-lg">{user.name}'s Predictions</h3>
+                <h3 className="font-bold text-white text-lg">{user.name}'s Prediction Analysis</h3>
                 <span className="text-xs text-text-secondary">Score: {user.score} | Accuracy: {user.accuracy}%</span>
               </div>
             </div>
@@ -97,6 +113,22 @@ export const UserPicksModal = ({ user, isOpen, onClose, allMatches, allTeams }: 
                     <span className="text-lg font-bold text-[#d4af37] drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]">
                       {mvpPlayer ? mvpPlayer.name : 'Not Selected'}
                     </span>
+                  </div>
+                </div>
+
+                {/* Prediction Analysis Stats */}
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="bg-bg-secondary p-3 rounded-lg border border-green-500/20 flex flex-col items-center text-center">
+                    <span className="text-[10px] uppercase tracking-widest text-text-secondary font-bold mb-1">Correct</span>
+                    <span className="text-xl font-bold text-green-400">{correctPicks}</span>
+                  </div>
+                  <div className="bg-bg-secondary p-3 rounded-lg border border-red-500/20 flex flex-col items-center text-center">
+                    <span className="text-[10px] uppercase tracking-widest text-text-secondary font-bold mb-1">Wrong</span>
+                    <span className="text-xl font-bold text-red-400">{wrongPicks}</span>
+                  </div>
+                  <div className="bg-bg-secondary p-3 rounded-lg border border-blue-500/20 flex flex-col items-center text-center">
+                    <span className="text-[10px] uppercase tracking-widest text-text-secondary font-bold mb-1">Pending</span>
+                    <span className="text-xl font-bold text-blue-400">{pendingPicks}</span>
                   </div>
                 </div>
 
