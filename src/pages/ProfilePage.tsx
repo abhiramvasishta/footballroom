@@ -5,17 +5,18 @@ import { useNavigate } from 'react-router-dom';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { uploadProfilePhoto, cropAndResizeImage } from '../lib/cloudinary';
-import { updateUserPhoto } from '../lib/services';
+import { updateUserPhoto, fetchTeams, getPredictionData } from '../lib/services';
 import { useUserStore } from '../store/useUserStore';
 import { ShareBracket, type ShareBracketRef } from '../components/ShareBracket';
 import { AnimatedTransition } from '../components/AnimatedTransition';
 import { goldenBallPlayers } from '../data/goldenBallPlayers';
-import type { UserData } from '../types';
+import type { UserData, Team } from '../types';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { entryId } = useUserStore();
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [championTeam, setChampionTeam] = useState<Team | null>(null);
   const [loading, setLoading] = useState(true);
   
   const [isUploading, setIsUploading] = useState(false);
@@ -36,7 +37,21 @@ export default function ProfilePage() {
       return;
     }
 
-
+    const loadStaticData = async () => {
+      try {
+        const [teams, pred] = await Promise.all([
+          fetchTeams(),
+          getPredictionData(entryId)
+        ]);
+        if (pred?.predictedChampion) {
+          setChampionTeam(teams.find(t => t.id === pred.predictedChampion) || null);
+        }
+      } catch (err) {
+        console.error("Failed to load profile static data", err);
+      }
+    };
+    
+    loadStaticData();
 
     // Real-time listener for user data
     const unsubscribe = onSnapshot(doc(db, 'users', entryId), (docSnap) => {
@@ -189,12 +204,6 @@ export default function ProfilePage() {
           </div>
 
           <h1 className="text-3xl font-display font-bold text-white mb-2">{userData.name}</h1>
-          <button
-            onClick={() => navigate('/review')}
-            className="bg-cyan-primary/20 hover:bg-cyan-primary/30 transition-colors px-4 py-1.5 rounded-full border border-cyan-primary/30 text-cyan-primary text-xs font-bold uppercase tracking-widest mb-2 shadow-[0_0_10px_rgba(0,217,255,0.2)]"
-          >
-            View My Picks
-          </button>
 
           {currentPhoto && (
             <button
@@ -222,7 +231,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Statistics Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
           <div className="glass-card p-6 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)] group relative overflow-hidden">
             <div className="absolute -top-10 -right-10 w-24 h-24 bg-cyan-primary/10 rounded-full blur-xl group-hover:bg-cyan-primary/20 transition-colors" />
             <span className="text-4xl font-bold font-mono text-white group-hover:text-cyan-primary transition-colors relative z-10">{userData.score || 0}</span>
@@ -271,6 +280,33 @@ export default function ProfilePage() {
             )}
             <span className="text-[10px] md:text-xs text-[#e5b969] uppercase tracking-widest font-black mt-1 relative z-10">MVP (Golden Ball)</span>
           </div>
+          
+          <div className="glass-card relative overflow-hidden p-6 flex flex-col items-center justify-center text-center gap-2 border-[#e5b969]/30 group hover:border-[#e5b969]/60 transition-all">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#e5b969]/10 to-transparent pointer-events-none" />
+            {championTeam ? (
+              <div className="flex flex-col items-center gap-2 relative z-10">
+                <div className="w-12 h-12 rounded-full p-1 bg-gradient-to-b from-[#e5b969] to-[#b08d57]">
+                  <img src={championTeam.flagUrl} alt={championTeam.id} className="w-full h-full object-cover rounded-full border-2 border-bg-primary" />
+                </div>
+                <span className="font-bold text-white uppercase tracking-wider">{championTeam.id}</span>
+              </div>
+            ) : (
+              <span className="text-2xl font-bold text-white relative z-10">-</span>
+            )}
+            <span className="text-[10px] md:text-xs text-[#e5b969] uppercase tracking-widest font-black mt-1 relative z-10">Champion</span>
+          </div>
+
+          <button
+            onClick={() => navigate('/review')}
+            className="glass-card relative overflow-hidden p-6 flex flex-col items-center justify-center text-center gap-2 border-cyan-primary/30 group hover:border-cyan-primary/60 transition-all cursor-pointer"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-primary/10 to-transparent pointer-events-none" />
+            <div className="w-12 h-12 rounded-full flex items-center justify-center bg-cyan-primary/20 text-cyan-primary group-hover:scale-110 transition-transform relative z-10">
+              <Share2 size={24} />
+            </div>
+            <span className="font-bold text-white uppercase tracking-wider mt-2 relative z-10">View My Picks</span>
+            <span className="text-[10px] text-text-secondary uppercase tracking-widest font-semibold mt-1 relative z-10">See your bracket</span>
+          </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
