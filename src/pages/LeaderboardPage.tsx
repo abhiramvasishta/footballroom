@@ -35,16 +35,23 @@ export default function LeaderboardPage() {
         setAllTeams(teams);
         setAllMatches(matches);
         
-        const enhancedUsers: LeaderboardEntry[] = await Promise.all(
+        const enhancedUsers: LeaderboardEntry[] = (await Promise.all(
           usersData.map(async (user) => {
             const pred = await getPredictionData(user.entryId);
+            if (!pred) return null; // Filter out users who haven't made predictions
+            
             const champTeam = pred?.predictedChampion ? teams.find(t => t.id === pred.predictedChampion) : undefined;
             return { ...user, championTeam: champTeam };
           })
-        );
+        )).filter(Boolean) as LeaderboardEntry[];
 
-        // Sort: Score -> Accuracy -> SubmittedAt -> Champion (alphabetical string compare)
+        // Sort: Status (Eliminated last) -> Score -> Accuracy -> SubmittedAt -> Champion
         enhancedUsers.sort((a, b) => {
+          const aEliminated = a.status === 'Eliminated';
+          const bEliminated = b.status === 'Eliminated';
+          if (aEliminated && !bEliminated) return 1;
+          if (!aEliminated && bEliminated) return -1;
+
           if (b.score !== a.score) return b.score - a.score;
           if (b.accuracy !== a.accuracy) return b.accuracy - a.accuracy;
           
@@ -118,7 +125,7 @@ export default function LeaderboardPage() {
                 <div className="w-full bg-gradient-to-t from-cyan-primary/5 to-bg-primary rounded-t-lg border-t border-x border-[rgba(0,217,255,0.18)] flex flex-col items-center justify-end pb-4 relative overflow-hidden" style={{ height: '120px' }}>
                   <span className="text-text-primary font-bold font-mono text-2xl drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">#2</span>
                   <span className="text-xs text-text-secondary truncate w-full text-center px-1 mt-1">{top3[1].name}</span>
-                  <span className="font-bold text-cyan-primary font-mono text-sm">{top3[1].score} pts</span>
+                  <span className="font-bold text-cyan-primary font-mono text-sm">{top3[1].status === 'Eliminated' ? '-' : `${top3[1].score} pts`}</span>
                 </div>
               </div>
             )}
@@ -136,7 +143,7 @@ export default function LeaderboardPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-cyan-primary/10 to-transparent pointer-events-none" />
                 <span className="text-cyan-primary font-bold font-mono text-4xl mb-1 drop-shadow-[0_0_15px_rgba(0,217,255,0.8)]">#1</span>
                 <span className="text-sm font-bold truncate w-full text-center px-1 tracking-wide">{top3[0].name}</span>
-                <span className="font-bold text-cyan-primary font-mono text-lg">{top3[0].score} pts</span>
+                <span className="font-bold text-cyan-primary font-mono text-lg">{top3[0].status === 'Eliminated' ? '-' : `${top3[0].score} pts`}</span>
               </div>
             </div>
 
@@ -151,7 +158,7 @@ export default function LeaderboardPage() {
                 <div className="w-full bg-gradient-to-t from-white/5 to-bg-primary rounded-t-lg border-t border-x border-white/10 flex flex-col items-center justify-end pb-2 relative overflow-hidden" style={{ height: '90px' }}>
                   <span className="text-text-secondary font-bold font-mono text-xl">#3</span>
                   <span className="text-xs text-text-secondary truncate w-full text-center px-1 mt-1">{top3[2].name}</span>
-                  <span className="font-bold text-cyan-primary/80 font-mono text-sm">{top3[2].score} pts</span>
+                  <span className="font-bold text-cyan-primary/80 font-mono text-sm">{top3[2].status === 'Eliminated' ? '-' : `${top3[2].score} pts`}</span>
                 </div>
               </div>
             )}
@@ -179,15 +186,19 @@ export default function LeaderboardPage() {
                     className="hover:bg-white/5 transition-colors cursor-pointer"
                     onClick={() => setSelectedUser(user)}
                   >
-                    <td className="p-2 md:p-4 text-center font-bold text-text-muted">{user.rank}</td>
+                    <td className="p-2 md:p-4 text-center font-bold text-text-muted">{user.status === 'Eliminated' ? '-' : `#${user.rank}`}</td>
                     <td className="p-2 md:p-4">
                       <div className="flex items-center gap-2 md:gap-3">
-                        <Avatar photoURL={user.photoURL} avatar={user.avatar} name={user.name} className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-card-hover text-[10px] md:text-xs font-bold border border-[rgba(0,217,255,0.18)]" />
-                        <span className="font-bold text-sm md:text-base truncate max-w-[100px] sm:max-w-[150px] md:max-w-none">{user.name}</span>
+                        <Avatar photoURL={user.photoURL} avatar={user.avatar} name={user.name} className={`w-6 h-6 md:w-8 md:h-8 rounded-full bg-card-hover text-[10px] md:text-xs font-bold border border-[rgba(0,217,255,0.18)] ${user.status === 'Eliminated' ? 'grayscale opacity-50' : ''}`} />
+                        <span className={`font-bold text-sm md:text-base truncate max-w-[100px] sm:max-w-[150px] md:max-w-none ${user.status === 'Eliminated' ? 'text-text-muted line-through' : ''}`}>{user.name}</span>
                       </div>
                     </td>
-                    <td className="p-2 md:p-4 text-center font-bold text-cyan-primary text-sm md:text-base">{user.score}</td>
-                    <td className="p-2 md:p-4 text-center text-sm hidden sm:table-cell">{user.accuracy}%</td>
+                    <td className="p-2 md:p-4 text-center font-bold text-cyan-primary text-sm md:text-base">
+                      {user.status === 'Eliminated' ? <span className="text-text-muted font-normal">-</span> : user.score}
+                    </td>
+                    <td className="p-2 md:p-4 text-center text-sm hidden sm:table-cell">
+                      {user.status === 'Eliminated' ? <span className="text-text-muted">-</span> : `${user.accuracy}%`}
+                    </td>
                     <td className="p-2 md:p-4 text-center hidden md:table-cell">
                       {user.championTeam ? (
                         <div className="w-10 h-7 mx-auto rounded overflow-hidden shadow-sm border border-white/20" title={user.championTeam.name}>
