@@ -11,7 +11,7 @@ const telegramProvider = new TelegramProvider();
 
 fastify.register(cors, {
   origin: '*', // Allow all origins for the SmartVideoPlayer
-  methods: ['GET', 'OPTIONS'],
+  methods: ['GET', 'POST', 'OPTIONS'],
 });
 
 fastify.get('/api/stream/:videoId', async (request, reply) => {
