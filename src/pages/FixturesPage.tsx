@@ -119,12 +119,21 @@ export default function FixturesPage() {
                     }
                   }
 
+                  let statusText = m.completed ? 'FT' : (m.date ? 'Scheduled' : 'TBD');
+                  if (m.completed) {
+                    if (m.penalties) statusText = 'AET (P)';
+                    else if (m.extraTime) statusText = 'AET';
+                  }
+
                   return (
                   <div key={m.id} className="glass-card flex flex-col md:flex-row items-center justify-between p-4 border-[rgba(0,217,255,0.1)] hover:bg-white/5 transition-colors gap-4">
                     
                     <div className="flex items-center gap-2 w-full md:w-auto md:flex-1 justify-between md:justify-end text-right">
                        <span className="font-bold text-white md:hidden">Home</span>
                        <div className="flex items-center gap-3">
+                         {m.penalties && m.homePenaltyScore !== undefined && (
+                           <span className="text-xs text-cyan-primary/70 font-bold hidden md:inline-block">({m.homePenaltyScore})</span>
+                         )}
                          <span className="font-bold text-white text-lg">{homeTeam ? homeTeam.id : 'TBD'}</span>
                          {homeTeam ? (
                            <img src={homeTeam.flagUrl} alt={homeTeam.id} className="w-6 h-6 rounded-full object-cover" />
@@ -138,11 +147,13 @@ export default function FixturesPage() {
                       <div className="text-[10px] text-text-secondary uppercase tracking-widest mb-1">
                         {m.date ? new Date(m.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'TBD'}
                       </div>
-                      <div className="font-bold text-xl text-cyan-primary">
-                         {m.completed ? `${m.homeScore} - ${m.awayScore}` : 'vs'}
+                      <div className="font-bold text-xl text-cyan-primary flex items-center gap-2">
+                         <span className="md:hidden text-xs text-cyan-primary/70">{m.penalties ? `(${m.homePenaltyScore})` : ''}</span>
+                         <span>{m.completed ? `${m.homeScore} - ${m.awayScore}` : 'vs'}</span>
+                         <span className="md:hidden text-xs text-cyan-primary/70">{m.penalties ? `(${m.awayPenaltyScore})` : ''}</span>
                       </div>
                       <div className="text-[10px] text-text-secondary uppercase mt-1">
-                        {m.completed ? 'FT' : (m.date ? 'Scheduled' : 'TBD')}
+                        {statusText}
                       </div>
                     </div>
 
@@ -155,6 +166,9 @@ export default function FixturesPage() {
                            <div className="w-6 h-6 rounded-full bg-white/10" />
                          )}
                          <span className="font-bold text-white text-lg">{awayTeam ? awayTeam.id : 'TBD'}</span>
+                         {m.penalties && m.awayPenaltyScore !== undefined && (
+                           <span className="text-xs text-cyan-primary/70 font-bold hidden md:inline-block">({m.awayPenaltyScore})</span>
+                         )}
                        </div>
                     </div>
 
