@@ -9,13 +9,13 @@ import { updateUserPhoto, fetchTeams, getPredictionData } from '../lib/services'
 import { useUserStore } from '../store/useUserStore';
 import { ShareBracket, type ShareBracketRef } from '../components/ShareBracket';
 import { AnimatedTransition } from '../components/AnimatedTransition';
+import { goldenBallPlayers } from '../data/goldenBallPlayers';
 import type { UserData, Team } from '../types';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { entryId } = useUserStore();
   const [userData, setUserData] = useState<UserData | null>(null);
-  const [championTeam, setChampionTeam] = useState<Team | null>(null);
   const [loading, setLoading] = useState(true);
   
   const [isUploading, setIsUploading] = useState(false);
@@ -42,9 +42,7 @@ export default function ProfilePage() {
           fetchTeams(),
           getPredictionData(entryId)
         ]);
-        if (pred?.predictedChampion) {
-          setChampionTeam(teams.find(t => t.id === pred.predictedChampion) || null);
-        }
+        // championTeam no longer used
       } catch (err) {
         console.error("Failed to load profile static data", err);
       }
@@ -156,6 +154,10 @@ export default function ProfilePage() {
   // Get Avatar initials
   const initials = userData.name.charAt(0).toUpperCase();
 
+  const mvpPlayer = userData.goldenBallPlayerId 
+    ? goldenBallPlayers.find(p => p.id === userData.goldenBallPlayerId)
+    : null;
+
   return (
     <AnimatedTransition className="min-h-screen bg-bg-primary text-text-primary p-4 md:p-8 pb-24">
       <div className="max-w-4xl mx-auto flex flex-col gap-8 mt-12 md:mt-4">
@@ -198,10 +200,13 @@ export default function ProfilePage() {
             />
           </div>
 
-          <h1 className="text-3xl font-display font-bold text-white mb-1">{userData.name}</h1>
-          <div className="bg-cyan-primary/20 px-3 py-1 rounded-full border border-cyan-primary/30 text-cyan-primary text-xs font-bold uppercase tracking-widest mb-2">
-            Official Manager
-          </div>
+          <h1 className="text-3xl font-display font-bold text-white mb-2">{userData.name}</h1>
+          <button
+            onClick={() => navigate('/review')}
+            className="bg-cyan-primary/20 hover:bg-cyan-primary/30 transition-colors px-4 py-1.5 rounded-full border border-cyan-primary/30 text-cyan-primary text-xs font-bold uppercase tracking-widest mb-2 shadow-[0_0_10px_rgba(0,217,255,0.2)]"
+          >
+            View My Picks
+          </button>
 
           {currentPhoto && (
             <button
@@ -266,17 +271,17 @@ export default function ProfilePage() {
 
           <div className="glass-card relative overflow-hidden p-6 flex flex-col items-center justify-center text-center gap-2 border-[#e5b969]/30 group hover:border-[#e5b969]/60 transition-all">
             <div className="absolute inset-0 bg-gradient-to-br from-[#e5b969]/10 to-transparent pointer-events-none" />
-            {championTeam ? (
+            {mvpPlayer ? (
               <div className="flex flex-col items-center gap-2 relative z-10">
                 <div className="w-12 h-12 rounded-full p-1 bg-gradient-to-b from-[#e5b969] to-[#b08d57]">
-                  <img src={championTeam.flagUrl} alt={championTeam.id} className="w-full h-full object-cover rounded-full border-2 border-bg-primary" />
+                  <img src={mvpPlayer.photoUrl || mvpPlayer.flagUrl} alt={mvpPlayer.name} className="w-full h-full object-cover rounded-full border-2 border-bg-primary bg-bg-secondary" />
                 </div>
-                <span className="font-bold text-white uppercase tracking-wider">{championTeam.id}</span>
+                <span className="font-bold text-white uppercase tracking-wider text-xs md:text-sm">{mvpPlayer.name}</span>
               </div>
             ) : (
               <span className="text-2xl font-bold text-white relative z-10">-</span>
             )}
-            <span className="text-xs text-[#e5b969] uppercase tracking-widest font-black mt-1 relative z-10">Champion</span>
+            <span className="text-[10px] md:text-xs text-[#e5b969] uppercase tracking-widest font-black mt-1 relative z-10">MVP (Golden Ball)</span>
           </div>
         </div>
 

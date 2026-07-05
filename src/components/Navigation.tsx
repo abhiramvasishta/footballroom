@@ -23,15 +23,16 @@ export const Navigation = ({ onOpenLeaderboard }: Props) => {
       action: null
     },
     {
-      label: 'Fixtures',
-      icon: <CalendarDays size={24} />,
-      to: '/fixtures',
-      action: null
-    },
-    {
       label: 'Highlights',
       icon: <PlaySquare size={24} />,
       to: '/highlights',
+      action: null,
+      isSpecial: true
+    },
+    {
+      label: 'Fixtures',
+      icon: <CalendarDays size={24} />,
+      to: '/fixtures',
       action: null
     },
     {
@@ -46,9 +47,11 @@ export const Navigation = ({ onOpenLeaderboard }: Props) => {
     <>
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-bg-secondary/90 backdrop-blur-xl border-t border-[rgba(0,217,255,0.18)] z-50 pb-safe">
-        <div className="flex items-center justify-around h-16 px-2">
+        <div className="flex items-center justify-around h-16 px-2 relative">
           {navItems.map((item, idx) => {
             const isActive = item.to !== '#' && location.pathname === item.to;
+            const isSpecial = (item as any).isSpecial;
+
             return (
               <button
                 key={idx}
@@ -56,23 +59,36 @@ export const Navigation = ({ onOpenLeaderboard }: Props) => {
                   if (item.action) item.action();
                 }}
                 className={cn(
-                  "flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors relative group",
-                  isActive ? "text-cyan-primary" : "text-text-secondary hover:text-white"
+                  "flex flex-col items-center justify-center w-full space-y-1 transition-colors relative group h-full",
+                  isActive && !isSpecial ? "text-cyan-primary" : "text-text-secondary hover:text-white"
                 )}
               >
-                {item.to !== '#' ? (
-                  <NavLink to={item.to} className="flex flex-col items-center w-full">
-                    {item.icon}
-                    <span className="text-[10px] font-bold uppercase tracking-wider mt-1">{item.label}</span>
+                {isSpecial ? (
+                  <NavLink to={item.to} className="flex flex-col items-center justify-center absolute -top-5 left-1/2 -translate-x-1/2">
+                    <div className={cn(
+                      "w-14 h-14 rounded-full flex flex-col items-center justify-center text-navy-900 shadow-[0_0_15px_rgba(0,217,255,0.4)] transition-transform",
+                      isActive ? "bg-white scale-110" : "bg-cyan-primary hover:bg-white"
+                    )}>
+                      {item.icon}
+                    </div>
                   </NavLink>
                 ) : (
-                  <div className="flex flex-col items-center w-full">
-                    {item.icon}
-                    <span className="text-[10px] font-bold uppercase tracking-wider mt-1">{item.label}</span>
-                  </div>
-                )}
-                {isActive && (
-                  <div className="absolute top-0 w-8 h-1 bg-cyan-primary rounded-b-full shadow-[0_0_10px_rgba(0,217,255,0.8)]" />
+                  <>
+                    {item.to !== '#' ? (
+                      <NavLink to={item.to} className="flex flex-col items-center w-full">
+                        {item.icon}
+                        <span className="text-[10px] font-bold uppercase tracking-wider mt-1">{item.label}</span>
+                      </NavLink>
+                    ) : (
+                      <div className="flex flex-col items-center w-full">
+                        {item.icon}
+                        <span className="text-[10px] font-bold uppercase tracking-wider mt-1">{item.label}</span>
+                      </div>
+                    )}
+                    {isActive && (
+                      <div className="absolute top-0 w-8 h-1 bg-cyan-primary rounded-b-full shadow-[0_0_10px_rgba(0,217,255,0.8)]" />
+                    )}
+                  </>
                 )}
               </button>
             );

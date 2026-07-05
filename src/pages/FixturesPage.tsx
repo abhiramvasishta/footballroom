@@ -126,48 +126,46 @@ export default function FixturesPage() {
                   }
 
                   return (
-                  <div key={m.id} className="glass-card flex flex-col md:flex-row items-center justify-between p-4 border-[rgba(0,217,255,0.1)] hover:bg-white/5 transition-colors gap-4">
+                  <div key={m.id} className="glass-card flex items-center justify-between p-2 md:p-4 border-[rgba(0,217,255,0.1)] hover:bg-white/5 transition-colors gap-2 md:gap-4">
                     
-                    <div className="flex items-center gap-2 w-full md:w-auto md:flex-1 justify-between md:justify-end text-right">
-                       <span className="font-bold text-white md:hidden">Home</span>
-                       <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1 md:gap-2 flex-1 justify-end text-right">
+                       <div className="flex items-center gap-1.5 md:gap-3">
                          {m.penalties && m.homePenaltyScore !== undefined && (
-                           <span className="text-xs text-cyan-primary/70 font-bold hidden md:inline-block">({m.homePenaltyScore})</span>
+                           <span className="text-[10px] md:text-xs text-cyan-primary/70 font-bold hidden md:inline-block">({m.homePenaltyScore})</span>
                          )}
-                         <span className="font-bold text-white text-lg">{homeTeam ? homeTeam.id : 'TBD'}</span>
+                         <span className="font-bold text-white text-xs md:text-lg">{homeTeam ? homeTeam.id : 'TBD'}</span>
                          {homeTeam ? (
-                           <img src={homeTeam.flagUrl} alt={homeTeam.id} className="w-6 h-6 rounded-full object-cover" />
+                           <img src={homeTeam.flagUrl} alt={homeTeam.id} className="w-4 h-4 md:w-6 md:h-6 rounded-full object-cover" />
                          ) : (
-                           <div className="w-6 h-6 rounded-full bg-white/10" />
+                           <div className="w-4 h-4 md:w-6 md:h-6 rounded-full bg-white/10" />
                          )}
                        </div>
                     </div>
 
-                    <div className="flex flex-col items-center justify-center w-full md:w-32 px-4 shrink-0 bg-bg-tertiary rounded-lg py-2 border border-white/5">
-                      <div className="text-[10px] text-text-secondary uppercase tracking-widest mb-1">
+                    <div className="flex flex-col items-center justify-center px-2 md:px-4 shrink-0 bg-bg-tertiary rounded-lg py-1 md:py-2 border border-white/5 min-w-[60px] md:min-w-[128px]">
+                      <div className="text-[8px] md:text-[10px] text-text-secondary uppercase tracking-widest mb-0.5 md:mb-1 whitespace-nowrap">
                         {m.date ? new Date(m.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'TBD'}
                       </div>
-                      <div className="font-bold text-xl text-cyan-primary flex items-center gap-2">
-                         <span className="md:hidden text-xs text-cyan-primary/70">{m.penalties ? `(${m.homePenaltyScore})` : ''}</span>
+                      <div className="font-bold text-sm md:text-xl text-cyan-primary flex items-center gap-1 md:gap-2">
+                         <span className="md:hidden text-[9px] text-cyan-primary/70">{m.penalties ? `(${m.homePenaltyScore})` : ''}</span>
                          <span>{m.completed ? `${m.homeScore} - ${m.awayScore}` : 'vs'}</span>
-                         <span className="md:hidden text-xs text-cyan-primary/70">{m.penalties ? `(${m.awayPenaltyScore})` : ''}</span>
+                         <span className="md:hidden text-[9px] text-cyan-primary/70">{m.penalties ? `(${m.awayPenaltyScore})` : ''}</span>
                       </div>
-                      <div className="text-[10px] text-text-secondary uppercase mt-1">
+                      <div className="text-[8px] md:text-[10px] text-text-secondary uppercase mt-0.5 md:mt-1">
                         {statusText}
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 w-full md:w-auto md:flex-1 justify-between md:justify-start">
-                       <span className="font-bold text-white md:hidden">Away</span>
-                       <div className="flex items-center gap-3 flex-row-reverse md:flex-row">
+                    <div className="flex items-center gap-1 md:gap-2 flex-1 justify-start">
+                       <div className="flex items-center gap-1.5 md:gap-3 flex-row">
                          {awayTeam ? (
-                           <img src={awayTeam.flagUrl} alt={awayTeam.id} className="w-6 h-6 rounded-full object-cover" />
+                           <img src={awayTeam.flagUrl} alt={awayTeam.id} className="w-4 h-4 md:w-6 md:h-6 rounded-full object-cover" />
                          ) : (
-                           <div className="w-6 h-6 rounded-full bg-white/10" />
+                           <div className="w-4 h-4 md:w-6 md:h-6 rounded-full bg-white/10" />
                          )}
-                         <span className="font-bold text-white text-lg">{awayTeam ? awayTeam.id : 'TBD'}</span>
+                         <span className="font-bold text-white text-xs md:text-lg">{awayTeam ? awayTeam.id : 'TBD'}</span>
                          {m.penalties && m.awayPenaltyScore !== undefined && (
-                           <span className="text-xs text-cyan-primary/70 font-bold hidden md:inline-block">({m.awayPenaltyScore})</span>
+                           <span className="text-[10px] md:text-xs text-cyan-primary/70 font-bold hidden md:inline-block">({m.awayPenaltyScore})</span>
                          )}
                        </div>
                     </div>
@@ -270,7 +268,7 @@ export default function FixturesPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 p-1 bg-bg-secondary/50 rounded-xl border border-[rgba(0,217,255,0.1)] w-full max-w-md mx-auto">
+        <div className="flex gap-2 p-1 bg-bg-secondary/90 backdrop-blur-md rounded-xl border border-[rgba(0,217,255,0.1)] w-full max-w-md mx-auto sticky top-4 z-20 shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
           <button
             onClick={() => setActiveTab('standings')}
             className={`flex-1 py-3 px-4 rounded-lg flex items-center justify-center gap-2 text-sm font-bold transition-all duration-300 ${
