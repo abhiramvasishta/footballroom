@@ -351,18 +351,21 @@ export default function BracketPage() {
     // transform: x !== undefined && y !== undefined ? (isMobile && !isCenter ? 'translate(-50%, 0)' : 'translate(-50%, -50%)') : 'none'
     // I should fix MatchBox transform for isCenter on mobile!
 
-    if (finalMatch) drawnMatches.push(<MatchBox key="final" match={finalMatch} x={finalX} y={finalTopY} isCenter={true} isMobile={true} />);
+    if (finalMatch) {
+      drawnMatches.push(<MatchBox key="final" match={finalMatch} x={finalX} y={finalTopY} isCenter={true} isMobile={true} />);
+      drawnMatches.push(
+        <div key="trophy" className="absolute z-20 flex flex-col items-center opacity-80" style={{ left: finalX - 95, top: finalTopY + 45, transform: 'translate(-50%, -50%)' }}>
+           <Trophy className="w-12 h-12 text-[#e5b969] drop-shadow-[0_0_15px_rgba(229,185,105,0.4)]" strokeWidth={1.5} />
+           <span className="text-[#e5b969] text-[9px] font-black tracking-[0.25em] mt-2 uppercase">Champion</span>
+        </div>
+      );
+    }
     if (thirdMatch) drawnMatches.push(<MatchBox key="third" match={thirdMatch} x={finalX + 160} y={finalTopY} isCenter={true} isMobile={true} />);
 
     return (
       <div className="xl:hidden w-full overflow-auto custom-scrollbar pb-8 pt-10 px-4">
         <div className="w-[800px] h-[1296px] relative bg-[#131418] rounded-[24px] overflow-hidden shadow-2xl flex-shrink-0">
           
-          <div className="absolute top-[480px] left-1/2 -translate-x-1/2 flex flex-col items-center opacity-80 z-20">
-             <Trophy className="w-16 h-16 text-[#e5b969] drop-shadow-[0_0_15px_rgba(229,185,105,0.4)]" strokeWidth={1.5} />
-             <span className="text-[#e5b969] text-[11px] font-black tracking-[0.25em] mt-3 uppercase">Champion</span>
-          </div>
-
           <svg className="absolute top-0 left-0 w-full h-full pointer-events-none">
             {svgLines}
           </svg>
