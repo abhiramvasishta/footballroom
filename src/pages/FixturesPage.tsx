@@ -268,29 +268,31 @@ export default function FixturesPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 p-1 bg-bg-secondary/90 backdrop-blur-md rounded-xl border border-[rgba(0,217,255,0.1)] w-full max-w-md mx-auto sticky top-4 z-20 shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
-          <button
-            onClick={() => setActiveTab('standings')}
-            className={`flex-1 py-3 px-4 rounded-lg flex items-center justify-center gap-2 text-sm font-bold transition-all duration-300 ${
-              activeTab === 'standings'
-                ? 'bg-cyan-primary text-navy-900 shadow-[0_0_15px_rgba(0,217,255,0.3)]'
-                : 'text-text-secondary hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <TableProperties size={18} />
-            <span>Standings</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('matches')}
-            className={`flex-1 py-3 px-4 rounded-lg flex items-center justify-center gap-2 text-sm font-bold transition-all duration-300 ${
-              activeTab === 'matches'
-                ? 'bg-cyan-primary text-navy-900 shadow-[0_0_15px_rgba(0,217,255,0.3)]'
-                : 'text-text-secondary hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <Calendar size={18} />
-            <span>Matches</span>
-          </button>
+        <div className="sticky top-0 z-40 w-full bg-bg-primary/90 backdrop-blur-md border-b border-[rgba(0,217,255,0.1)] px-4 py-3">
+          <div className="flex gap-2 p-1 bg-bg-secondary/90 rounded-xl border border-[rgba(0,217,255,0.2)] w-full max-w-md mx-auto shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
+            <button
+              onClick={() => setActiveTab('standings')}
+              className={`flex-1 py-2 px-4 rounded-lg flex items-center justify-center gap-2 text-sm font-bold transition-all duration-300 ${
+                activeTab === 'standings'
+                  ? 'bg-cyan-primary text-navy-900 shadow-[0_0_15px_rgba(0,217,255,0.3)]'
+                  : 'text-text-secondary hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <TableProperties size={18} />
+              <span>Standings</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('matches')}
+              className={`flex-1 py-2 px-4 rounded-lg flex items-center justify-center gap-2 text-sm font-bold transition-all duration-300 ${
+                activeTab === 'matches'
+                  ? 'bg-cyan-primary text-navy-900 shadow-[0_0_15px_rgba(0,217,255,0.3)]'
+                  : 'text-text-secondary hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Calendar size={18} />
+              <span>Matches</span>
+            </button>
+          </div>
         </div>
 
         {/* Content */}

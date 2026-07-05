@@ -73,33 +73,36 @@ export default function HighlightsPage() {
   }
 
   return (
-    <AnimatedTransition className="min-h-screen bg-bg-primary p-4 md:p-8 pt-12 pb-24">
-      <div className="max-w-4xl mx-auto flex flex-col gap-6">
-        
-        <div className="mb-4">
-          <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-wide">Match Highlights</h1>
-          <p className="text-text-secondary uppercase tracking-widest text-xs">Relive the best moments of the tournament.</p>
-        </div>
-
-        {matches.length > 0 && (
-          <div className="flex gap-2 overflow-x-auto pb-4 custom-scrollbar mb-2 border-b border-[rgba(0,217,255,0.1)]">
+    <AnimatedTransition className="min-h-screen bg-bg-primary pb-24">
+      {/* Sticky Round Selection */}
+      {matches.length > 0 && (
+        <div className="sticky top-0 z-40 w-full bg-bg-primary/90 backdrop-blur-md border-b border-[rgba(0,217,255,0.1)] px-4 py-3">
+          <div className="flex gap-2 p-1 bg-bg-secondary/90 rounded-xl border border-[rgba(0,217,255,0.2)] w-full max-w-3xl mx-auto shadow-[0_4px_20px_rgba(0,0,0,0.4)] overflow-x-auto no-scrollbar">
             {['Round of 32', 'Round of 16', 'Quarter Finals', 'Semi Finals', 'Third Place', 'Final']
               .filter(r => matches.some(m => m.round === r))
               .map(round => (
               <button
                 key={round}
                 onClick={() => setSelectedRound(round)}
-                className={`px-4 py-2 sm:py-2.5 rounded-full whitespace-nowrap text-sm sm:text-base font-medium transition-colors ${
+                className={`flex-none py-2 px-4 rounded-lg flex items-center justify-center gap-2 text-sm font-bold transition-all duration-300 ${
                   selectedRound === round 
-                    ? 'bg-cyan-primary text-navy-900 shadow-[0_0_15px_rgba(0,217,255,0.4)] font-bold' 
-                    : 'bg-white/5 text-text-secondary hover:bg-white/10 hover:text-white border border-white/5'
+                    ? 'bg-cyan-primary text-navy-900 shadow-[0_0_15px_rgba(0,217,255,0.3)]' 
+                    : 'text-text-secondary hover:text-white hover:bg-white/5'
                 }`}
               >
                 {round}
               </button>
             ))}
           </div>
-        )}
+        </div>
+      )}
+
+      <div className="max-w-4xl mx-auto flex flex-col gap-6 p-4 md:p-8 pt-6">
+        
+        <div className="mb-4">
+          <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-wide">Match Highlights</h1>
+          <p className="text-text-secondary uppercase tracking-widest text-xs">Relive the best moments of the tournament.</p>
+        </div>
 
         {matches.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-12 glass-card rounded-2xl border border-[rgba(0,217,255,0.18)] text-center h-64">
