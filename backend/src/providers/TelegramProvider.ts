@@ -30,12 +30,16 @@ export class TelegramProvider implements IStorageProvider {
     console.log('[TelegramProvider] Connected to MTProto');
   }
 
-  // Parse videoId: look up in Firestore, fallback to legacy "channelId_msgId"
   private async resolveLocation(videoId: string): Promise<Api.TypeInputFileLocation | null> {
+    console.log(`[resolveLocation] Requested:`, videoId);
     try {
       const meta = await getVideoMetadata(videoId);
+      console.log(`[resolveLocation] Metadata:`, meta);
       if (meta && meta.telegramDocumentId && meta.telegramAccessHash && meta.telegramFileReference) {
-        // Fast path: Construct location directly from secure Firestore metadata
+        console.log(`telegramDocumentId: ${meta.telegramDocumentId}`);
+        console.log(`telegramAccessHash: ${meta.telegramAccessHash}`);
+        console.log(`telegramFileReference length: ${meta.telegramFileReference.length}`);
+        console.log(`Creating InputDocumentFileLocation...`);
         return new Api.InputDocumentFileLocation({
           id: BigInt(meta.telegramDocumentId) as any,
           accessHash: BigInt(meta.telegramAccessHash) as any,
@@ -78,8 +82,13 @@ export class TelegramProvider implements IStorageProvider {
 
   // Get metadata directly from Firestore
   async getMetadata(videoId: string): Promise<FileMetadata> {
+    console.log(`[getMetadata] Requested videoId:`, videoId);
     try {
       const meta = await getVideoMetadata(videoId);
+      console.log(`[getMetadata] Firestore returned:`, meta);
+      if (!meta) {
+        console.error(`No Firestore metadata found for`, videoId);
+      }
       if (meta) {
         return {
           size: meta.size || 100000000,
@@ -159,6 +168,15 @@ export class TelegramProvider implements IStorageProvider {
     const videoId = `video_${crypto.randomBytes(4).toString('hex')}`;
     const thumbnailPath = hasThumbnail ? `/api/telegram/thumbnail/${doc.id.toString()}` : undefined;
 
+    console.log("Saving metadata to Firestore");
+    console.log({
+        videoId,
+        telegramDocumentId: doc.id.toString(),
+        telegramAccessHash: doc.accessHash.toString(),
+        telegramMessageId: msgId,
+        telegramChannelId: channelIdRaw
+    });
+
     // Securely store Telegram metadata in Firestore
     await saveVideoMetadata({
       videoId,
@@ -176,6 +194,7 @@ export class TelegramProvider implements IStorageProvider {
       createdAt: new Date().toISOString(),
       provider: 'telegram'
     });
+    console.log("Firestore save completed successfully");
 
     // Return ONLY safe metadata to the frontend
     return {

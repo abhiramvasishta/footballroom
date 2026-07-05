@@ -2,6 +2,7 @@ import 'dotenv/config';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import { TelegramProvider } from './providers/TelegramProvider';
+import { getVideoMetadata } from './db/firestore';
 
 const fastify = Fastify({ logger: true, trustProxy: true });
 
@@ -17,30 +18,32 @@ fastify.get('/api/stream/:videoId', async (request, reply) => {
   const { videoId } = request.params as { videoId: string };
   const range = request.headers.range;
 
-  fastify.log.info(`[Stream] Request for videoId: ${videoId}, Range: ${range || 'none'}`);
+  fastify.log.info(`[Stream] Incoming request for videoId: ${videoId}, Range: ${range || 'none'}`);
 
   try {
     const metadata = await telegramProvider.getMetadata(videoId);
+    fastify.log.info(`[Stream] Resolved videoId: ${videoId} with metadata.`);
     const videoSize = metadata.size;
 
     if (!range) {
-      // If no range header, respond with 200 OK and stream the entire video
-      // This is crucial for Safari and some players to check `Accept-Ranges: bytes`
       const stream = await telegramProvider.getStream(videoId, 0, videoSize - 1);
-      const response = reply.status(200).headers({
+      const headers = {
         'Accept-Ranges': 'bytes',
         'Content-Length': videoSize,
         'Content-Type': metadata.mimeType,
-      }).send(stream);
+      };
+      
+      console.log(`[Stream] Before reply.send(stream) [No Range]. Headers:`, headers);
+      const response = reply.status(200).headers(headers).send(stream);
       
       request.raw.on('close', () => {
+        console.log(`[Stream] Request closed by client (No Range)`);
         if (!stream.destroyed) stream.destroy();
       });
       return response;
     }
 
-    // Parse Range
-    const CHUNK_SIZE = 1024 * 1024 * 4; // Max 4MB per request to avoid huge memory spikes per connection
+    const CHUNK_SIZE = 1024 * 1024 * 4;
     const parts = range.replace(/bytes=/, "").split("-");
     const start = parseInt(parts[0], 10);
     const end = parts[1] ? parseInt(parts[1], 10) : Math.min(start + CHUNK_SIZE - 1, videoSize - 1);
@@ -64,24 +67,25 @@ fastify.get('/api/stream/:videoId', async (request, reply) => {
       'Content-Type': metadata.mimeType,
     };
 
-    console.log(`[Stream] Before reply.send(stream). Headers:`, headers);
+    console.log(`[Stream] Before reply.send(stream) [Partial]. Headers:`, headers);
 
-    // Handle client disconnects to abort streaming
     request.raw.on('close', () => {
-      console.log(`[Stream] Client disconnected early. Writable ended: ${reply.raw.writableEnded}, Stream destroyed: ${stream.destroyed}`);
+      console.log(`[Stream] Request closed by client (Partial). Writable ended: ${reply.raw.writableEnded}, Stream destroyed: ${stream.destroyed}`);
       if (!stream.destroyed) {
         stream.destroy();
       }
     });
 
-    // In async route handlers, return the reply when sending a stream to prevent premature resolution
     const response = reply.status(206).headers(headers).send(stream);
-    console.log(`[Stream] After reply.send(stream). Response type: typeof stream`);
+    console.log(`[Stream] After reply.send(stream) invoked`);
     
     return response;
 
-  } catch (error) {
-    fastify.log.error(error);
+  } catch (error: any) {
+    console.error(`[Stream] Error processing request for videoId ${videoId}:`, error);
+    if (error.stack) {
+      console.error(error.stack);
+    }
     reply.status(500).send('Internal Server Error');
   }
 });
@@ -94,6 +98,13 @@ fastify.post('/api/telegram/resolve', async (request, reply) => {
   }
   try {
     const result = await telegramProvider.resolveLink(link);
+    console.log(`Created videoId: ${result.videoId}`);
+    const readBack = await getVideoMetadata(result.videoId);
+    if (!readBack) {
+      console.error(`ERROR: Read-back failed! Firestore did NOT return the document for ${result.videoId}`);
+    } else {
+      console.log(`SUCCESS: Read-back verified for ${result.videoId}`);
+    }
     reply.send(result);
   } catch (error: any) {
     fastify.log.error(error);
@@ -113,6 +124,7 @@ fastify.get('/api/telegram/thumbnail/:docId', async (request, reply) => {
 
 const start = async () => {
   try {
+    console.log("Backend Firebase Project:", process.env.FIREBASE_PROJECT_ID);
     await telegramProvider.init();
     const port = parseInt(process.env.PORT || '3001', 10);
     await fastify.listen({ port, host: '0.0.0.0' });
