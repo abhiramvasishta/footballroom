@@ -7,8 +7,9 @@ import { AnimatedTransition } from '../components/AnimatedTransition';
 const ROUND_ORDER = [
   'Round of 32',
   'Round of 16',
-  'Quarter-final',
-  'Semi-final',
+  'Quarter Finals',
+  'Semi Finals',
+  'Third Place',
   'Final'
 ];
 
@@ -45,7 +46,7 @@ export default function BracketPage() {
 
   // A helper function to get the participating team for a match node,
   // resolving through previous matches if the actual team isn't set yet.
-  const getTeamForMatch = (teamId: string | null, matchId: string, isHome: boolean): Team | null => {
+  const getTeam = (teamId: string | null, matchId: string, isHome: boolean, roundName?: string) => {
     if (teamId && teamMap.has(teamId)) return teamMap.get(teamId)!;
 
     // Look for a previous match that feeds into this slot
@@ -54,13 +55,21 @@ export default function BracketPage() {
       return teamMap.get(prevMatch.winnerTeamId) || null;
     }
 
+    if (roundName === 'Third Place') {
+      const loserPrevMatch = matches.find((m) => m.loserNextMatchId === matchId && m.loserNextSlot === (isHome ? 'home' : 'away'));
+      if (loserPrevMatch && loserPrevMatch.winnerTeamId) {
+        const loserId = loserPrevMatch.winnerTeamId === loserPrevMatch.homeTeamId ? loserPrevMatch.awayTeamId : loserPrevMatch.homeTeamId;
+        if (loserId) return teamMap.get(loserId) || null;
+      }
+    }
+
     return null;
   };
 
   // Render a single Match block
   const MatchBox = ({ match }: { match: Match }) => {
-    const homeTeam = getTeamForMatch(match.homeTeamId, match.id, true);
-    const awayTeam = getTeamForMatch(match.awayTeamId, match.id, false);
+    const homeTeam = getTeam(match.homeTeamId, match.id, true, match.round);
+    const awayTeam = getTeam(match.awayTeamId, match.id, false, match.round);
 
     return (
       <div className="glass-card flex flex-col w-48 rounded-lg overflow-hidden border-[rgba(0,217,255,0.1)] text-sm shadow-[0_4px_15px_rgba(0,0,0,0.3)] shrink-0 transition-transform hover:scale-105">
@@ -112,8 +121,9 @@ export default function BracketPage() {
 
     const r32 = getMatchesForRound('Round of 32');
     const r16 = getMatchesForRound('Round of 16');
-    const qf = getMatchesForRound('Quarter-final');
-    const sf = getMatchesForRound('Semi-final');
+    const qf = getMatchesForRound('Quarter Finals');
+    const sf = getMatchesForRound('Semi Finals');
+    const third = getMatchesForRound('Third Place');
     const final = matches.find(m => m.round === 'Final');
 
     // Split Left and Right for dual-sided bracket
@@ -144,10 +154,17 @@ export default function BracketPage() {
           <Column title="Quarter Final" mList={qfL} />
           <Column title="Semi Final" mList={sfL} />
 
-          {/* Center (Final) */}
+          {/* Center (Final & Third Place) */}
           <div className="flex flex-col justify-center items-center gap-12 relative z-10 px-8">
             <h2 className="text-2xl font-display font-bold text-white mb-[-2rem] text-shadow-glow">FINAL</h2>
             {final && <MatchBox match={final} />}
+            
+            {third && third.length > 0 && (
+              <div className="mt-8 flex flex-col items-center gap-4">
+                <h3 className="text-cyan-primary font-bold text-xs uppercase tracking-widest">Third Place</h3>
+                <MatchBox match={third[0]} />
+              </div>
+            )}
           </div>
 
           {/* Right Side */}

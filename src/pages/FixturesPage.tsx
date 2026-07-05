@@ -9,8 +9,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 const ROUND_ORDER = [
   'Round of 32',
   'Round of 16',
-  'Quarter-final',
-  'Semi-final',
+  'Quarter Finals',
+  'Semi Finals',
+  'Third Place',
   'Final'
 ];
 
@@ -81,9 +82,43 @@ export default function FixturesPage() {
               
               <div className="flex flex-col gap-3">
                 {roundMatches.map(m => {
-                  const homeTeam = teams.find(t => t.id === m.homeTeamId);
-                  const awayTeam = teams.find(t => t.id === m.awayTeamId);
+                  let homeTeam = teams.find(t => t.id === m.homeTeamId);
+                  let awayTeam = teams.find(t => t.id === m.awayTeamId);
                   
+                  // If homeTeam is missing, see if a previous match feeds into this slot and has a winner
+                  if (!homeTeam) {
+                    const prevMatchHome = matches.find((prev) => prev.nextMatchId === m.id && prev.nextSlot === 'home');
+                    if (prevMatchHome && prevMatchHome.winnerTeamId) {
+                      homeTeam = teams.find(t => t.id === prevMatchHome.winnerTeamId);
+                    }
+                  }
+
+                  // If awayTeam is missing, see if a previous match feeds into this slot and has a winner
+                  if (!awayTeam) {
+                    const prevMatchAway = matches.find((prev) => prev.nextMatchId === m.id && prev.nextSlot === 'away');
+                    if (prevMatchAway && prevMatchAway.winnerTeamId) {
+                      awayTeam = teams.find(t => t.id === prevMatchAway.winnerTeamId);
+                    }
+                  }
+
+                  // Fallback to third-place feeds (loserNextMatchId)
+                  if (!homeTeam && m.round === 'Third Place') {
+                    const prevMatchHome = matches.find((prev) => prev.loserNextMatchId === m.id && prev.loserNextSlot === 'home');
+                    if (prevMatchHome && prevMatchHome.winnerTeamId) {
+                      // The loser is the one who didn't win
+                      const loserId = prevMatchHome.winnerTeamId === prevMatchHome.homeTeamId ? prevMatchHome.awayTeamId : prevMatchHome.homeTeamId;
+                      homeTeam = teams.find(t => t.id === loserId);
+                    }
+                  }
+
+                  if (!awayTeam && m.round === 'Third Place') {
+                    const prevMatchAway = matches.find((prev) => prev.loserNextMatchId === m.id && prev.loserNextSlot === 'away');
+                    if (prevMatchAway && prevMatchAway.winnerTeamId) {
+                      const loserId = prevMatchAway.winnerTeamId === prevMatchAway.homeTeamId ? prevMatchAway.awayTeamId : prevMatchAway.homeTeamId;
+                      awayTeam = teams.find(t => t.id === loserId);
+                    }
+                  }
+
                   return (
                   <div key={m.id} className="glass-card flex flex-col md:flex-row items-center justify-between p-4 border-[rgba(0,217,255,0.1)] hover:bg-white/5 transition-colors gap-4">
                     
