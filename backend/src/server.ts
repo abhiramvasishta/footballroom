@@ -2,14 +2,14 @@ import 'dotenv/config';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import { TelegramProvider } from './providers/TelegramProvider';
-import { FifaProvider } from './providers/FifaProvider';
+import { EspnProvider } from './providers/EspnProvider';
 import { getVideoMetadata } from './db/firestore';
 
 const fastify = Fastify({ logger: true, trustProxy: true });
 
 // Initialize provider
 const telegramProvider = new TelegramProvider();
-const fifaProvider = new FifaProvider();
+const fifaProvider = new EspnProvider();
 
 fastify.register(cors, {
   origin: '*', // Allow all origins for the SmartVideoPlayer
