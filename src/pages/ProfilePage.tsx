@@ -300,17 +300,6 @@ export default function DashboardPage() {
             )}
           </div>
 
-          <div className="flex gap-3 mb-2">
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-              className="flex items-center gap-2 text-sm text-cyan-primary hover:text-white transition-colors bg-cyan-primary/10 hover:bg-cyan-primary/20 px-4 py-2 rounded-lg font-bold"
-            >
-              <Camera size={16} />
-              Update Photo
-            </button>
-          </div>
-
           <AnimatePresence>
             {error && (
               <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="text-red-500 text-sm mt-4 text-center">
