@@ -6,6 +6,7 @@ import { cache } from '../cache/ChunkCache';
 import { Api } from 'telegram';
 import { saveVideoMetadata, getVideoMetadata } from '../db/firestore';
 import * as crypto from 'crypto';
+import * as os from 'os';
 
 export class TelegramProvider implements IStorageProvider {
   private client: TelegramClient;
@@ -26,8 +27,20 @@ export class TelegramProvider implements IStorageProvider {
   }
 
   async init(): Promise<void> {
+    console.log(`[TelegramProvider] Before client.connect()`);
+    console.log(`PID: ${process.pid}`);
+    console.log(`Hostname: ${os.hostname()}`);
+    console.log(`Render Instance ID: ${process.env.RENDER_INSTANCE_ID || 'N/A'}`);
+    console.log(`Timestamp: ${new Date().toISOString()}`);
+    
     await this.client.connect();
-    console.log('[TelegramProvider] Connected to MTProto');
+    console.log('[TelegramProvider] Connected successfully');
+  }
+
+  async disconnect(): Promise<void> {
+    if (this.client) {
+      await this.client.disconnect();
+    }
   }
 
   private async resolveLocation(videoId: string): Promise<Api.TypeInputFileLocation | null> {

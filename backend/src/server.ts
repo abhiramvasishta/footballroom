@@ -139,6 +139,21 @@ const start = async () => {
   try {
     console.log("Backend Firebase Project:", process.env.FIREBASE_PROJECT_ID);
     await telegramProvider.init();
+    
+    process.on("SIGTERM", async () => {
+      console.log("SIGTERM");
+      console.log("Disconnecting Telegram...");
+      await telegramProvider.disconnect();
+      process.exit(0);
+    });
+
+    process.on("SIGINT", async () => {
+      console.log("SIGINT");
+      console.log("Disconnecting Telegram...");
+      await telegramProvider.disconnect();
+      process.exit(0);
+    });
+
     const port = parseInt(process.env.PORT || '3001', 10);
     await fastify.listen({ port, host: '0.0.0.0' });
     console.log(`Server is running on http://0.0.0.0:${port}`);
