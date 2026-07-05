@@ -33,7 +33,7 @@ export const MatchEventsTimeline = ({ match }: Props) => {
         minute: parseMinute(g.minute),
         displayMinute: g.minute,
         type: g.isOwnGoal ? 'own_goal' : (g.isPenalty ? 'penalty' : 'goal'),
-        player: g.playerName,
+        player: g.player,
         isHomeTeam: g.isHomeTeam,
       });
     });

@@ -1,10 +1,9 @@
-import { X } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useEffect } from 'react';
+import { X, BarChart3, Users } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import type { Match, Team } from '../types';
 import { SmartVideoPlayer } from './SmartVideoPlayer';
 import { useMatchDetails } from '../hooks/useMatchDetails';
-import { MatchInfoPanel } from './player/match-info/MatchInfoPanel';
 import { MatchStatistics } from './player/match-info/MatchStatistics';
 import { MatchEventsTimeline } from './player/match-info/MatchEventsTimeline';
 import { MatchLineups } from './player/match-info/MatchLineups';
@@ -18,6 +17,7 @@ interface Props {
 
 export const VideoPlayerModal = ({ match, homeTeam, awayTeam, onClose }: Props) => {
   const { data: detailedMatch, loading, error } = useMatchDetails(match, homeTeam, awayTeam);
+  const [activeTab, setActiveTab] = useState<'statistics' | 'lineups'>('statistics');
 
   // Scroll Lock for iOS and Android
   useEffect(() => {
@@ -103,23 +103,61 @@ export const VideoPlayerModal = ({ match, homeTeam, awayTeam, onClose }: Props) 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="flex flex-col gap-6 lg:gap-8"
+            className="flex flex-col gap-6"
           >
-            {/* Match Info Panel always full width */}
-            <MatchInfoPanel match={detailedMatch} />
+            {/* Tabs */}
+            <div className="flex gap-2 p-1 bg-bg-secondary/50 rounded-xl border border-[rgba(0,217,255,0.1)] w-full max-w-md mx-auto">
+              <button
+                onClick={() => setActiveTab('statistics')}
+                className={`flex-1 py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 text-sm font-bold transition-all duration-300 ${
+                  activeTab === 'statistics'
+                    ? 'bg-cyan-primary text-navy-900 shadow-[0_0_15px_rgba(0,217,255,0.3)]'
+                    : 'text-text-secondary hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <BarChart3 size={16} />
+                <span>Statistics</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('lineups')}
+                className={`flex-1 py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 text-sm font-bold transition-all duration-300 ${
+                  activeTab === 'lineups'
+                    ? 'bg-cyan-primary text-navy-900 shadow-[0_0_15px_rgba(0,217,255,0.3)]'
+                    : 'text-text-secondary hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <Users size={16} />
+                <span>Lineups</span>
+              </button>
+            </div>
 
-            {/* Desktop Two-Column Layout / Mobile Stack */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-              
-              <div className="lg:col-span-7 flex flex-col gap-6 lg:gap-8">
-                <MatchStatistics match={detailedMatch} />
-                <MatchEventsTimeline match={detailedMatch} />
-              </div>
-
-              <div className="lg:col-span-5">
-                <MatchLineups match={detailedMatch} />
-              </div>
-
+            {/* Tab Content */}
+            <div className="w-full relative mt-2">
+              <AnimatePresence mode="wait">
+                {activeTab === 'statistics' ? (
+                  <motion.div
+                    key="stats"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex flex-col gap-6 lg:gap-8"
+                  >
+                    <MatchStatistics match={detailedMatch} />
+                    <MatchEventsTimeline match={detailedMatch} />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="lineups"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <MatchLineups match={detailedMatch} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </motion.div>
         )}
