@@ -215,36 +215,36 @@ export default function FixturesPage() {
               <div className="bg-cyan-primary/10 border-b border-[rgba(0,217,255,0.1)] px-4 py-3">
                 <h3 className="font-display font-bold text-cyan-primary">{group.name}</h3>
               </div>
-              <div className="overflow-x-auto custom-scrollbar">
-                <table className="w-full text-sm text-left">
-                  <thead className="text-xs text-text-secondary uppercase bg-bg-tertiary">
+              <div className="w-full">
+                <table className="w-full text-[10px] md:text-sm text-left">
+                  <thead className="text-[9px] md:text-xs text-text-secondary uppercase bg-bg-tertiary">
                     <tr>
-                      <th className="px-4 py-3 w-8">#</th>
-                      <th className="px-4 py-3">Team</th>
-                      <th className="px-4 py-3 text-center">P</th>
-                      <th className="px-4 py-3 text-center">W</th>
-                      <th className="px-4 py-3 text-center">D</th>
-                      <th className="px-4 py-3 text-center">L</th>
-                      <th className="px-4 py-3 text-center">GD</th>
-                      <th className="px-4 py-3 text-center font-bold text-cyan-primary">Pts</th>
+                      <th className="px-1 md:px-4 py-2 w-6 md:w-8 text-center">#</th>
+                      <th className="px-1 md:px-4 py-2">Team</th>
+                      <th className="px-1 md:px-4 py-2 text-center" title="Played">P</th>
+                      <th className="px-1 md:px-4 py-2 text-center" title="Won">W</th>
+                      <th className="px-1 md:px-4 py-2 text-center" title="Drawn">D</th>
+                      <th className="px-1 md:px-4 py-2 text-center" title="Lost">L</th>
+                      <th className="px-1 md:px-4 py-2 text-center" title="Goal Difference">GD</th>
+                      <th className="px-1 md:px-4 py-2 text-center font-bold text-cyan-primary" title="Points">Pts</th>
                     </tr>
                   </thead>
                   <tbody>
                     {group.standings.entries.map((entry: any, idx: number) => (
                       <tr key={entry.team.id} className="border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
-                        <td className="px-4 py-3 text-text-secondary">{idx + 1}</td>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-3">
-                            <img src={entry.team.logos?.[0]?.href} alt={entry.team.name} className="w-6 h-6 rounded-full object-cover" />
-                            <span className="font-bold text-white truncate max-w-[120px]">{entry.team.displayName}</span>
+                        <td className="px-1 md:px-4 py-2 text-center text-text-secondary">{idx + 1}</td>
+                        <td className="px-1 md:px-4 py-2">
+                          <div className="flex items-center gap-1 md:gap-3">
+                            <img src={entry.team.logos?.[0]?.href} alt={entry.team.name} className="w-4 h-4 md:w-6 md:h-6 rounded-full object-cover shrink-0" />
+                            <span className="font-bold text-white truncate max-w-[60px] sm:max-w-[100px] md:max-w-[120px]">{entry.team.displayName}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-center text-text-secondary">{getStat(entry, 'gamesPlayed')}</td>
-                        <td className="px-4 py-3 text-center text-text-secondary">{getStat(entry, 'wins')}</td>
-                        <td className="px-4 py-3 text-center text-text-secondary">{getStat(entry, 'ties')}</td>
-                        <td className="px-4 py-3 text-center text-text-secondary">{getStat(entry, 'losses')}</td>
-                        <td className="px-4 py-3 text-center text-text-secondary">{getStat(entry, 'pointDifferential')}</td>
-                        <td className="px-4 py-3 text-center font-bold text-cyan-primary">{getStat(entry, 'points')}</td>
+                        <td className="px-1 md:px-4 py-2 text-center text-text-secondary">{getStat(entry, 'gamesPlayed')}</td>
+                        <td className="px-1 md:px-4 py-2 text-center text-text-secondary">{getStat(entry, 'wins')}</td>
+                        <td className="px-1 md:px-4 py-2 text-center text-text-secondary">{getStat(entry, 'ties')}</td>
+                        <td className="px-1 md:px-4 py-2 text-center text-text-secondary">{getStat(entry, 'losses')}</td>
+                        <td className="px-1 md:px-4 py-2 text-center text-text-secondary">{getStat(entry, 'pointDifferential')}</td>
+                        <td className="px-1 md:px-4 py-2 text-center font-bold text-cyan-primary">{getStat(entry, 'points')}</td>
                       </tr>
                     ))}
                   </tbody>

@@ -4,15 +4,6 @@ import type { Team, Match } from '../types';
 import { AnimatedTransition } from '../components/AnimatedTransition';
 import { Loader2, Trophy } from 'lucide-react';
 
-const ROUND_ORDER = [
-  'Round of 32',
-  'Round of 16',
-  'Quarter Finals',
-  'Semi Finals',
-  'Third Place',
-  'Final'
-];
-
 export default function BracketPage() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
@@ -227,7 +218,7 @@ export default function BracketPage() {
     if (thirdMatch) drawnMatches.push(<MatchBox key="third" match={thirdMatch} x={X_CENTER} y={finalY + 120} isCenter={true} />);
 
     return (
-      <div className="hidden xl:flex w-full justify-center overflow-x-auto custom-scrollbar pb-8 pt-10 px-4">
+      <div className="w-full flex justify-start xl:justify-center overflow-auto custom-scrollbar pb-8 pt-10 px-4">
         <div className="w-[1296px] h-[800px] relative bg-[#131418] rounded-[24px] overflow-hidden shadow-2xl flex-shrink-0">
           
           <div className="absolute top-[180px] left-1/2 -translate-x-1/2 flex flex-col items-center opacity-80">
@@ -249,34 +240,6 @@ export default function BracketPage() {
     );
   };
 
-  const renderMobileBracket = () => {
-    return (
-      <div className="xl:hidden flex flex-col gap-10 w-full px-4">
-        {ROUND_ORDER.map((roundName) => {
-          const roundMatches = matches.filter(m => m.round === roundName).sort((a, b) => a.id.localeCompare(b.id));
-          if (roundMatches.length === 0) return null;
-
-          return (
-            <div key={roundName} className="flex flex-col gap-4">
-              <div className="flex items-center gap-4">
-                <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-white/10" />
-                <h3 className="text-white font-display font-bold uppercase tracking-widest text-xs opacity-70">
-                  {roundName}
-                </h3>
-                <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-white/10" />
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 justify-items-center">
-                {roundMatches.map(m => (
-                  <MatchBox key={m.id} match={m} isMobile={true} />
-                ))}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
-
   return (
     <AnimatedTransition className="min-h-screen bg-[#05070A] text-text-primary pt-6 pb-24 relative overflow-hidden">
       <div className="max-w-[1400px] mx-auto flex flex-col gap-8 px-0">
@@ -285,7 +248,6 @@ export default function BracketPage() {
         </div>
 
         {renderDesktopBracket()}
-        {renderMobileBracket()}
       </div>
     </AnimatedTransition>
   );

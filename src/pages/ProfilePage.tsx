@@ -198,8 +198,10 @@ export default function ProfilePage() {
             />
           </div>
 
-          <h1 className="text-3xl font-display font-bold text-white mb-2">{userData.name}</h1>
-          <p className="text-text-secondary">Entry ID: {userData.entryId}</p>
+          <h1 className="text-3xl font-display font-bold text-white mb-1">{userData.name}</h1>
+          <div className="bg-cyan-primary/20 px-3 py-1 rounded-full border border-cyan-primary/30 text-cyan-primary text-xs font-bold uppercase tracking-widest mb-2">
+            Official Manager
+          </div>
 
           {currentPhoto && (
             <button
@@ -227,18 +229,20 @@ export default function ProfilePage() {
         </div>
 
         {/* Statistics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="glass-card p-6 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)] group">
-            <span className="text-4xl font-bold font-mono text-white group-hover:text-cyan-primary transition-colors">{userData.score || 0}</span>
-            <span className="text-xs text-text-secondary uppercase tracking-widest font-semibold mt-2">Total Score</span>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          <div className="glass-card p-6 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)] group relative overflow-hidden">
+            <div className="absolute -top-10 -right-10 w-24 h-24 bg-cyan-primary/10 rounded-full blur-xl group-hover:bg-cyan-primary/20 transition-colors" />
+            <span className="text-4xl font-bold font-mono text-white group-hover:text-cyan-primary transition-colors relative z-10">{userData.score || 0}</span>
+            <span className="text-xs text-text-secondary uppercase tracking-widest font-semibold mt-1 relative z-10">Total Score</span>
           </div>
           
-          <div className="glass-card p-6 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)] group">
-            <span className="text-4xl font-bold font-mono text-white group-hover:text-cyan-primary transition-colors">{userData.accuracy || 0}%</span>
-            <span className="text-xs text-text-secondary uppercase tracking-widest font-semibold mt-2">Accuracy</span>
+          <div className="glass-card p-6 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)] group relative overflow-hidden">
+            <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-colors" />
+            <span className="text-4xl font-bold font-mono text-white group-hover:text-blue-400 transition-colors relative z-10">{userData.accuracy || 0}%</span>
+            <span className="text-xs text-text-secondary uppercase tracking-widest font-semibold mt-1 relative z-10">Accuracy</span>
           </div>
           
-          <div className="glass-card p-6 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)] group">
+          <div className="glass-card p-4 md:p-6 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)] group">
             <div className="flex gap-4 items-center">
               <div className="flex flex-col items-center">
                 <span className="text-2xl font-bold font-mono text-status-success">{userData.correctPicks || 0}</span>
@@ -250,19 +254,29 @@ export default function ProfilePage() {
                 <span className="text-[10px] text-text-secondary uppercase mt-1">Lost</span>
               </div>
             </div>
-            <span className="text-xs text-text-secondary uppercase tracking-widest font-semibold mt-3">Predictions</span>
+            
+            <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden mt-2">
+              <div 
+                className="h-full bg-gradient-to-r from-status-success to-status-success" 
+                style={{ width: `${((userData.correctPicks || 0) / Math.max(1, (userData.correctPicks || 0) + (userData.wrongPicks || 0))) * 100}%` }}
+              />
+            </div>
+            <span className="text-[10px] text-text-secondary uppercase tracking-widest font-semibold mt-1">Win Rate</span>
           </div>
 
-          <div className="glass-card p-6 flex flex-col items-center justify-center text-center gap-2 border-[rgba(0,217,255,0.18)] group">
+          <div className="glass-card relative overflow-hidden p-6 flex flex-col items-center justify-center text-center gap-2 border-[#e5b969]/30 group hover:border-[#e5b969]/60 transition-all">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#e5b969]/10 to-transparent pointer-events-none" />
             {championTeam ? (
-              <div className="flex flex-col items-center gap-2">
-                <img src={championTeam.flagUrl} alt={championTeam.id} className="w-10 h-10 object-cover rounded-full" />
-                <span className="font-bold text-white uppercase">{championTeam.id}</span>
+              <div className="flex flex-col items-center gap-2 relative z-10">
+                <div className="w-12 h-12 rounded-full p-1 bg-gradient-to-b from-[#e5b969] to-[#b08d57]">
+                  <img src={championTeam.flagUrl} alt={championTeam.id} className="w-full h-full object-cover rounded-full border-2 border-bg-primary" />
+                </div>
+                <span className="font-bold text-white uppercase tracking-wider">{championTeam.id}</span>
               </div>
             ) : (
-              <span className="text-2xl font-bold text-white">-</span>
+              <span className="text-2xl font-bold text-white relative z-10">-</span>
             )}
-            <span className="text-xs text-text-secondary uppercase tracking-widest font-semibold mt-2">Champion</span>
+            <span className="text-xs text-[#e5b969] uppercase tracking-widest font-black mt-1 relative z-10">Champion</span>
           </div>
         </div>
 
