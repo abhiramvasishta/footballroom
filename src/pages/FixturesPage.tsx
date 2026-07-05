@@ -256,7 +256,7 @@ export default function FixturesPage() {
   };
 
   return (
-    <AnimatedTransition className="min-h-screen bg-bg-primary text-text-primary pt-6 pb-24 relative overflow-x-hidden">
+    <AnimatedTransition className="min-h-screen bg-bg-primary text-text-primary pt-6 pb-24 relative">
       <div className="max-w-[1600px] mx-auto flex flex-col gap-8 px-4 md:px-8">
         
         {/* Header */}

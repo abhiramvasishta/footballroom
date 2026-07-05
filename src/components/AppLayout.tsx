@@ -7,7 +7,7 @@ export const AppLayout = () => {
       <Navigation />
       
       {/* Main Content Area */}
-      <main className="flex-1 md:ml-24 pb-16 md:pb-0 min-h-screen relative overflow-x-hidden">
+      <main className="flex-1 md:ml-24 pb-16 md:pb-0 min-h-screen relative">
         <Outlet />
       </main>
     </div>

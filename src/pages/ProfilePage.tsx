@@ -176,25 +176,27 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-bg-primary text-text-primary pb-24">
       {/* Sticky Tab Navigation */}
-      <div className="sticky top-0 z-40 bg-bg-primary/90 backdrop-blur-md border-b border-[rgba(0,217,255,0.18)]">
-        <div className="max-w-4xl mx-auto flex">
-          <button 
-            onClick={() => setActiveTab('yours')}
-            className={`flex-1 py-4 text-center font-bold text-sm md:text-base uppercase tracking-wider transition-colors border-b-2 ${
-              activeTab === 'yours' ? 'text-cyan-primary border-cyan-primary bg-cyan-primary/5' : 'text-text-secondary border-transparent hover:text-white hover:bg-white/5'
-            }`}
-          >
-            Yours
-          </button>
-          <button 
-            onClick={() => setActiveTab('others')}
-            className={`flex-1 py-4 text-center font-bold text-sm md:text-base uppercase tracking-wider transition-colors border-b-2 ${
-              activeTab === 'others' ? 'text-cyan-primary border-cyan-primary bg-cyan-primary/5' : 'text-text-secondary border-transparent hover:text-white hover:bg-white/5'
-            }`}
-          >
-            Others
-          </button>
-        </div>
+      <div className="flex gap-2 p-1 bg-bg-secondary/90 backdrop-blur-md rounded-xl border border-[rgba(0,217,255,0.1)] w-full max-w-md mx-auto sticky top-4 z-40 shadow-[0_4px_20px_rgba(0,0,0,0.4)] mt-6">
+        <button 
+          onClick={() => setActiveTab('yours')}
+          className={`flex-1 py-3 px-4 rounded-lg flex items-center justify-center gap-2 text-sm font-bold transition-all duration-300 ${
+            activeTab === 'yours' 
+              ? 'bg-cyan-primary text-navy-900 shadow-[0_0_15px_rgba(0,217,255,0.3)]' 
+              : 'text-text-secondary hover:text-white hover:bg-white/5'
+          }`}
+        >
+          Yours
+        </button>
+        <button 
+          onClick={() => setActiveTab('others')}
+          className={`flex-1 py-3 px-4 rounded-lg flex items-center justify-center gap-2 text-sm font-bold transition-all duration-300 ${
+            activeTab === 'others' 
+              ? 'bg-cyan-primary text-navy-900 shadow-[0_0_15px_rgba(0,217,255,0.3)]' 
+              : 'text-text-secondary hover:text-white hover:bg-white/5'
+          }`}
+        >
+          Others
+        </button>
       </div>
 
       <AnimatedTransition className="p-4 md:p-8">

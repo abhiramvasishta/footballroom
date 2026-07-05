@@ -35,13 +35,13 @@ export default function LeaderboardPage() {
         setAllTeams(teams);
         setAllMatches(matches);
         
-        const enhancedUsers: LeaderboardEntry[] = [];
-        
-        for (const user of usersData) {
-           const pred = await getPredictionData(user.entryId);
-           const champTeam = pred?.predictedChampion ? teams.find(t => t.id === pred.predictedChampion) : undefined;
-           enhancedUsers.push({ ...user, championTeam: champTeam });
-        }
+        const enhancedUsers: LeaderboardEntry[] = await Promise.all(
+          usersData.map(async (user) => {
+            const pred = await getPredictionData(user.entryId);
+            const champTeam = pred?.predictedChampion ? teams.find(t => t.id === pred.predictedChampion) : undefined;
+            return { ...user, championTeam: champTeam };
+          })
+        );
 
         // Sort: Score -> Accuracy -> SubmittedAt -> Champion (alphabetical string compare)
         enhancedUsers.sort((a, b) => {
