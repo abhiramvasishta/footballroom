@@ -68,9 +68,32 @@ export const useMatchDetails = (match: Match, homeTeam: Team | null, awayTeam: T
         }
 
         // 1. Fetch matches by date to find ESPN ID
-        const dateRes = await fetch(`/api/fifa/date/${dateStr}`);
-        if (!dateRes.ok) throw new Error('Failed to fetch date matches');
-        const dateMatches = await dateRes.json();
+        // Because of timezone differences between IST and ESPN's internal dates, 
+        // a match on 2026-06-15 in Firestore might appear on 20260614 or 20260616 in ESPN.
+        const baseDate = new Date(match.date);
+        const prevDate = new Date(baseDate);
+        prevDate.setDate(prevDate.getDate() - 1);
+        const nextDate = new Date(baseDate);
+        nextDate.setDate(nextDate.getDate() + 1);
+
+        const formatDate = (d: Date) => d.toISOString().split('T')[0].replace(/-/g, '');
+
+        const datesToTry = [
+          formatDate(baseDate),
+          formatDate(prevDate),
+          formatDate(nextDate)
+        ];
+
+        let dateMatches: any[] = [];
+        const responses = await Promise.allSettled(
+          datesToTry.map(d => fetch(`/api/fifa/date/${d}`).then(r => r.json()))
+        );
+
+        responses.forEach(res => {
+          if (res.status === 'fulfilled' && Array.isArray(res.value)) {
+            dateMatches = dateMatches.concat(res.value);
+          }
+        });
 
         // 2. Find matching ESPN match
         const normHome = normalizeTeamName(homeTeam.name);
@@ -82,7 +105,10 @@ export const useMatchDetails = (match: Match, homeTeam: Team | null, awayTeam: T
           return (mHome === normHome && mAway === normAway) || (mHome === normAway && mAway === normHome);
         });
 
-        if (!espnMatch) throw new Error('Could not find match in ESPN data');
+        if (!espnMatch) {
+          console.error('[useMatchDetails] Could not find match:', { normHome, normAway, datesTried: datesToTry });
+          throw new Error('Could not find match in ESPN data');
+        }
 
         // 3. Fetch full match details
         const detailsRes = await fetch(`/api/fifa/match/${espnMatch.id}`);
@@ -95,6 +121,7 @@ export const useMatchDetails = (match: Match, homeTeam: Team | null, awayTeam: T
           setData(detailsData);
         }
       } catch (err) {
+        console.error('[useMatchDetails] Error:', err);
         if (isMounted) setError(err instanceof Error ? err : new Error(String(err)));
       } finally {
         if (isMounted) setLoading(false);
