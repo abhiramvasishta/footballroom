@@ -173,6 +173,17 @@ fastify.get('/api/fifa/today', async (request, reply) => {
   }
 });
 
+fastify.get('/api/fifa/date/:date', async (request, reply) => {
+  try {
+    const { date } = request.params as { date: string };
+    const matches = await fifaProvider.getMatchesByDate(date);
+    reply.send(matches);
+  } catch (error: any) {
+    fastify.log.error(error);
+    reply.status(500).send({ error: error.message || 'Failed to fetch matches by date' });
+  }
+});
+
 fastify.get('/api/fifa/upcoming', async (request, reply) => {
   try {
     const matches = await fifaProvider.getUpcomingMatches();

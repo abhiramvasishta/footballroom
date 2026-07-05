@@ -1,22 +1,44 @@
 import type { Match, Team } from '../types';
 
 
-
 export const syncMatchesFromApi = async (
   _apiKey: string, // Kept for signature compatibility
   localMatches: Match[],
   localTeams: Team[]
 ): Promise<Match[]> => {
-  // Fetch from our backend which now uses ESPN
   const apiUrl = import.meta.env.VITE_API_URL || '';
-  const response = await fetch(`${apiUrl}/api/fifa/today`);
-  
-  if (!response.ok) {
-    throw new Error(`Failed to fetch from backend: ${response.statusText}`);
-  }
-  
-  const apiFixtures = await response.json();
   const updatedMatches: Match[] = [];
+  
+  // 1. Collect unique match dates from the incomplete Firestore matches
+  const datesToFetch = new Set<string>();
+  for (const localMatch of localMatches) {
+    if (!localMatch.completed && localMatch.homeTeamId && localMatch.awayTeamId && localMatch.date) {
+      // Convert 'YYYY-MM-DD' to 'YYYYMMDD' for ESPN
+      datesToFetch.add(localMatch.date.replace(/-/g, ''));
+    }
+  }
+
+  console.log(`[ESPN Sync] Requested dates: ${Array.from(datesToFetch).join(', ')}`);
+
+  // 2. Make one ESPN request per unique date & 3. Merge all responses
+  const allApiFixtures: any[] = [];
+  for (const date of datesToFetch) {
+    try {
+      const response = await fetch(`${apiUrl}/api/fifa/date/${date}`);
+      if (response.ok) {
+        const data = await response.json();
+        console.log(`[ESPN Sync] Date ${date} returned ${data.length} ESPN matches.`);
+        allApiFixtures.push(...data);
+      } else {
+        console.warn(`[ESPN Sync] Failed to fetch date ${date}: ${response.statusText}`);
+      }
+    } catch (err) {
+      console.warn(`[ESPN Sync] Error fetching date ${date}:`, err);
+    }
+  }
+
+  let skippedCount = 0;
+  let updatedCount = 0;
 
   for (const localMatch of localMatches) {
     if (localMatch.completed) continue;
@@ -27,8 +49,8 @@ export const syncMatchesFromApi = async (
     
     if (!homeTeam || !awayTeam) continue;
 
-    // Stable mapping by team names
-    const apiMatch = apiFixtures.find((f: any) => {
+    // Stable mapping by team names against the merged API fixtures
+    const apiMatch = allApiFixtures.find((f: any) => {
       const apiHome = f.homeTeam.toLowerCase();
       const apiAway = f.awayTeam.toLowerCase();
       const localHome = homeTeam.name.toLowerCase();
@@ -39,7 +61,8 @@ export const syncMatchesFromApi = async (
     });
 
     if (!apiMatch) {
-       console.warn(`[ESPN Sync] Skipping ${homeTeam.name} vs ${awayTeam.name} - Cannot find in API response`);
+       console.warn(`[ESPN Sync] Skipped ${homeTeam.name} vs ${awayTeam.name} - Reason: Cannot find match in ESPN response for the requested dates`);
+       skippedCount++;
        continue;
     }
 
@@ -72,11 +95,6 @@ export const syncMatchesFromApi = async (
           newMatch.penalties = true;
       }
       
-      // Update Goals, Cards, Substitutions directly if needed.
-      // (AdminPanel saves goals/cards natively if they exist).
-      // newMatch.goals = apiMatch.goals (We could map it if AdminPanel expects a specific format)
-      // Actually, AdminPanel just reads homeScore/awayScore and winnerTeamId.
-      
       // Determine Winner if completed
       if (newMatch.completed) {
          if ((newMatch.homeScore || 0) > (newMatch.awayScore || 0)) {
@@ -93,8 +111,14 @@ export const syncMatchesFromApi = async (
       }
 
       updatedMatches.push(newMatch);
+      updatedCount++;
+    } else {
+      console.warn(`[ESPN Sync] Skipped ${homeTeam.name} vs ${awayTeam.name} - Reason: ESPN status is ${apiMatch.status} (Not live or completed)`);
+      skippedCount++;
     }
   }
+
+  console.log(`[ESPN Sync] Sync Summary: Updated ${updatedCount} matches. Skipped ${skippedCount} incomplete matches.`);
 
   return updatedMatches;
 };

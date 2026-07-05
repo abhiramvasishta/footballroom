@@ -159,6 +159,12 @@ export class EspnProvider {
     return data.events.map((e: any) => this.parseScoreboardMatch(e));
   }
 
+  async getMatchesByDate(date: string): Promise<ParsedMatch[]> {
+    const data = await this.fetchFromEspn(`/scoreboard?dates=${date}`);
+    if (!data.events) return [];
+    return data.events.map((e: any) => this.parseScoreboardMatch(e));
+  }
+
   async getUpcomingMatches(): Promise<ParsedMatch[]> {
     const data = await this.fetchFromEspn('/scoreboard');
     if (!data.events) return [];
