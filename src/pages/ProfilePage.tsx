@@ -280,22 +280,22 @@ export default function DashboardPage() {
             <div className="absolute inset-0 bg-gradient-to-br from-[#e5b969]/10 to-transparent pointer-events-none" />
             {mvpPlayer ? (
               <div className="flex flex-col items-center gap-2 relative z-10">
-                <div className="w-12 h-12 rounded-full p-1 bg-gradient-to-b from-[#e5b969] to-[#b08d57]">
+                <div className="w-20 h-20 md:w-20 md:h-20 rounded-full p-1 bg-gradient-to-b from-[#e5b969] to-[#b08d57]">
                   <img src={mvpPlayer.photoUrl || mvpPlayer.flagUrl} alt={mvpPlayer.name} className="w-full h-full object-cover rounded-full border-2 border-bg-primary bg-bg-secondary" />
                 </div>
-                <span className="font-bold text-white uppercase tracking-wider text-xs md:text-sm">{mvpPlayer.name}</span>
+                <span className="font-bold text-white uppercase tracking-wider text-base md:text-lg mt-2">{mvpPlayer.name}</span>
               </div>
             ) : (
               <span className="text-2xl font-bold text-white relative z-10">-</span>
             )}
-            <span className="text-[10px] md:text-xs text-[#e5b969] uppercase tracking-widest font-black mt-1 relative z-10">MVP (Golden Ball)</span>
+            <span className="text-xs text-[#e5b969] uppercase tracking-widest font-black mt-2 relative z-10">MVP (Golden Ball)</span>
           </div>
           
           <div className="glass-card relative overflow-hidden p-6 flex flex-col items-center justify-center text-center gap-2 border-[#e5b969]/30 group hover:border-[#e5b969]/60 transition-all">
             <div className="absolute inset-0 bg-gradient-to-br from-[#e5b969]/10 to-transparent pointer-events-none" />
             {championTeam ? (
               <div className="flex flex-col items-center gap-2 relative z-10">
-                <div className="w-12 h-12 rounded-full p-1 bg-gradient-to-b from-[#e5b969] to-[#b08d57]">
+                <div className="w-20 h-20 md:w-24 md:h-24 rounded-full p-1 bg-gradient-to-b from-[#e5b969] to-[#b08d57]">
                   <img src={championTeam.flagUrl} alt={championTeam.id} className="w-full h-full object-cover rounded-full border-2 border-bg-primary" />
                 </div>
                 <span className="font-bold text-white uppercase tracking-wider">{championTeam.id}</span>
@@ -303,7 +303,7 @@ export default function DashboardPage() {
             ) : (
               <span className="text-2xl font-bold text-white relative z-10">-</span>
             )}
-            <span className="text-[10px] md:text-xs text-[#e5b969] uppercase tracking-widest font-black mt-1 relative z-10">Champion</span>
+            <span className="text-xs text-[#e5b969] uppercase tracking-widest font-black mt-2 relative z-10">Champion</span>
           </div>
 
           <button

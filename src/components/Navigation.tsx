@@ -66,10 +66,10 @@ export const Navigation = ({ onOpenLeaderboard }: Props) => {
                 {isSpecial ? (
                   <NavLink to={item.to} className="flex flex-col items-center justify-center absolute -top-6 left-1/2 -translate-x-1/2">
                     <div className={cn(
-                      "w-16 h-16 rounded-full flex flex-col items-center justify-center text-navy-900 shadow-[0_0_20px_rgba(0,217,255,0.5)] transition-transform",
-                      isActive ? "bg-white scale-110" : "bg-cyan-primary hover:bg-white"
+                      "w-16 h-16 rounded-full flex flex-col items-center justify-center shadow-[0_0_20px_rgba(0,217,255,0.5)] transition-all",
+                      isActive ? "bg-cyan-primary scale-110 text-white border-2 border-white" : "bg-cyan-primary text-navy-900 hover:bg-white hover:text-cyan-primary"
                     )}>
-                      <PlaySquare size={26} />
+                      <PlaySquare size={26} fill={isActive ? "currentColor" : "none"} />
                     </div>
                     <span className={cn(
                       "text-[9px] font-bold uppercase tracking-wider mt-1",

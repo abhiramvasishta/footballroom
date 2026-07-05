@@ -89,7 +89,7 @@ export default function HighlightsPage() {
               <button
                 key={round}
                 onClick={() => setSelectedRound(round)}
-                className={`px-4 py-1.5 sm:py-2 rounded-full whitespace-nowrap text-xs sm:text-sm font-medium transition-colors ${
+                className={`px-4 py-2 sm:py-2.5 rounded-full whitespace-nowrap text-sm sm:text-base font-medium transition-colors ${
                   selectedRound === round 
                     ? 'bg-cyan-primary text-navy-900 shadow-[0_0_15px_rgba(0,217,255,0.4)] font-bold' 
                     : 'bg-white/5 text-text-secondary hover:bg-white/10 hover:text-white border border-white/5'
