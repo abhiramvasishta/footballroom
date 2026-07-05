@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
-import { Trophy, ChevronLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Trophy } from 'lucide-react';
 import { db } from '../lib/firebase';
 import { getPredictionData, fetchTeams, fetchMatches } from '../lib/services';
 import type { UserData, Team, Match } from '../types';
@@ -13,7 +12,6 @@ interface LeaderboardEntry extends UserData {
 }
 
 export default function LeaderboardPage() {
-  const navigate = useNavigate();
   const [users, setUsers] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -101,14 +99,8 @@ export default function LeaderboardPage() {
   return (
     <div className="min-h-screen bg-bg-primary text-white p-4 md:p-6 pb-24">
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center gap-4 mb-8">
-          <button onClick={() => navigate(-1)} className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors">
-            <ChevronLeft />
-          </button>
-          <div className="flex items-center gap-3">
-            <Trophy className="text-cyan-primary" size={32} />
-            <h1 className="text-3xl font-bold font-display text-cyan-primary">Leaderboard</h1>
-          </div>
+        <div className="flex justify-center items-center mb-8">
+          <h1 className="text-3xl font-bold font-display text-cyan-primary uppercase tracking-widest">Leaderboard</h1>
         </div>
 
         {/* Podium for Top 3 */}

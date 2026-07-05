@@ -99,8 +99,10 @@ export default function HighlightsPage() {
 
       <div className="max-w-4xl mx-auto flex flex-col gap-6 p-4 md:p-8 pt-6">
         
-        <div className="mb-4">
-          <h1 className="text-3xl font-display font-bold text-white mb-2 tracking-wide">Match Highlights</h1>
+        <div className="mb-4 flex justify-center text-center">
+          <h1 className="text-3xl font-display font-bold tracking-wide uppercase">
+            <span className="text-white">Highlights</span> {selectedRound && <span className="text-cyan-primary">- {selectedRound}</span>}
+          </h1>
         </div>
 
         {matches.length === 0 ? (
