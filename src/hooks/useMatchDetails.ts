@@ -12,7 +12,7 @@ export interface DetailedMatch {
   awayScore: number | null;
   homePenalties: number | null;
   awayPenalties: number | null;
-  status: string;
+  status: number;
   kickoffTime: string;
   venue: string | null;
   city: string | null;

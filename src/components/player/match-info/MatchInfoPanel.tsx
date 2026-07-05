@@ -16,7 +16,9 @@ export const MatchInfoPanel = ({ match }: Props) => {
         
         <div className="flex flex-col">
           <span className="text-text-secondary text-xs uppercase font-medium tracking-wider mb-1">Status</span>
-          <span className="text-white font-medium capitalize">{match.status.replace('-', ' ')}</span>
+          <span className="text-white font-medium capitalize">
+            {match.status === 0 ? 'Full Time' : match.status === 1 ? 'Not Started' : 'Live'}
+          </span>
         </div>
 
         {match.venue && (
