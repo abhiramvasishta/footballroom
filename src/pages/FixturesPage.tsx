@@ -16,7 +16,7 @@ const ROUND_ORDER = [
 ];
 
 export default function FixturesPage() {
-  const [activeTab, setActiveTab] = useState<'matches' | 'standings'>('standings');
+  const [activeTab, setActiveTab] = useState<'matches' | 'standings'>('matches');
   const [matches, setMatches] = useState<Match[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [standingsData, setStandingsData] = useState<any>(null);
@@ -119,7 +119,7 @@ export default function FixturesPage() {
                     }
                   }
 
-                  let statusText = m.completed ? 'FT' : (m.date ? 'Scheduled' : 'TBD');
+                  let statusText = m.completed ? 'FT' : (m.kickoff ? 'Scheduled' : 'TBD');
                   if (m.completed) {
                     if (m.penalties) statusText = 'AET (P)';
                     else if (m.extraTime) statusText = 'AET';
@@ -144,7 +144,7 @@ export default function FixturesPage() {
 
                     <div className="flex flex-col items-center justify-center px-2 md:px-4 shrink-0 bg-bg-tertiary rounded-lg py-1 md:py-2 border border-white/5 min-w-[60px] md:min-w-[128px]">
                       <div className="text-[8px] md:text-[10px] text-text-secondary uppercase tracking-widest mb-0.5 md:mb-1 whitespace-nowrap">
-                        {m.date ? new Date(m.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'TBD'}
+                        {m.kickoff ? new Date(m.kickoff).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'TBD'}
                       </div>
                       <div className="font-bold text-sm md:text-xl text-cyan-primary flex items-center gap-1 md:gap-2">
                          <span className="md:hidden text-[9px] text-cyan-primary/70">{m.penalties ? `(${m.homePenaltyScore})` : ''}</span>
@@ -271,17 +271,6 @@ export default function FixturesPage() {
         <div className="sticky top-0 z-40 w-full bg-bg-primary/90 backdrop-blur-md border-b border-[rgba(0,217,255,0.1)] px-4 py-3">
           <div className="flex gap-2 p-1 bg-bg-secondary/90 rounded-xl border border-[rgba(0,217,255,0.2)] w-full max-w-md mx-auto shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
             <button
-              onClick={() => setActiveTab('standings')}
-              className={`flex-1 py-2 px-4 rounded-lg flex items-center justify-center gap-2 text-sm font-bold transition-all duration-300 ${
-                activeTab === 'standings'
-                  ? 'bg-cyan-primary text-navy-900 shadow-[0_0_15px_rgba(0,217,255,0.3)]'
-                  : 'text-text-secondary hover:text-white hover:bg-white/5'
-              }`}
-            >
-              <TableProperties size={18} />
-              <span>Standings</span>
-            </button>
-            <button
               onClick={() => setActiveTab('matches')}
               className={`flex-1 py-2 px-4 rounded-lg flex items-center justify-center gap-2 text-sm font-bold transition-all duration-300 ${
                 activeTab === 'matches'
@@ -291,6 +280,17 @@ export default function FixturesPage() {
             >
               <Calendar size={18} />
               <span>Matches</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('standings')}
+              className={`flex-1 py-2 px-4 rounded-lg flex items-center justify-center gap-2 text-sm font-bold transition-all duration-300 ${
+                activeTab === 'standings'
+                  ? 'bg-cyan-primary text-navy-900 shadow-[0_0_15px_rgba(0,217,255,0.3)]'
+                  : 'text-text-secondary hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <TableProperties size={18} />
+              <span>Standings</span>
             </button>
           </div>
         </div>

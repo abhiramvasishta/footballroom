@@ -189,8 +189,8 @@ export default function LeaderboardPage() {
                     <td className="p-2 md:p-4 text-center font-bold text-text-muted">{user.status === 'Eliminated' ? '-' : `#${user.rank}`}</td>
                     <td className="p-2 md:p-4">
                       <div className="flex items-center gap-2 md:gap-3">
-                        <Avatar photoURL={user.photoURL} avatar={user.avatar} name={user.name} className={`w-6 h-6 md:w-8 md:h-8 rounded-full bg-card-hover text-[10px] md:text-xs font-bold border border-[rgba(0,217,255,0.18)] ${user.status === 'Eliminated' ? 'grayscale opacity-50' : ''}`} />
-                        <span className={`font-bold text-sm md:text-base truncate max-w-[100px] sm:max-w-[150px] md:max-w-none ${user.status === 'Eliminated' ? 'text-text-muted line-through' : ''}`}>{user.name}</span>
+                        <Avatar photoURL={user.photoURL} avatar={user.avatar} name={user.name} className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-card-hover text-[10px] md:text-xs font-bold border border-[rgba(0,217,255,0.18)]" />
+                        <span className={`font-bold text-sm md:text-base truncate max-w-[100px] sm:max-w-[150px] md:max-w-none ${user.status === 'Eliminated' ? 'text-red-500' : ''}`}>{user.name}</span>
                       </div>
                     </td>
                     <td className="p-2 md:p-4 text-center font-bold text-cyan-primary text-sm md:text-base">
