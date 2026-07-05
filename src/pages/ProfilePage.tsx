@@ -9,6 +9,7 @@ import { updateUserPhoto, fetchTeams, fetchMatches, getPredictionData } from '..
 import { useUserStore } from '../store/useUserStore';
 import { ShareBracket, type ShareBracketRef } from '../components/ShareBracket';
 import { AnimatedTransition } from '../components/AnimatedTransition';
+import { GlobalAnalytics } from '../components/GlobalAnalytics';
 import { goldenBallPlayers } from '../data/goldenBallPlayers';
 import type { UserData, Team, Match, PredictionDoc } from '../types';
 
@@ -22,6 +23,7 @@ export default function DashboardPage() {
   const [allTeams, setAllTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [showPicks, setShowPicks] = useState(false);
+  const [activeTab, setActiveTab] = useState<'yours' | 'others'>('yours');
   
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
@@ -172,10 +174,37 @@ export default function DashboardPage() {
   const getTeamName = (teamId: string) => allTeams.find(t => t.id === teamId)?.name || teamId;
 
   return (
-    <AnimatedTransition className="min-h-screen bg-bg-primary text-text-primary p-4 md:p-8 pb-24">
-      <div className="max-w-4xl mx-auto flex flex-col gap-8 mt-12 md:mt-4">
-        
-        {/* Profile Header & Edit */}
+    <div className="min-h-screen bg-bg-primary text-text-primary pb-24">
+      {/* Sticky Tab Navigation */}
+      <div className="sticky top-0 z-40 bg-bg-primary/90 backdrop-blur-md border-b border-[rgba(0,217,255,0.18)]">
+        <div className="max-w-4xl mx-auto flex">
+          <button 
+            onClick={() => setActiveTab('yours')}
+            className={`flex-1 py-4 text-center font-bold text-sm md:text-base uppercase tracking-wider transition-colors border-b-2 ${
+              activeTab === 'yours' ? 'text-cyan-primary border-cyan-primary bg-cyan-primary/5' : 'text-text-secondary border-transparent hover:text-white hover:bg-white/5'
+            }`}
+          >
+            Yours
+          </button>
+          <button 
+            onClick={() => setActiveTab('others')}
+            className={`flex-1 py-4 text-center font-bold text-sm md:text-base uppercase tracking-wider transition-colors border-b-2 ${
+              activeTab === 'others' ? 'text-cyan-primary border-cyan-primary bg-cyan-primary/5' : 'text-text-secondary border-transparent hover:text-white hover:bg-white/5'
+            }`}
+          >
+            Others
+          </button>
+        </div>
+      </div>
+
+      <AnimatedTransition className="p-4 md:p-8">
+        <div className="max-w-4xl mx-auto flex flex-col gap-8 mt-6">
+          
+          {activeTab === 'others' ? (
+            <GlobalAnalytics />
+          ) : (
+            <>
+              {/* Profile Header & Edit */}
         <div className="glass-card p-6 md:p-10 border-[rgba(0,217,255,0.18)] flex flex-col items-center">
           <div className="relative group mb-6">
             <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-bg-secondary bg-bg-tertiary flex items-center justify-center relative">
@@ -366,7 +395,10 @@ export default function DashboardPage() {
           </div>
         </div>
 
-      </div>
+            </>
+          )}
+        </div>
+      </AnimatedTransition>
       
       {/* Hidden ShareBracket component for image generation */}
       <div className="absolute top-0 left-[-9999px] opacity-0 pointer-events-none">
@@ -470,6 +502,6 @@ export default function DashboardPage() {
           </motion.div>
         )}
       </AnimatePresence>
-    </AnimatedTransition>
+    </div>
   );
 }

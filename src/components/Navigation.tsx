@@ -1,13 +1,9 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Trophy, PlaySquare, LayoutDashboard, GitCommit, CalendarDays } from 'lucide-react';
+import { Trophy, PlaySquare, LayoutDashboard, GitCommit, CalendarDays, BarChart3 } from 'lucide-react';
 import { useUserStore } from '../store/useUserStore';
 import { cn } from '../utils/cn';
 
-interface Props {
-  onOpenLeaderboard: () => void;
-}
-
-export const Navigation = ({ onOpenLeaderboard }: Props) => {
+export const Navigation = () => {
   const { isRegistered } = useUserStore();
   const location = useLocation();
 
@@ -16,32 +12,37 @@ export const Navigation = ({ onOpenLeaderboard }: Props) => {
       label: 'Dashboard',
       icon: <LayoutDashboard size={24} />,
       to: '/dashboard',
-      action: null
-    }] : []),
+      action: undefined
+    }] : [{
+      label: 'Analysis',
+      icon: <BarChart3 size={24} />,
+      to: '/analysis',
+      action: undefined
+    }]),
     {
       label: 'Bracket',
       icon: <GitCommit size={24} className="rotate-90" />,
       to: '/bracket',
-      action: null
+      action: undefined
     },
     {
       label: 'Highlights',
       icon: <PlaySquare size={24} />,
       to: '/highlights',
-      action: null,
+      action: undefined,
       isSpecial: true
     },
     {
       label: 'Fixtures',
       icon: <CalendarDays size={24} />,
       to: '/fixtures',
-      action: null
+      action: undefined
     },
     {
       label: 'Leaderboard',
       icon: <Trophy size={24} />,
-      to: '#',
-      action: onOpenLeaderboard
+      to: '/leaderboard',
+      action: undefined
     }
   ];
 
@@ -57,9 +58,6 @@ export const Navigation = ({ onOpenLeaderboard }: Props) => {
             return (
               <button
                 key={idx}
-                onClick={() => {
-                  if (item.action) item.action();
-                }}
                 className={cn(
                   "flex flex-col items-center justify-center w-full space-y-1 transition-colors relative group h-full",
                   isActive && !isSpecial ? "text-cyan-primary" : "text-text-secondary hover:text-white"
@@ -74,8 +72,8 @@ export const Navigation = ({ onOpenLeaderboard }: Props) => {
                       <PlaySquare size={26} />
                     </div>
                     <span className={cn(
-                      "text-[9px] font-bold uppercase tracking-wider mt-1",
-                      isActive ? "text-cyan-primary" : "text-text-secondary"
+                      "text-[9px] font-bold uppercase tracking-wider mt-1 transition-all duration-300",
+                      isActive ? "opacity-0 h-0 overflow-hidden" : "text-text-secondary opacity-100"
                     )}>Highlights</span>
                   </NavLink>
                 ) : (
@@ -116,9 +114,6 @@ export const Navigation = ({ onOpenLeaderboard }: Props) => {
             return (
               <button
                 key={idx}
-                onClick={() => {
-                  if (item.action) item.action();
-                }}
                 className={cn(
                   "flex flex-col items-center justify-center w-full py-4 transition-all relative group",
                   isActive ? "text-cyan-primary" : "text-text-secondary hover:text-white hover:bg-white/5"

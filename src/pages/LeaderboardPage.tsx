@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { Trophy, ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { AnimatedTransition } from '../components/AnimatedTransition';
 import { db } from '../lib/firebase';
-import { getPredictionData, fetchTeams } from '../lib/services';
-import type { UserData, Team } from '../types';
+import { getPredictionData, fetchTeams, fetchMatches } from '../lib/services';
+import type { UserData, Team, Match } from '../types';
 import { Avatar } from '../components/Avatar';
+import { UserPicksModal } from '../components/UserPicksModal';
 
 interface LeaderboardEntry extends UserData {
   championTeam?: Team;
@@ -16,6 +16,10 @@ export default function LeaderboardPage() {
   const navigate = useNavigate();
   const [users, setUsers] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
+  const [allMatches, setAllMatches] = useState<Match[]>([]);
+  const [allTeams, setAllTeams] = useState<Team[]>([]);
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -23,8 +27,13 @@ export default function LeaderboardPage() {
         const snapshot = await getDocs(collection(db, 'users'));
         const usersData = snapshot.docs.map(doc => doc.data() as UserData);
         
-        // Fetch teams to map champion IDs
-        const teams = await fetchTeams();
+        // Fetch teams to map champion IDs and matches for modal
+        const [teams, matches] = await Promise.all([
+          fetchTeams(),
+          fetchMatches()
+        ]);
+        setAllTeams(teams);
+        setAllMatches(matches);
         
         const enhancedUsers: LeaderboardEntry[] = [];
         
@@ -83,7 +92,7 @@ export default function LeaderboardPage() {
   const rest = users.slice(3);
 
   return (
-    <AnimatedTransition className="min-h-screen bg-bg-primary text-white p-4 md:p-6 pb-24">
+    <div className="min-h-screen bg-bg-primary text-white p-4 md:p-6 pb-24">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
           <button onClick={() => navigate(-1)} className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors">
@@ -100,7 +109,11 @@ export default function LeaderboardPage() {
           <div className="flex justify-center items-end h-64 mb-12 gap-2 md:gap-4">
             {/* 2nd Place */}
             {top3[1] && (
-              <div className="flex flex-col items-center w-1/4 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+              <div 
+                className="flex flex-col items-center w-1/4 animate-fade-in-up cursor-pointer group" 
+                style={{ animationDelay: '0.2s' }}
+                onClick={() => setSelectedUser(top3[1])}
+              >
                 <Avatar photoURL={top3[1].photoURL} avatar={top3[1].avatar} name={top3[1].name} className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-bg-secondary text-text-primary font-bold text-xl md:text-2xl mb-2 z-10 border-2 border-[rgba(0,217,255,0.3)] shadow-[0_0_15px_rgba(0,217,255,0.1)]" />
                 <div className="w-full bg-gradient-to-t from-cyan-primary/5 to-bg-primary rounded-t-lg border-t border-x border-[rgba(0,217,255,0.18)] flex flex-col items-center justify-end pb-4 relative overflow-hidden" style={{ height: '120px' }}>
                   <span className="text-text-primary font-bold font-mono text-2xl drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">#2</span>
@@ -111,7 +124,10 @@ export default function LeaderboardPage() {
             )}
             
             {/* 1st Place */}
-            <div className="flex flex-col items-center w-1/3 animate-fade-in-up z-20">
+            <div 
+              className="flex flex-col items-center w-1/3 animate-fade-in-up z-20 cursor-pointer group"
+              onClick={() => setSelectedUser(top3[0])}
+            >
               <div className="relative mb-2">
                 <Trophy className="absolute -top-7 left-1/2 -translate-x-1/2 text-cyan-primary drop-shadow-[0_0_10px_rgba(0,217,255,0.8)] z-20" size={28} />
                 <Avatar photoURL={top3[0].photoURL} avatar={top3[0].avatar} name={top3[0].name} className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-bg-primary text-cyan-primary font-bold text-2xl md:text-3xl shadow-[0_0_25px_rgba(0,217,255,0.6)] border-2 border-cyan-primary" />
@@ -126,7 +142,11 @@ export default function LeaderboardPage() {
 
             {/* 3rd Place */}
             {top3[2] && (
-              <div className="flex flex-col items-center w-1/4 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+              <div 
+                className="flex flex-col items-center w-1/4 animate-fade-in-up cursor-pointer group" 
+                style={{ animationDelay: '0.4s' }}
+                onClick={() => setSelectedUser(top3[2])}
+              >
                 <Avatar photoURL={top3[2].photoURL} avatar={top3[2].avatar} name={top3[2].name} className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-bg-secondary text-text-primary font-bold text-xl md:text-2xl mb-2 z-10 border-2 border-white/10" />
                 <div className="w-full bg-gradient-to-t from-white/5 to-bg-primary rounded-t-lg border-t border-x border-white/10 flex flex-col items-center justify-end pb-2 relative overflow-hidden" style={{ height: '90px' }}>
                   <span className="text-text-secondary font-bold font-mono text-xl">#3</span>
@@ -154,7 +174,11 @@ export default function LeaderboardPage() {
               </thead>
               <tbody className="divide-y divide-white/5">
                 {rest.map((user) => (
-                  <tr key={user.entryId} className="hover:bg-white/5 transition-colors">
+                  <tr 
+                    key={user.entryId} 
+                    className="hover:bg-white/5 transition-colors cursor-pointer"
+                    onClick={() => setSelectedUser(user)}
+                  >
                     <td className="p-4 text-center font-bold text-text-muted">#{user.rank}</td>
                     <td className="p-4">
                       <div className="flex items-center gap-3">
@@ -189,6 +213,14 @@ export default function LeaderboardPage() {
           </div>
         </div>
       </div>
-    </AnimatedTransition>
+
+      <UserPicksModal 
+        user={selectedUser} 
+        isOpen={!!selectedUser} 
+        onClose={() => setSelectedUser(null)} 
+        allMatches={allMatches} 
+        allTeams={allTeams} 
+      />
+    </div>
   );
 }

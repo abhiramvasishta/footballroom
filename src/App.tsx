@@ -14,6 +14,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import SuccessPage from './pages/SuccessPage';
 import MaintenancePage from './pages/MaintenancePage';
 import HighlightsPage from './pages/HighlightsPage';
+import AnalysisPage from './pages/AnalysisPage';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { AppLayout } from './components/AppLayout';
 
@@ -84,9 +85,10 @@ function App() {
             <Route path="/bracket" element={<BracketPage />} />
             <Route path="/fixtures" element={<FixturesPage />} />
             <Route path="/highlights" element={<HighlightsPage />} />
+            <Route path="/leaderboard" element={<LeaderboardPage />} />
+            <Route path="/analysis" element={<AnalysisPage />} />
           </Route>
 
-          <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </MaintenanceGuard>
