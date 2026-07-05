@@ -308,7 +308,7 @@ export default function DashboardPage() {
             )}
             {uploadSuccess && (
               <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="text-green-500 text-sm mt-4 flex items-center justify-center gap-2">
-                <CheckCircle2 size={16} /> Photo updated successfully
+                <CheckCircle2 size={16} /> Updated successfully
               </motion.p>
             )}
           </AnimatePresence>
