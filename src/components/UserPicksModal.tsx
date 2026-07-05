@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
@@ -18,6 +18,53 @@ export const UserPicksModal = ({ user, isOpen, onClose, allMatches, allTeams }: 
   const [predictionDoc, setPredictionDoc] = useState<PredictionDoc | null>(null);
   const [loading, setLoading] = useState(false);
   const [isFullscreenPhoto, setIsFullscreenPhoto] = useState(false);
+  const isFullscreenPhotoRef = useRef(false);
+
+  useEffect(() => {
+    isFullscreenPhotoRef.current = isFullscreenPhoto;
+  }, [isFullscreenPhoto]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Scroll Lock
+    const originalBodyStyle = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    // Push history state
+    window.history.pushState({ modal: 'userPicks' }, '');
+
+    const handlePopState = () => {
+      if (isFullscreenPhotoRef.current) {
+        setIsFullscreenPhoto(false);
+      } else {
+        onClose();
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      document.body.style.overflow = originalBodyStyle;
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [isOpen, onClose]);
+
+  const handleCloseModal = () => {
+    window.history.back();
+  };
+
+  const handleOpenPhoto = () => {
+    if (user?.photoURL) {
+      window.history.pushState({ modal: 'fullscreenPhoto' }, '');
+      setIsFullscreenPhoto(true);
+    } else {
+      toast('No profile photo', { icon: '⚠️', style: { borderRadius: '10px', background: '#1a202c', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' } });
+    }
+  };
+
+  const handleClosePhoto = () => {
+    window.history.back();
+  };
 
   useEffect(() => {
     if (isOpen && user?.entryId) {
@@ -66,7 +113,7 @@ export const UserPicksModal = ({ user, isOpen, onClose, allMatches, allTeams }: 
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-        onClick={onClose}
+        onClick={handleCloseModal}
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
@@ -76,32 +123,22 @@ export const UserPicksModal = ({ user, isOpen, onClose, allMatches, allTeams }: 
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex justify-between items-center p-4 border-b border-white/10 bg-bg-secondary shrink-0">
-            <div className="flex items-center gap-4">
-              <div 
-                className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden bg-bg-primary border-2 border-cyan-primary flex items-center justify-center relative shadow-[0_0_15px_rgba(0,217,255,0.3)] cursor-pointer group hover:scale-105 transition-transform"
-                onClick={() => {
-                  if (user.photoURL) {
-                    setIsFullscreenPhoto(true);
-                  } else {
-                    toast('No profile photo', { icon: '⚠️', style: { borderRadius: '10px', background: '#1a202c', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' } });
-                  }
-                }}
-              >
-                {user.photoURL ? (
-                  <img src={user.photoURL} alt="" className="w-full h-full object-cover group-hover:opacity-90 transition-opacity" />
-                ) : (
-                  <span className="font-bold text-cyan-primary text-2xl md:text-3xl">{initials}</span>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <h3 className="font-bold text-white text-xl md:text-2xl">{user.name}</h3>
-                <span className="text-sm text-cyan-primary/80 font-mono tracking-widest mt-1">SCORE: {user.score} | ACCURACY: {user.accuracy}%</span>
-              </div>
-            </div>
-            <button onClick={onClose} className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors self-start">
+          <div className="relative p-6 border-b border-white/10 bg-bg-secondary shrink-0 flex flex-col items-center text-center">
+            <button onClick={handleCloseModal} className="absolute top-4 right-4 p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors z-10">
               <X size={20} className="text-white" />
             </button>
+            <div 
+              className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden bg-bg-primary border-4 border-cyan-primary flex items-center justify-center relative shadow-[0_0_25px_rgba(0,217,255,0.4)] cursor-pointer group hover:scale-105 transition-transform mb-4"
+              onClick={handleOpenPhoto}
+            >
+              {user.photoURL ? (
+                <img src={user.photoURL} alt="" className="w-full h-full object-cover group-hover:opacity-90 transition-opacity" />
+              ) : (
+                <span className="font-bold text-cyan-primary text-3xl md:text-5xl">{initials}</span>
+              )}
+            </div>
+            <h3 className="font-display font-bold text-white text-2xl md:text-3xl tracking-wide uppercase">{user.name}</h3>
+            <span className="text-sm text-cyan-primary font-mono tracking-widest mt-2 font-semibold bg-cyan-primary/10 px-3 py-1 rounded-full border border-cyan-primary/30">SCORE: {user.score} | ACCURACY: {user.accuracy}%</span>
           </div>
 
           {/* Content */}
@@ -197,7 +234,7 @@ export const UserPicksModal = ({ user, isOpen, onClose, allMatches, allTeams }: 
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl"
-            onClick={() => setIsFullscreenPhoto(false)}
+            onClick={handleClosePhoto}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
@@ -207,7 +244,7 @@ export const UserPicksModal = ({ user, isOpen, onClose, allMatches, allTeams }: 
               onClick={e => e.stopPropagation()}
             >
               <button 
-                onClick={() => setIsFullscreenPhoto(false)}
+                onClick={handleClosePhoto}
                 className="absolute -top-12 right-0 p-2 text-white/50 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-colors"
               >
                 <X size={24} />
