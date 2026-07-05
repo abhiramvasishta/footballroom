@@ -13,7 +13,7 @@ export const LoadingOverlay = ({ isBuffering }: Props) => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 backdrop-blur-[2px] pointer-events-none"
+          className="absolute inset-0 z-20 flex items-start justify-center pt-[30%] bg-black/40 backdrop-blur-[2px] pointer-events-none"
         >
           <div className="flex flex-col items-center gap-4">
             <div className="relative w-16 h-16 flex items-center justify-center">

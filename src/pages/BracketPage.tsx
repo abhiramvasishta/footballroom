@@ -355,7 +355,7 @@ export default function BracketPage() {
     if (thirdMatch) drawnMatches.push(<MatchBox key="third" match={thirdMatch} x={finalX + 160} y={finalTopY} isCenter={true} isMobile={true} />);
 
     return (
-      <div className="xl:hidden w-full flex justify-center overflow-auto custom-scrollbar pb-8 px-4">
+      <div className="xl:hidden w-full overflow-auto custom-scrollbar pb-8 pt-10 px-4">
         <div className="w-[800px] h-[1296px] relative bg-[#131418] rounded-[24px] overflow-hidden shadow-2xl flex-shrink-0">
           
           <div className="absolute top-[480px] left-1/2 -translate-x-1/2 flex flex-col items-center opacity-80 z-20">

@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Trophy, PlaySquare, User, GitCommit, CalendarDays } from 'lucide-react';
+import { Trophy, PlaySquare, LayoutDashboard, GitCommit, CalendarDays } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 interface Props {
@@ -11,9 +11,9 @@ export const Navigation = ({ onOpenLeaderboard }: Props) => {
 
   const navItems = [
     {
-      label: 'Profile',
-      icon: <User size={24} />,
-      to: '/profile',
+      label: 'Dashboard',
+      icon: <LayoutDashboard size={24} />,
+      to: '/dashboard',
       action: null
     },
     {
@@ -64,13 +64,17 @@ export const Navigation = ({ onOpenLeaderboard }: Props) => {
                 )}
               >
                 {isSpecial ? (
-                  <NavLink to={item.to} className="flex flex-col items-center justify-center absolute -top-5 left-1/2 -translate-x-1/2">
+                  <NavLink to={item.to} className="flex flex-col items-center justify-center absolute -top-6 left-1/2 -translate-x-1/2">
                     <div className={cn(
-                      "w-14 h-14 rounded-full flex flex-col items-center justify-center text-navy-900 shadow-[0_0_15px_rgba(0,217,255,0.4)] transition-transform",
+                      "w-16 h-16 rounded-full flex flex-col items-center justify-center text-navy-900 shadow-[0_0_20px_rgba(0,217,255,0.5)] transition-transform",
                       isActive ? "bg-white scale-110" : "bg-cyan-primary hover:bg-white"
                     )}>
-                      {item.icon}
+                      <PlaySquare size={26} />
                     </div>
+                    <span className={cn(
+                      "text-[9px] font-bold uppercase tracking-wider mt-1",
+                      isActive ? "text-cyan-primary" : "text-text-secondary"
+                    )}>Highlights</span>
                   </NavLink>
                 ) : (
                   <>

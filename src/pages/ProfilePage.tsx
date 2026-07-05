@@ -1,23 +1,27 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, Camera, Loader2, Share2, Copy, CheckCircle2 } from 'lucide-react';
+import { Trash2, Camera, Loader2, Share2, Copy, CheckCircle2, Eye, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { uploadProfilePhoto, cropAndResizeImage } from '../lib/cloudinary';
-import { updateUserPhoto, fetchTeams, getPredictionData } from '../lib/services';
+import { updateUserPhoto, fetchTeams, fetchMatches, getPredictionData } from '../lib/services';
 import { useUserStore } from '../store/useUserStore';
 import { ShareBracket, type ShareBracketRef } from '../components/ShareBracket';
 import { AnimatedTransition } from '../components/AnimatedTransition';
 import { goldenBallPlayers } from '../data/goldenBallPlayers';
-import type { UserData, Team } from '../types';
+import type { UserData, Team, Match, PredictionDoc } from '../types';
 
-export default function ProfilePage() {
+export default function DashboardPage() {
   const navigate = useNavigate();
   const { entryId } = useUserStore();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [championTeam, setChampionTeam] = useState<Team | null>(null);
+  const [predictionDoc, setPredictionDoc] = useState<PredictionDoc | null>(null);
+  const [allMatches, setAllMatches] = useState<Match[]>([]);
+  const [allTeams, setAllTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showPicks, setShowPicks] = useState(false);
   
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
@@ -39,10 +43,14 @@ export default function ProfilePage() {
 
     const loadStaticData = async () => {
       try {
-        const [teams, pred] = await Promise.all([
+        const [teams, matches, pred] = await Promise.all([
           fetchTeams(),
+          fetchMatches(),
           getPredictionData(entryId)
         ]);
+        setAllTeams(teams);
+        setAllMatches(matches);
+        setPredictionDoc(pred);
         if (pred?.predictedChampion) {
           setChampionTeam(teams.find(t => t.id === pred.predictedChampion) || null);
         }
@@ -157,9 +165,11 @@ export default function ProfilePage() {
   // Get Avatar initials
   const initials = userData.name.charAt(0).toUpperCase();
 
-  const mvpPlayer = userData.goldenBallPlayerId 
-    ? goldenBallPlayers.find(p => p.id === userData.goldenBallPlayerId)
+  const mvpPlayer = predictionDoc?.goldenBallPlayerId 
+    ? goldenBallPlayers.find(p => p.id === predictionDoc.goldenBallPlayerId)
     : null;
+
+  const getTeamName = (teamId: string) => allTeams.find(t => t.id === teamId)?.name || teamId;
 
   return (
     <AnimatedTransition className="min-h-screen bg-bg-primary text-text-primary p-4 md:p-8 pb-24">
@@ -297,12 +307,12 @@ export default function ProfilePage() {
           </div>
 
           <button
-            onClick={() => navigate('/review')}
+            onClick={() => setShowPicks(true)}
             className="glass-card relative overflow-hidden p-6 flex flex-col items-center justify-center text-center gap-2 border-cyan-primary/30 group hover:border-cyan-primary/60 transition-all cursor-pointer"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-cyan-primary/10 to-transparent pointer-events-none" />
             <div className="w-12 h-12 rounded-full flex items-center justify-center bg-cyan-primary/20 text-cyan-primary group-hover:scale-110 transition-transform relative z-10">
-              <Share2 size={24} />
+              <Eye size={24} />
             </div>
             <span className="font-bold text-white uppercase tracking-wider mt-2 relative z-10">View My Picks</span>
             <span className="text-[10px] text-text-secondary uppercase tracking-widest font-semibold mt-1 relative z-10">See your bracket</span>
@@ -360,8 +370,106 @@ export default function ProfilePage() {
       
       {/* Hidden ShareBracket component for image generation */}
       <div className="absolute top-0 left-[-9999px] opacity-0 pointer-events-none">
-        <ShareBracket ref={shareRef} />
+        <ShareBracket ref={shareRef} user={{ name: userData.name, photoURL: currentPhoto }} picks={predictionDoc?.picks} goldenBallPlayerId={predictionDoc?.goldenBallPlayerId} championId={predictionDoc?.predictedChampion} />
       </div>
+
+      {/* View My Picks Modal */}
+      <AnimatePresence>
+        {showPicks && predictionDoc && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            onClick={() => setShowPicks(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-bg-primary border border-cyan-primary/30 rounded-xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-[0_0_50px_rgba(0,217,255,0.1)] overflow-hidden"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex justify-between items-center p-4 border-b border-white/10 bg-bg-secondary shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full overflow-hidden bg-bg-primary border border-cyan-primary/50 flex items-center justify-center">
+                    {currentPhoto ? (
+                      <img src={currentPhoto} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="font-bold text-cyan-primary text-lg">{initials}</span>
+                    )}
+                  </div>
+                  <div className="flex flex-col">
+                    <h3 className="font-bold text-white text-lg">{userData.name}'s Predictions</h3>
+                    <span className="text-xs text-text-secondary">Score: {userData.score} | Accuracy: {userData.accuracy}%</span>
+                  </div>
+                </div>
+                <button onClick={() => setShowPicks(false)} className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors">
+                  <X size={20} className="text-white" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-bg-secondary p-4 rounded-lg border border-cyan-primary/20 flex flex-col items-center justify-center text-center">
+                    <span className="text-xs uppercase tracking-widest text-text-secondary font-bold mb-1">Predicted Champion</span>
+                    <span className="text-xl font-display font-bold text-cyan-primary drop-shadow-[0_0_8px_rgba(0,217,255,0.5)]">
+                      {predictionDoc.predictedChampion ? getTeamName(predictionDoc.predictedChampion) : 'Not Selected'}
+                    </span>
+                  </div>
+                  <div className="bg-bg-secondary p-4 rounded-lg border border-[#d4af37]/30 flex flex-col items-center justify-center text-center">
+                    <span className="text-xs uppercase tracking-widest text-text-secondary font-bold mb-1">Golden Ball Winner</span>
+                    <span className="text-lg font-bold text-[#d4af37] drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]">
+                      {mvpPlayer ? mvpPlayer.name : 'Not Selected'}
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-bold uppercase tracking-widest text-text-secondary mb-3 border-b border-white/10 pb-2">Match Picks</h4>
+                  <div className="space-y-2">
+                    {allMatches
+                      .sort((a, b) => {
+                        const roundOrder: Record<string, number> = { 'Round of 32': 1, 'Round of 16': 2, 'Quarter Finals': 3, 'Semi Finals': 4, 'Third Place': 5, 'Final': 6 };
+                        return (roundOrder[a.round] || 0) - (roundOrder[b.round] || 0);
+                      })
+                      .map(match => {
+                        const predictedWinnerId = predictionDoc.picks[match.id];
+                        if (!predictedWinnerId) return null;
+                        const isCorrect = match.completed && match.winnerTeamId === predictedWinnerId;
+                        const isWrong = match.completed && match.winnerTeamId && match.winnerTeamId !== predictedWinnerId;
+
+                        return (
+                          <div key={match.id} className={`flex justify-between items-center p-3 rounded-lg border text-sm ${
+                            isCorrect ? 'bg-green-500/10 border-green-500/30' : isWrong ? 'bg-red-500/10 border-red-500/30' : 'bg-white/5 border-white/5'
+                          }`}>
+                            <span className="font-mono text-cyan-primary/70 text-xs w-12 shrink-0">{match.id}</span>
+                            <span className="text-text-secondary flex-1 text-xs truncate">
+                              {getTeamName(match.homeTeamId || '?')} <span className="mx-1 text-xs opacity-50">vs</span> {getTeamName(match.awayTeamId || '?')}
+                            </span>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <span className="text-[10px] text-text-muted">Picked:</span>
+                              <span className={`font-bold text-xs px-2 py-1 rounded ${
+                                isCorrect ? 'text-green-400 bg-green-500/20' : isWrong ? 'text-red-400 bg-red-500/20' : 'text-white bg-white/10'
+                              }`}>
+                                {getTeamName(predictedWinnerId)}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    {Object.keys(predictionDoc.picks).length === 0 && (
+                      <p className="text-text-secondary text-sm italic">No individual match picks found.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </AnimatedTransition>
   );
 }
