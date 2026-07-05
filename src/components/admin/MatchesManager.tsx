@@ -198,26 +198,53 @@ export const MatchesManager = () => {
   };
 
   const handleResolve = async () => {
+    console.log('[handleResolve] Enter handleResolve()');
+    console.log('[handleResolve] Telegram link value:', telegramLink);
     if (!telegramLink) return;
     setResolving(true);
     setResolveError('');
     try {
       const apiUrl = import.meta.env.VITE_API_URL;
-      const res = await fetch(`${apiUrl}/api/telegram/resolve`, {
+      console.log('[handleResolve] API base URL:', apiUrl);
+      
+      const finalUrl = `${apiUrl}/api/telegram/resolve`;
+      console.log('[handleResolve] Final fetch URL:', finalUrl);
+      
+      const reqBody = { link: telegramLink };
+      console.log('[handleResolve] Request body:', reqBody);
+      
+      console.log('[handleResolve] Before fetch()');
+      const res = await fetch(finalUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ link: telegramLink })
+        body: JSON.stringify(reqBody)
       });
+      console.log('[handleResolve] After fetch()');
+      console.log('[handleResolve] Response status:', res.status, res.statusText);
+      
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to resolve link');
+        let errorData = {};
+        try {
+          const text = await res.text();
+          console.log('[handleResolve] Response text (error):', text);
+          errorData = JSON.parse(text);
+        } catch (e) {
+          console.error('[handleResolve] Failed to parse error response JSON');
+        }
+        throw new Error((errorData as any).error || 'Failed to resolve link');
       }
+      
       const data = await res.json();
+      console.log('[handleResolve] Response JSON:', data);
+      
       setHighlightUrl(data.videoId); // internal videoId
       setVideoMetadata(data.metadata);
     } catch (err: any) {
+      console.error('[handleResolve] Exception caught:', err);
+      if (err.stack) console.error('[handleResolve] Full stack trace:', err.stack);
       setResolveError(err.message);
     } finally {
+      console.log('[handleResolve] Exiting handleResolve(), resolving set to false');
       setResolving(false);
     }
   };

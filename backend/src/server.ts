@@ -91,22 +91,35 @@ fastify.get('/api/stream/:videoId', async (request, reply) => {
 });
 
 fastify.post('/api/telegram/resolve', async (request, reply) => {
+  console.log('[server] POST /api/telegram/resolve entered');
+  console.log('[server] Request body:', request.body);
   const { link } = request.body as { link: string };
   if (!link) {
+    console.log('[server] Missing link, returning 400');
     reply.status(400).send({ error: 'Missing link' });
     return;
   }
   try {
+    console.log(`[server] Before telegramProvider.resolveLink('${link}')`);
     const result = await telegramProvider.resolveLink(link);
-    console.log(`Created videoId: ${result.videoId}`);
+    console.log(`[server] After telegramProvider.resolveLink()`);
+    console.log(`[server] Created videoId: ${result.videoId}`);
+    
+    console.log(`[server] Before Firestore read-back check for ${result.videoId}`);
     const readBack = await getVideoMetadata(result.videoId);
     if (!readBack) {
-      console.error(`ERROR: Read-back failed! Firestore did NOT return the document for ${result.videoId}`);
+      console.error(`[server] ERROR: Read-back failed! Firestore did NOT return the document for ${result.videoId}`);
     } else {
-      console.log(`SUCCESS: Read-back verified for ${result.videoId}`);
+      console.log(`[server] SUCCESS: Read-back verified for ${result.videoId}`);
     }
+    
+    console.log('[server] Before reply.send(result)');
     reply.send(result);
   } catch (error: any) {
+    console.error('[server] Exception caught in /api/telegram/resolve:', error);
+    if (error.stack) {
+      console.error('[server] Full stack trace:', error.stack);
+    }
     fastify.log.error(error);
     reply.status(400).send({ error: error.message || 'Failed to resolve link' });
   }

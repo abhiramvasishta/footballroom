@@ -125,21 +125,33 @@ export class TelegramProvider implements IStorageProvider {
   }
 
   async resolveLink(link: string): Promise<{ videoId: string, metadata: any }> {
+    console.log(`[TelegramProvider] resolveLink() entered for link: ${link}`);
     const match = link.match(/t\.me\/(?:c\/)?([a-zA-Z0-9_-]+)\/(\d+)/);
-    if (!match) throw new Error('Invalid Telegram link format');
+    if (!match) {
+      console.error('[TelegramProvider] Invalid Telegram link format');
+      throw new Error('Invalid Telegram link format');
+    }
 
     const channelIdRaw = match[1];
     const msgId = parseInt(match[2]);
 
     const channelId = channelIdRaw.match(/^\d+$/) ? "-100" + channelIdRaw : channelIdRaw;
+    
+    console.log(`[TelegramProvider] Before await this.client.getEntity(${channelId})`);
     const channel = await this.client.getEntity(channelId);
+    console.log(`[TelegramProvider] After await this.client.getEntity()`);
+    
+    console.log(`[TelegramProvider] Before await this.client.getMessages() for msgId: ${msgId}`);
     const messages = await this.client.getMessages(channel, { ids: [msgId] });
+    console.log(`[TelegramProvider] After await this.client.getMessages(), count: ${messages.length}`);
 
     if (!messages.length || !messages[0].media || !('document' in messages[0].media)) {
+      console.error('[TelegramProvider] Message does not contain a video/document');
       throw new Error('Message does not contain a video/document');
     }
 
     const doc = messages[0].media.document as Api.Document;
+    console.log(`[TelegramProvider] Document extracted from message. docId: ${doc.id}`);
     
     // Extract video attributes
     let duration: number | undefined = undefined;
@@ -154,13 +166,16 @@ export class TelegramProvider implements IStorageProvider {
     let hasThumbnail = false;
     if (doc.thumbs && doc.thumbs.length > 0) {
       try {
+        console.log(`[TelegramProvider] Before await this.client.downloadMedia() for thumbnail`);
         const thumbBuffer = await this.client.downloadMedia(messages[0], { thumb: 0 });
+        console.log(`[TelegramProvider] After await this.client.downloadMedia() for thumbnail`);
         if (thumbBuffer) {
           cache.set(`thumb_${doc.id.toString()}`, thumbBuffer as Buffer);
           hasThumbnail = true;
         }
-      } catch (e) {
-        console.error('Failed to download thumbnail', e);
+      } catch (e: any) {
+        console.error('[TelegramProvider] Failed to download thumbnail', e);
+        if (e.stack) console.error('[TelegramProvider] Thumbnail download stack trace:', e.stack);
       }
     }
 
@@ -168,7 +183,7 @@ export class TelegramProvider implements IStorageProvider {
     const videoId = `video_${crypto.randomBytes(4).toString('hex')}`;
     const thumbnailPath = hasThumbnail ? `/api/telegram/thumbnail/${doc.id.toString()}` : undefined;
 
-    console.log("Saving metadata to Firestore");
+    console.log("[TelegramProvider] Saving metadata to Firestore");
     console.log({
         videoId,
         telegramDocumentId: doc.id.toString(),
@@ -177,6 +192,7 @@ export class TelegramProvider implements IStorageProvider {
         telegramChannelId: channelIdRaw
     });
 
+    console.log(`[TelegramProvider] Before await saveVideoMetadata()`);
     // Securely store Telegram metadata in Firestore
     await saveVideoMetadata({
       videoId,
@@ -194,10 +210,9 @@ export class TelegramProvider implements IStorageProvider {
       createdAt: new Date().toISOString(),
       provider: 'telegram'
     });
-    console.log("Firestore save completed successfully");
+    console.log("[TelegramProvider] After await saveVideoMetadata() - Firestore save completed successfully");
 
-    // Return ONLY safe metadata to the frontend
-    return {
+    const returnPayload = {
       videoId,
       metadata: {
         size: doc.size ? doc.size.toJSNumber() : undefined,
@@ -207,6 +222,9 @@ export class TelegramProvider implements IStorageProvider {
         thumbnail: thumbnailPath,
       }
     };
+    console.log(`[TelegramProvider] Returning payload:`, returnPayload);
+    // Return ONLY safe metadata to the frontend
+    return returnPayload;
   }
 
   getThumbnail(docId: string): Buffer | null {
