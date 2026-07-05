@@ -88,7 +88,11 @@ export const deleteTeam = async (teamId: string) => {
 };
 
 export const saveMatch = async (match: Match) => {
-  await setDoc(doc(db, 'matches', match.id), match);
+  // Firestore does not support undefined values, so we strip them before saving.
+  const serializedMatch = Object.fromEntries(
+    Object.entries(match).filter(([_, v]) => v !== undefined)
+  ) as Match;
+  await setDoc(doc(db, 'matches', match.id), serializedMatch);
 };
 
 export const deleteMatch = async (matchId: string) => {
