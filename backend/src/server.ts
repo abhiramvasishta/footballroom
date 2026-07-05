@@ -137,6 +137,26 @@ fastify.get('/api/telegram/thumbnail/:docId', async (request, reply) => {
   reply.header('Content-Type', 'image/jpeg').send(thumbBuffer);
 });
 
+// --- API Cache ---
+interface CacheEntry {
+  data: any;
+  expiresAt: number;
+}
+const apiCache = new Map<string, CacheEntry>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+function getCached(key: string) {
+  const entry = apiCache.get(key);
+  if (entry && entry.expiresAt > Date.now()) {
+    return entry.data;
+  }
+  return null;
+}
+
+function setCache(key: string, data: any) {
+  apiCache.set(key, { data, expiresAt: Date.now() + CACHE_TTL });
+}
+
 // --- FIFA Data Endpoints ---
 
 fastify.get('/api/fifa/live', async (request, reply) => {
@@ -152,10 +172,16 @@ fastify.get('/api/fifa/live', async (request, reply) => {
 fastify.get('/api/fifa/match/:matchId', async (request, reply) => {
   try {
     const { matchId } = request.params as { matchId: string };
+    
+    const cached = getCached(`match_${matchId}`);
+    if (cached) return reply.send(cached);
+
     const match = await fifaProvider.getMatchDetails(matchId);
     if (!match) {
       return reply.status(404).send({ error: 'Match not found' });
     }
+    
+    setCache(`match_${matchId}`, match);
     reply.send(match);
   } catch (error: any) {
     fastify.log.error(error);
@@ -176,7 +202,13 @@ fastify.get('/api/fifa/today', async (request, reply) => {
 fastify.get('/api/fifa/date/:date', async (request, reply) => {
   try {
     const { date } = request.params as { date: string };
+    
+    const cached = getCached(`date_${date}`);
+    if (cached) return reply.send(cached);
+
     const matches = await fifaProvider.getMatchesByDate(date);
+    
+    setCache(`date_${date}`, matches);
     reply.send(matches);
   } catch (error: any) {
     fastify.log.error(error);

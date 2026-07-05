@@ -5,6 +5,8 @@ export interface ParsedMatch {
   competition: string;
   homeTeam: string;
   awayTeam: string;
+  homeEspnId?: string;
+  awayEspnId?: string;
   homeScore: number | null;
   awayScore: number | null;
   homePenalties: number | null;
@@ -12,12 +14,15 @@ export interface ParsedMatch {
   status: number; 
   kickoffTime: string;
   venue: string | null;
+  city?: string | null;
   referee: string | null;
   goals: any[];
   cards: any[];
   substitutions: any[];
   homeLineup: any[];
   awayLineup: any[];
+  homeStatistics?: any[];
+  awayStatistics?: any[];
 }
 
 export class EspnProvider {
@@ -127,11 +132,16 @@ export class EspnProvider {
       refereeName = ref ? ref.displayName : data.gameInfo.officials[0].displayName;
     }
 
+    const homeStats = data.boxscore?.teams?.find((t: any) => t.team?.id === home.team.id)?.statistics || [];
+    const awayStats = data.boxscore?.teams?.find((t: any) => t.team?.id === away.team.id)?.statistics || [];
+
     return {
       id: header.id,
       competition: 'FIFA World Cup',
       homeTeam: home.team.name,
       awayTeam: away.team.name,
+      homeEspnId: home.team.id,
+      awayEspnId: away.team.id,
       homeScore: home.score ? parseInt(home.score) : null,
       awayScore: away.score ? parseInt(away.score) : null,
       homePenalties: home.shootoutScore ? parseInt(home.shootoutScore) : null,
@@ -139,12 +149,15 @@ export class EspnProvider {
       status: this.mapStatus(header.status.type.state),
       kickoffTime: header.date,
       venue: data.gameInfo?.venue?.fullName || null,
+      city: data.gameInfo?.venue?.address?.city || null,
       referee: refereeName,
       goals,
       cards,
       substitutions,
       homeLineup,
-      awayLineup
+      awayLineup,
+      homeStatistics: homeStats,
+      awayStatistics: awayStats
     };
   }
 

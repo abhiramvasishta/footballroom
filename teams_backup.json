@@ -1,0 +1,258 @@
+{
+  "ALG": {
+    "id": "ALG",
+    "name": "Algeria",
+    "fifaCode": "ALG",
+    "countryCode": "dz",
+    "flagUrl": "https://flagcdn.com/w80/dz.png",
+    "confederation": "CAF"
+  },
+  "ARG": {
+    "id": "ARG",
+    "name": "Argentina",
+    "fifaCode": "ARG",
+    "countryCode": "ar",
+    "flagUrl": "https://flagcdn.com/w80/ar.png",
+    "confederation": "CONMEBOL"
+  },
+  "AUS": {
+    "id": "AUS",
+    "name": "Australia",
+    "fifaCode": "AUS",
+    "countryCode": "au",
+    "flagUrl": "https://flagcdn.com/w80/au.png",
+    "confederation": "AFC"
+  },
+  "AUT": {
+    "id": "AUT",
+    "name": "Austria",
+    "fifaCode": "AUT",
+    "countryCode": "at",
+    "flagUrl": "https://flagcdn.com/w80/at.png",
+    "confederation": "UEFA"
+  },
+  "BEL": {
+    "id": "BEL",
+    "name": "Belgium",
+    "fifaCode": "BEL",
+    "countryCode": "be",
+    "flagUrl": "https://flagcdn.com/w80/be.png",
+    "confederation": "UEFA"
+  },
+  "BIH": {
+    "id": "BIH",
+    "name": "Bosnia & Herzegovina",
+    "fifaCode": "BIH",
+    "countryCode": "ba",
+    "flagUrl": "https://flagcdn.com/w80/ba.png",
+    "confederation": "UEFA"
+  },
+  "BRA": {
+    "id": "BRA",
+    "name": "Brazil",
+    "fifaCode": "BRA",
+    "countryCode": "br",
+    "flagUrl": "https://flagcdn.com/w80/br.png",
+    "confederation": "CONMEBOL"
+  },
+  "CAN": {
+    "id": "CAN",
+    "name": "Canada",
+    "fifaCode": "CAN",
+    "countryCode": "ca",
+    "flagUrl": "https://flagcdn.com/w80/ca.png",
+    "confederation": "CONCACAF"
+  },
+  "CIV": {
+    "id": "CIV",
+    "name": "Ivory Coast",
+    "fifaCode": "CIV",
+    "countryCode": "ci",
+    "flagUrl": "https://flagcdn.com/w80/ci.png",
+    "confederation": "CAF"
+  },
+  "COD": {
+    "id": "COD",
+    "name": "DR Congo",
+    "fifaCode": "COD",
+    "countryCode": "cd",
+    "flagUrl": "https://flagcdn.com/w80/cd.png",
+    "confederation": "CAF"
+  },
+  "COL": {
+    "id": "COL",
+    "name": "Colombia",
+    "fifaCode": "COL",
+    "countryCode": "co",
+    "flagUrl": "https://flagcdn.com/w80/co.png",
+    "confederation": "CONMEBOL"
+  },
+  "CPV": {
+    "id": "CPV",
+    "name": "Cape Verde",
+    "fifaCode": "CPV",
+    "countryCode": "cv",
+    "flagUrl": "https://flagcdn.com/w80/cv.png",
+    "confederation": "CAF"
+  },
+  "CRO": {
+    "id": "CRO",
+    "name": "Croatia",
+    "fifaCode": "CRO",
+    "countryCode": "hr",
+    "flagUrl": "https://flagcdn.com/w80/hr.png",
+    "confederation": "UEFA"
+  },
+  "ECU": {
+    "id": "ECU",
+    "name": "Ecuador",
+    "fifaCode": "ECU",
+    "countryCode": "ec",
+    "flagUrl": "https://flagcdn.com/w80/ec.png",
+    "confederation": "CONMEBOL"
+  },
+  "EGY": {
+    "id": "EGY",
+    "name": "Egypt",
+    "fifaCode": "EGY",
+    "countryCode": "eg",
+    "flagUrl": "https://flagcdn.com/w80/eg.png",
+    "confederation": "CAF"
+  },
+  "ENG": {
+    "id": "ENG",
+    "name": "England",
+    "fifaCode": "ENG",
+    "countryCode": "gb-eng",
+    "flagUrl": "https://flagcdn.com/w80/gb-eng.png",
+    "confederation": "UEFA"
+  },
+  "ESP": {
+    "id": "ESP",
+    "name": "Spain",
+    "fifaCode": "ESP",
+    "countryCode": "es",
+    "flagUrl": "https://flagcdn.com/w80/es.png",
+    "confederation": "UEFA"
+  },
+  "FRA": {
+    "id": "FRA",
+    "name": "France",
+    "fifaCode": "FRA",
+    "countryCode": "fr",
+    "flagUrl": "https://flagcdn.com/w80/fr.png",
+    "confederation": "UEFA"
+  },
+  "GER": {
+    "id": "GER",
+    "name": "Germany",
+    "fifaCode": "GER",
+    "countryCode": "de",
+    "flagUrl": "https://flagcdn.com/w80/de.png",
+    "confederation": "UEFA"
+  },
+  "GHA": {
+    "id": "GHA",
+    "name": "Ghana",
+    "fifaCode": "GHA",
+    "countryCode": "gh",
+    "flagUrl": "https://flagcdn.com/w80/gh.png",
+    "confederation": "CAF"
+  },
+  "JPN": {
+    "id": "JPN",
+    "name": "Japan",
+    "fifaCode": "JPN",
+    "countryCode": "jp",
+    "flagUrl": "https://flagcdn.com/w80/jp.png",
+    "confederation": "AFC"
+  },
+  "MAR": {
+    "id": "MAR",
+    "name": "Morocco",
+    "fifaCode": "MAR",
+    "countryCode": "ma",
+    "flagUrl": "https://flagcdn.com/w80/ma.png",
+    "confederation": "CAF"
+  },
+  "MEX": {
+    "id": "MEX",
+    "name": "Mexico",
+    "fifaCode": "MEX",
+    "countryCode": "mx",
+    "flagUrl": "https://flagcdn.com/w80/mx.png",
+    "confederation": "CONCACAF"
+  },
+  "NED": {
+    "id": "NED",
+    "name": "Netherlands",
+    "fifaCode": "NED",
+    "countryCode": "nl",
+    "flagUrl": "https://flagcdn.com/w80/nl.png",
+    "confederation": "UEFA"
+  },
+  "NOR": {
+    "id": "NOR",
+    "name": "Norway",
+    "fifaCode": "NOR",
+    "countryCode": "no",
+    "flagUrl": "https://flagcdn.com/w80/no.png",
+    "confederation": "UEFA"
+  },
+  "PAR": {
+    "id": "PAR",
+    "name": "Paraguay",
+    "fifaCode": "PAR",
+    "countryCode": "py",
+    "flagUrl": "https://flagcdn.com/w80/py.png",
+    "confederation": "CONMEBOL"
+  },
+  "POR": {
+    "id": "POR",
+    "name": "Portugal",
+    "fifaCode": "POR",
+    "countryCode": "pt",
+    "flagUrl": "https://flagcdn.com/w80/pt.png",
+    "confederation": "UEFA"
+  },
+  "SEN": {
+    "id": "SEN",
+    "name": "Senegal",
+    "fifaCode": "SEN",
+    "countryCode": "sn",
+    "flagUrl": "https://flagcdn.com/w80/sn.png",
+    "confederation": "CAF"
+  },
+  "SUI": {
+    "id": "SUI",
+    "name": "Switzerland",
+    "fifaCode": "SUI",
+    "countryCode": "ch",
+    "flagUrl": "https://flagcdn.com/w80/ch.png",
+    "confederation": "UEFA"
+  },
+  "SWE": {
+    "id": "SWE",
+    "name": "Sweden",
+    "fifaCode": "SWE",
+    "countryCode": "se",
+    "flagUrl": "https://flagcdn.com/w80/se.png",
+    "confederation": "UEFA"
+  },
+  "USA": {
+    "id": "USA",
+    "name": "USA",
+    "fifaCode": "USA",
+    "countryCode": "us",
+    "flagUrl": "https://flagcdn.com/w80/us.png",
+    "confederation": "CONCACAF"
+  },
+  "ZAF": {
+    "id": "ZAF",
+    "name": "South Africa",
+    "fifaCode": "ZAF",
+    "countryCode": "za",
+    "flagUrl": "https://flagcdn.com/w80/za.png",
+    "confederation": "CAF"
+  }
+}

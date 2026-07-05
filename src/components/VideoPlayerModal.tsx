@@ -1,8 +1,13 @@
 import { X } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
 import type { Match, Team } from '../types';
-import { formatISTDateOnly } from '../utils/date';
 import { SmartVideoPlayer } from './SmartVideoPlayer';
+import { useMatchDetails } from '../hooks/useMatchDetails';
+import { MatchInfoPanel } from './player/match-info/MatchInfoPanel';
+import { MatchStatistics } from './player/match-info/MatchStatistics';
+import { MatchEventsTimeline } from './player/match-info/MatchEventsTimeline';
+import { MatchLineups } from './player/match-info/MatchLineups';
 
 interface Props {
   match: Match;
@@ -12,104 +17,112 @@ interface Props {
 }
 
 export const VideoPlayerModal = ({ match, homeTeam, awayTeam, onClose }: Props) => {
-  if (!match.highlightUrl) return null;
+  const { data: detailedMatch, loading, error } = useMatchDetails(match, homeTeam, awayTeam);
 
+  // Scroll Lock for iOS and Android
+  useEffect(() => {
+    // Save original styles
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    
+    // Prevent scrolling on body
+    document.body.style.overflow = 'hidden';
+    
+    return () => {
+      // Restore on unmount
+      document.body.style.overflow = originalStyle;
+    };
+  }, []);
+
+  if (!match.highlightUrl) return null;
   const streamUrl = match.highlightUrl;
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-bg-primary overflow-hidden">
-
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 bg-bg-secondary/80 backdrop-blur-md border-b border-[rgba(0,217,255,0.18)] z-10 shrink-0">
+    <div className="fixed inset-0 z-[100] flex flex-col bg-bg-primary overflow-y-auto overscroll-none">
+      
+      {/* Header (Non-sticky, just top) */}
+      <div className="flex items-center justify-between p-4 bg-bg-secondary/80 backdrop-blur-md border-b border-[rgba(0,217,255,0.18)] shrink-0 z-50">
         <div className="flex flex-col">
           <span className="font-display font-bold text-lg text-white">
             {homeTeam?.name || 'TBD'} vs {awayTeam?.name || 'TBD'}
           </span>
           <div className="flex flex-wrap items-center gap-2 text-xs text-text-secondary mt-1">
             <span className="font-bold text-cyan-primary">FT • {match.homeScore ?? '-'}–{match.awayScore ?? '-'}</span>
-            <span>•</span>
-            <span>🏟 {match.stadium}</span>
-            <span>•</span>
-            <span>📅 {formatISTDateOnly(match.kickoff)}</span>
           </div>
         </div>
 
         <button
           onClick={onClose}
           className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors shrink-0 group"
+          aria-label="Close video player"
         >
           <X size={24} className="text-white group-hover:rotate-90 transition-transform duration-300" />
         </button>
       </div>
 
-      {/* Video Container */}
+      {/* Sticky Video Container for Mobile, normal for Desktop */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.3 }}
-        className="flex-1 w-full relative flex items-center justify-center p-4 md:p-8"
+        className="w-full relative flex items-center justify-center bg-black shrink-0 z-40 lg:static sticky top-0"
+        style={{ minHeight: '30vh' }}
       >
-        <div className="w-full h-full max-w-5xl mx-auto flex items-center justify-center">
+        <div className="w-full max-w-5xl mx-auto flex items-center justify-center p-0 lg:p-8">
           <SmartVideoPlayer src={streamUrl} markers={match.goals || []} />
         </div>
       </motion.div>
 
-      {/* Stats Footer */}
-      <div className="shrink-0 p-4 bg-bg-secondary/80 backdrop-blur-md border-t border-[rgba(0,217,255,0.18)] max-h-48 overflow-y-auto">
-        <div className="max-w-4xl mx-auto flex flex-row gap-2 sm:gap-6 justify-between text-xs sm:text-sm w-full">
-
-          {/* Home Goals */}
-          <div className="flex-1 flex flex-col text-left">
-            <span className="text-xs text-cyan-primary uppercase tracking-widest font-bold mb-2 border-b border-white/10 pb-1">{homeTeam?.name || 'Home'}</span>
-            <div className="flex flex-col gap-1">
-              {(match.goals || []).filter(g => g.isHomeTeam).sort((a, b) => (parseInt(a.minute.replace(/\D/g, '')) || 0) - (parseInt(b.minute.replace(/\D/g, '')) || 0)).map(goal => (
-                <div key={goal.id} className="text-white text-xs flex items-center gap-2">
-                  <span className="font-mono text-cyan-primary/70">{goal.minute}'</span>
-                  <span className="font-medium">{goal.playerName}</span>
-                  {goal.isPenalty && <span className="text-[9px] bg-white/10 px-1 rounded text-text-secondary">P</span>}
-                  {goal.isOwnGoal && <span className="text-[9px] bg-status-danger/20 px-1 rounded text-status-danger">OG</span>}
-                </div>
-              ))}
+      {/* Details Container - Lazy loaded */}
+      <div className="flex-1 w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6 lg:gap-8 z-10">
+        
+        {loading ? (
+          // Progressive Loading Skeletons
+          <div className="flex flex-col gap-6 lg:gap-8 animate-pulse">
+            <div className="h-32 bg-white/5 rounded-xl border border-white/10" />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+              <div className="lg:col-span-7 flex flex-col gap-6 lg:gap-8">
+                <div className="h-48 bg-white/5 rounded-xl border border-white/10" />
+                <div className="h-64 bg-white/5 rounded-xl border border-white/10" />
+              </div>
+              <div className="lg:col-span-5">
+                <div className="h-[500px] bg-white/5 rounded-xl border border-white/10" />
+              </div>
             </div>
           </div>
-
-          {/* Center Info (Penalties / AET) */}
-          <div className="flex-[0.5] flex flex-col justify-start items-center text-center gap-2 px-4 border-x border-white/5">
-            {match.penalties && (
-              <div className="flex flex-col items-center gap-1">
-                <span className="text-xs text-text-secondary uppercase tracking-widest font-bold">Penalties</span>
-                <span className="text-lg font-mono font-bold text-cyan-primary">
-                  {match.homePenaltyScore ?? '-'} - {match.awayPenaltyScore ?? '-'}
-                </span>
-              </div>
-            )}
-            {match.extraTime && !match.penalties && (
-              <div className="flex flex-col items-center gap-1">
-                <span className="text-xs text-text-secondary uppercase tracking-widest font-bold">Extra Time</span>
-                <span className="text-white text-xs">Played</span>
-              </div>
-            )}
+        ) : error || !detailedMatch ? (
+          // Fallback if ESPN data fails - Just hide it, do not show error
+          <div className="text-center text-text-secondary text-sm p-8 opacity-50">
+            No additional match details available.
           </div>
+        ) : (
+          // Success Render
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="flex flex-col gap-6 lg:gap-8"
+          >
+            {/* Match Info Panel always full width */}
+            <MatchInfoPanel match={detailedMatch} />
 
-          {/* Away Goals */}
-          <div className="flex-1 flex flex-col text-right">
-            <span className="text-xs text-cyan-primary uppercase tracking-widest font-bold mb-2 border-b border-white/10 pb-1">{awayTeam?.name || 'Away'}</span>
-            <div className="flex flex-col gap-1 items-end">
-              {(match.goals || []).filter(g => !g.isHomeTeam).sort((a, b) => (parseInt(a.minute.replace(/\D/g, '')) || 0) - (parseInt(b.minute.replace(/\D/g, '')) || 0)).map(goal => (
-                <div key={goal.id} className="text-white text-xs flex items-center justify-end gap-2">
-                  {goal.isOwnGoal && <span className="text-[9px] bg-status-danger/20 px-1 rounded text-status-danger">OG</span>}
-                  {goal.isPenalty && <span className="text-[9px] bg-white/10 px-1 rounded text-text-secondary">P</span>}
-                  <span className="font-medium">{goal.playerName}</span>
-                  <span className="font-mono text-cyan-primary/70">{goal.minute}'</span>
-                </div>
-              ))}
+            {/* Desktop Two-Column Layout / Mobile Stack */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+              
+              <div className="lg:col-span-7 flex flex-col gap-6 lg:gap-8">
+                <MatchStatistics match={detailedMatch} />
+                <MatchEventsTimeline match={detailedMatch} />
+              </div>
+
+              <div className="lg:col-span-5">
+                <MatchLineups match={detailedMatch} />
+              </div>
+
             </div>
-          </div>
+          </motion.div>
+        )}
 
-        </div>
       </div>
-
     </div>
   );
 };

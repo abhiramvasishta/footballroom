@@ -1,0 +1,904 @@
+{
+  "M100": {
+    "id": "M100",
+    "round": "Quarter Finals",
+    "homeTeamId": null,
+    "awayTeamId": null,
+    "date": "2026-07-12",
+    "kickoff": "2026-07-12T01:00:00Z",
+    "completed": false,
+    "winnerTeamId": null,
+    "nextMatchId": "M102",
+    "nextSlot": "away",
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "city": "Kansas City, Missouri, USA",
+    "stadium": "Arrowhead Stadium"
+  },
+  "M101": {
+    "id": "M101",
+    "round": "Semi Finals",
+    "homeTeamId": null,
+    "awayTeamId": null,
+    "date": "2026-07-15",
+    "kickoff": "2026-07-14T19:00:00Z",
+    "completed": false,
+    "winnerTeamId": null,
+    "nextMatchId": "M104",
+    "nextSlot": "home",
+    "loserNextMatchId": "M103",
+    "loserNextSlot": "home",
+    "city": "East Rutherford, New Jersey, USA",
+    "stadium": "MetLife Stadium"
+  },
+  "M102": {
+    "id": "M102",
+    "round": "Semi Finals",
+    "homeTeamId": null,
+    "awayTeamId": null,
+    "date": "2026-07-16",
+    "kickoff": "2026-07-15T19:00:00Z",
+    "completed": false,
+    "winnerTeamId": null,
+    "nextMatchId": "M104",
+    "nextSlot": "away",
+    "loserNextMatchId": "M103",
+    "loserNextSlot": "away",
+    "city": "Atlanta, Georgia, USA",
+    "stadium": "Mercedes-Benz Stadium"
+  },
+  "M103": {
+    "id": "M103",
+    "round": "Third Place",
+    "homeTeamId": null,
+    "awayTeamId": null,
+    "date": "2026-07-19",
+    "kickoff": "2026-07-18T21:00:00Z",
+    "completed": false,
+    "winnerTeamId": null,
+    "nextMatchId": null,
+    "nextSlot": null,
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "city": "Miami Gardens, Florida, USA",
+    "stadium": "Hard Rock Stadium"
+  },
+  "M104": {
+    "id": "M104",
+    "round": "Final",
+    "homeTeamId": null,
+    "awayTeamId": null,
+    "date": "2026-07-20",
+    "kickoff": "2026-07-19T19:00:00Z",
+    "completed": false,
+    "winnerTeamId": null,
+    "nextMatchId": null,
+    "nextSlot": null,
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "city": "East Rutherford, New Jersey, USA",
+    "stadium": "MetLife Stadium"
+  },
+  "M73": {
+    "id": "M73",
+    "round": "Round of 32",
+    "homeTeamId": "ZAF",
+    "awayTeamId": "CAN",
+    "date": "2026-06-29",
+    "kickoff": "2026-06-28T19:00:00Z",
+    "isLocked": false,
+    "stadium": "SoFi Stadium",
+    "city": "Inglewood, California, USA",
+    "winnerTeamId": "CAN",
+    "completed": true,
+    "nextMatchId": "M90",
+    "nextSlot": "home",
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "extraTime": false,
+    "penalties": false,
+    "goals": [
+      {
+        "isHomeTeam": false,
+        "minute": "90+2",
+        "playerName": "S. Eustaquio",
+        "id": "cdd2efc7-3dee-466f-8f06-0addcd081c2a"
+      }
+    ],
+    "homeScore": 0,
+    "awayScore": 1,
+    "highlightUrl": "video_ce1828a4"
+  },
+  "M74": {
+    "id": "M74",
+    "round": "Round of 32",
+    "homeTeamId": "GER",
+    "awayTeamId": "PAR",
+    "date": "2026-06-30",
+    "kickoff": "2026-06-29T20:30:00Z",
+    "isLocked": false,
+    "stadium": "Gillette Stadium",
+    "city": "Foxborough, Massachusetts, USA",
+    "winnerTeamId": "PAR",
+    "completed": true,
+    "nextMatchId": "M89",
+    "nextSlot": "home",
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "extraTime": false,
+    "penalties": true,
+    "goals": [
+      {
+        "isHomeTeam": true,
+        "id": "e065f82a-1daf-4e9f-af31-60c67f0d5936",
+        "playerName": "K. Havertz",
+        "minute": "54"
+      },
+      {
+        "isHomeTeam": false,
+        "id": "b8711523-fba6-4d52-9f7d-b10168250422",
+        "minute": "42",
+        "playerName": "J. Enciso"
+      }
+    ],
+    "homeScore": 1,
+    "awayScore": 1,
+    "homePenaltyScore": 3,
+    "awayPenaltyScore": 4,
+    "highlightUrl": "video_f7244f09"
+  },
+  "M75": {
+    "id": "M75",
+    "round": "Round of 32",
+    "homeTeamId": "NED",
+    "awayTeamId": "MAR",
+    "date": "2026-06-30",
+    "kickoff": "2026-06-30T00:00:00Z",
+    "isLocked": false,
+    "stadium": "Estadio BBVA",
+    "city": "Monterrey, Mexico",
+    "winnerTeamId": "MAR",
+    "completed": true,
+    "nextMatchId": "M90",
+    "nextSlot": "away",
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "extraTime": false,
+    "penalties": true,
+    "goals": [
+      {
+        "id": "43d084f7-b53a-4ecf-a9ce-0d0355a6f0d7",
+        "minute": "72",
+        "playerName": "C. Gakpo",
+        "isHomeTeam": true
+      },
+      {
+        "id": "55b06f58-e790-41e2-92fd-87c93aa237e4",
+        "playerName": "I. Diop",
+        "minute": "90+2",
+        "isHomeTeam": false
+      }
+    ],
+    "homeScore": 1,
+    "awayScore": 1,
+    "homePenaltyScore": 2,
+    "awayPenaltyScore": 3,
+    "highlightUrl": "video_2590a8d7"
+  },
+  "M76": {
+    "id": "M76",
+    "round": "Round of 32",
+    "homeTeamId": "BRA",
+    "awayTeamId": "JPN",
+    "date": "2026-06-29",
+    "kickoff": "2026-06-29T17:00:00Z",
+    "isLocked": false,
+    "stadium": "NRG Stadium",
+    "city": "Houston, Texas, USA",
+    "winnerTeamId": "BRA",
+    "completed": true,
+    "nextMatchId": "M91",
+    "nextSlot": "home",
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "extraTime": false,
+    "penalties": false,
+    "goals": [
+      {
+        "playerName": "Casemiro",
+        "minute": "56",
+        "id": "7911c7c8-fc89-4ee2-a356-0723073a3b12",
+        "isHomeTeam": true
+      },
+      {
+        "isHomeTeam": true,
+        "id": "37bcc013-0770-494e-87e1-9aca812b96bf",
+        "playerName": "G. Martinelli",
+        "minute": "90+5"
+      },
+      {
+        "playerName": "K. Sano",
+        "minute": "29",
+        "id": "5c22e190-33c6-4e59-8796-4f27d6c0b41a",
+        "isHomeTeam": false
+      }
+    ],
+    "homeScore": 2,
+    "awayScore": 1,
+    "highlightUrl": "video_c2f5b7c4"
+  },
+  "M77": {
+    "id": "M77",
+    "round": "Round of 32",
+    "homeTeamId": "FRA",
+    "awayTeamId": "SWE",
+    "date": "2026-07-01",
+    "kickoff": "2026-06-30T21:00:00Z",
+    "isLocked": false,
+    "stadium": "MetLife Stadium",
+    "city": "East Rutherford, New Jersey, USA",
+    "winnerTeamId": "FRA",
+    "completed": true,
+    "nextMatchId": "M89",
+    "nextSlot": "away",
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "extraTime": false,
+    "penalties": false,
+    "goals": [
+      {
+        "id": "68f0a7ab-59a5-4c2c-b4ab-cbe4bdeaa890",
+        "playerName": "Mbappe",
+        "minute": "45",
+        "isHomeTeam": true
+      },
+      {
+        "minute": "74",
+        "playerName": "Mbappe",
+        "id": "6cedb17c-7803-4995-b576-fb8c97e6aadd",
+        "isHomeTeam": true
+      },
+      {
+        "isHomeTeam": true,
+        "id": "1c22a0d9-6575-4193-aea4-be033a2e1a49",
+        "playerName": "Barcola",
+        "minute": "53"
+      }
+    ],
+    "homeScore": 3,
+    "awayScore": 0,
+    "highlightUrl": "video_ff3c0da6"
+  },
+  "M78": {
+    "id": "M78",
+    "round": "Round of 32",
+    "homeTeamId": "CIV",
+    "awayTeamId": "NOR",
+    "date": "2026-06-30",
+    "kickoff": "2026-06-30T17:00:00Z",
+    "isLocked": false,
+    "stadium": "AT&T Stadium",
+    "city": "Arlington, Texas, USA",
+    "winnerTeamId": "NOR",
+    "completed": true,
+    "nextMatchId": "M91",
+    "nextSlot": "away",
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "extraTime": false,
+    "penalties": false,
+    "goals": [
+      {
+        "id": "2e8dfcb1-97e7-4275-9a7d-69d1d8e5c9de",
+        "minute": "39",
+        "playerName": "Antonio Nusa",
+        "isHomeTeam": false
+      },
+      {
+        "isHomeTeam": true,
+        "id": "70de20af-cd98-4033-8aa4-97f2c206c3d1",
+        "minute": "74",
+        "playerName": "Amad Diallo"
+      },
+      {
+        "isHomeTeam": false,
+        "id": "18c8996d-4935-4759-865c-2f2e72010b10",
+        "playerName": "Haaland",
+        "minute": "86"
+      }
+    ],
+    "homeScore": 1,
+    "awayScore": 2,
+    "highlightUrl": "video_3f961798"
+  },
+  "M79": {
+    "id": "M79",
+    "round": "Round of 32",
+    "homeTeamId": "MEX",
+    "awayTeamId": "ECU",
+    "date": "2026-07-01",
+    "kickoff": "2026-07-01T00:00:00Z",
+    "isLocked": false,
+    "stadium": "Estadio Azteca",
+    "city": "Mexico City, Mexico",
+    "winnerTeamId": "MEX",
+    "completed": true,
+    "nextMatchId": "M92",
+    "nextSlot": "home",
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "extraTime": false,
+    "penalties": false,
+    "goals": [
+      {
+        "isHomeTeam": true,
+        "playerName": "Quinones",
+        "minute": "22",
+        "id": "3e97adab-b41e-4e8f-836a-bf328d455433"
+      },
+      {
+        "id": "9b5b8e18-6533-4a16-9c5e-f1ab3a5d6417",
+        "minute": "31",
+        "playerName": "Raul Jiminez",
+        "isHomeTeam": true
+      }
+    ],
+    "homeScore": 2,
+    "awayScore": 0,
+    "highlightUrl": "video_47f1a52e"
+  },
+  "M80": {
+    "id": "M80",
+    "round": "Round of 32",
+    "homeTeamId": "ENG",
+    "awayTeamId": "COD",
+    "date": "2026-07-01",
+    "kickoff": "2026-07-01T16:00:00Z",
+    "isLocked": false,
+    "stadium": "Mercedes-Benz Stadium",
+    "city": "Atlanta, Georgia, USA",
+    "winnerTeamId": "ENG",
+    "completed": true,
+    "nextMatchId": "M92",
+    "nextSlot": "away",
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "extraTime": false,
+    "penalties": false,
+    "goals": [
+      {
+        "isHomeTeam": false,
+        "id": "2d1b1632-37a6-440f-9f18-869fb568362b",
+        "minute": "7",
+        "playerName": "Cipenga"
+      },
+      {
+        "isHomeTeam": true,
+        "id": "63792c32-0c2a-4176-a613-8e45e2146c88",
+        "playerName": "Harry Kane",
+        "minute": "75"
+      },
+      {
+        "isHomeTeam": true,
+        "playerName": "Harry Kane",
+        "minute": "86",
+        "id": "a544a49b-365a-4d1b-bb6e-36b3c7344a05"
+      }
+    ],
+    "homeScore": 2,
+    "awayScore": 1,
+    "highlightUrl": "video_33181b7d"
+  },
+  "M81": {
+    "id": "M81",
+    "round": "Round of 32",
+    "homeTeamId": "USA",
+    "awayTeamId": "BIH",
+    "date": "2026-07-02",
+    "kickoff": "2026-07-02T00:00:00Z",
+    "isLocked": false,
+    "stadium": "Levi's Stadium",
+    "city": "Santa Clara, California, USA",
+    "winnerTeamId": "USA",
+    "completed": true,
+    "nextMatchId": "M94",
+    "nextSlot": "home",
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "extraTime": false,
+    "penalties": false,
+    "goals": [
+      {
+        "playerName": "F Balogun",
+        "id": "9160baa8-3fb6-4191-b137-7978f8d0d676",
+        "isHomeTeam": true,
+        "minute": "45"
+      },
+      {
+        "isHomeTeam": true,
+        "minute": "82",
+        "playerName": "M Tillman",
+        "id": "c5bea468-4a6b-45ad-9a63-c93629cd7dfb"
+      }
+    ],
+    "homeScore": 2,
+    "awayScore": 0,
+    "highlightUrl": "video_0c24b4fd"
+  },
+  "M82": {
+    "id": "M82",
+    "round": "Round of 32",
+    "homeTeamId": "BEL",
+    "awayTeamId": "SEN",
+    "date": "2026-07-02",
+    "kickoff": "2026-07-01T20:00:00Z",
+    "isLocked": false,
+    "stadium": "Lumen Field",
+    "city": "Seattle, Washington, USA",
+    "winnerTeamId": "BEL",
+    "completed": true,
+    "nextMatchId": "M94",
+    "nextSlot": "away",
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "extraTime": true,
+    "penalties": false,
+    "goals": [
+      {
+        "playerName": "Diarra",
+        "minute": "24",
+        "isHomeTeam": false,
+        "id": "2afa0ac1-46ce-4365-a344-dc5ff766db9f"
+      },
+      {
+        "id": "2c28dac0-12d3-4af3-827e-6ab7f91272cc",
+        "isHomeTeam": false,
+        "playerName": "Ismaila Sarr",
+        "minute": "51"
+      },
+      {
+        "isHomeTeam": true,
+        "playerName": "Lukaku",
+        "minute": "86",
+        "id": "ef11b5fa-4a67-450a-b65e-1a3b5e551b4b"
+      },
+      {
+        "id": "43037196-6c82-453c-93a0-1db624b81bb2",
+        "playerName": "Yuri Tielemans",
+        "minute": "89",
+        "isHomeTeam": true
+      },
+      {
+        "minute": "120+5",
+        "id": "9e2e2526-1bc0-4e02-a9bb-fda16c87afe2",
+        "isPenalty": true,
+        "playerName": "Yuri Tielemans",
+        "isHomeTeam": true
+      }
+    ],
+    "homeScore": 3,
+    "awayScore": 2,
+    "highlightUrl": "video_442b242c"
+  },
+  "M83": {
+    "id": "M83",
+    "round": "Round of 32",
+    "homeTeamId": "POR",
+    "awayTeamId": "CRO",
+    "date": "2026-07-03",
+    "kickoff": "2026-07-02T23:00:00Z",
+    "isLocked": false,
+    "stadium": "BMO Field",
+    "city": "Toronto, Canada",
+    "winnerTeamId": "POR",
+    "completed": true,
+    "nextMatchId": "M93",
+    "nextSlot": "home",
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "extraTime": false,
+    "penalties": false,
+    "goals": [
+      {
+        "id": "ff34b764-160d-4cb6-be94-33654ffe6e65",
+        "minute": "53",
+        "isHomeTeam": true,
+        "playerName": "Perisic"
+      },
+      {
+        "isPenalty": true,
+        "id": "f9a1ee71-be4f-4ddb-9222-7b2e7673466c",
+        "isHomeTeam": true,
+        "playerName": "Ronaldo",
+        "minute": "68"
+      },
+      {
+        "playerName": "Ramos",
+        "id": "292e7f66-bc30-48e7-ab28-8b17a742debc",
+        "minute": "90",
+        "isHomeTeam": true
+      }
+    ],
+    "homeScore": 2,
+    "awayScore": 1,
+    "highlightUrl": "video_046ddb05"
+  },
+  "M84": {
+    "id": "M84",
+    "round": "Round of 32",
+    "homeTeamId": "ESP",
+    "awayTeamId": "AUT",
+    "date": "2026-07-03",
+    "kickoff": "2026-07-02T19:00:00Z",
+    "isLocked": false,
+    "stadium": "SoFi Stadium",
+    "city": "Inglewood, California, USA",
+    "winnerTeamId": "ESP",
+    "completed": true,
+    "nextMatchId": "M93",
+    "nextSlot": "away",
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "extraTime": false,
+    "penalties": false,
+    "goals": [
+      {
+        "id": "fd7d698a-a4b2-4a8a-aeb2-e94ee1e2c5ad",
+        "isHomeTeam": true,
+        "minute": "36",
+        "playerName": "Oyarzabal"
+      },
+      {
+        "isHomeTeam": true,
+        "playerName": "P Perro",
+        "minute": "66",
+        "id": "d00b9ed8-8e5a-4a80-9333-aaa5f2412e30"
+      },
+      {
+        "id": "4d84dac3-08b3-44d2-afe5-fc9a33788978",
+        "playerName": "Oyarzabal",
+        "minute": "89",
+        "isHomeTeam": true
+      }
+    ],
+    "homeScore": 3,
+    "awayScore": 0,
+    "highlightUrl": "video_1dc07fdf"
+  },
+  "M85": {
+    "id": "M85",
+    "round": "Round of 32",
+    "homeTeamId": "SUI",
+    "awayTeamId": "ALG",
+    "date": "2026-07-03",
+    "kickoff": "2026-07-03T03:00:00Z",
+    "isLocked": false,
+    "stadium": "BC Place",
+    "city": "Vancouver, Canada",
+    "winnerTeamId": "SUI",
+    "completed": true,
+    "nextMatchId": "M96",
+    "nextSlot": "home",
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "extraTime": false,
+    "penalties": false,
+    "goals": [
+      {
+        "playerName": "Embolo",
+        "id": "e5bb0ac4-88d7-41f7-a425-dd1c74c249fb",
+        "minute": "10",
+        "isHomeTeam": true
+      },
+      {
+        "playerName": "Nduye",
+        "id": "10bc4d0a-8e56-463f-9277-8b1f66e0dca1",
+        "minute": "46",
+        "isHomeTeam": true
+      }
+    ],
+    "homeScore": 2,
+    "awayScore": 0,
+    "highlightUrl": "video_85cb2835"
+  },
+  "M86": {
+    "id": "M86",
+    "round": "Round of 32",
+    "homeTeamId": "ARG",
+    "awayTeamId": "CPV",
+    "date": "2026-07-04",
+    "kickoff": "2026-07-03T22:00:00Z",
+    "isLocked": false,
+    "stadium": "Hard Rock Stadium",
+    "city": "Miami Gardens, Florida, USA",
+    "winnerTeamId": "ARG",
+    "completed": true,
+    "nextMatchId": "M95",
+    "nextSlot": "home",
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "extraTime": true,
+    "penalties": false,
+    "goals": [
+      {
+        "id": "0d720bf3-6040-411d-a350-b1fc115dcbc1",
+        "playerName": "MESSI",
+        "minute": "29",
+        "isHomeTeam": true
+      },
+      {
+        "id": "28d66ba9-7b17-4214-aab6-15ef5c0c3c40",
+        "playerName": "D DUARTE",
+        "isHomeTeam": false,
+        "minute": "59"
+      },
+      {
+        "minute": "92",
+        "playerName": "L MARTINEZ",
+        "isHomeTeam": true,
+        "id": "a56f9d34-c3a7-4b4d-bfd4-ca2262561715"
+      },
+      {
+        "id": "5eb8f39f-340a-4945-9663-359998a35aae",
+        "isHomeTeam": false,
+        "playerName": "C L CABREL",
+        "minute": "103"
+      },
+      {
+        "isHomeTeam": true,
+        "minute": "111",
+        "isOwnGoal": true,
+        "id": "0c6d2647-2de8-4071-b277-13b55415e39c",
+        "playerName": "DINEY BORGES"
+      }
+    ],
+    "homeScore": 3,
+    "awayScore": 2,
+    "highlightUrl": "video_d75b8246"
+  },
+  "M87": {
+    "id": "M87",
+    "round": "Round of 32",
+    "homeTeamId": "COL",
+    "awayTeamId": "GHA",
+    "date": "2026-07-04",
+    "kickoff": "2026-07-04T01:30:00Z",
+    "isLocked": false,
+    "stadium": "Arrowhead Stadium",
+    "city": "Kansas City, Missouri, USA",
+    "winnerTeamId": "COL",
+    "completed": true,
+    "nextMatchId": "M96",
+    "nextSlot": "away",
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "extraTime": false,
+    "penalties": false,
+    "goals": [
+      {
+        "isHomeTeam": true,
+        "playerName": "J ARIAS",
+        "id": "6ccaed5e-4da9-4424-9e4b-c571b334dca0",
+        "minute": ""
+      }
+    ],
+    "homeScore": 1,
+    "awayScore": 1,
+    "highlightUrl": "video_530e4929"
+  },
+  "M88": {
+    "id": "M88",
+    "round": "Round of 32",
+    "homeTeamId": "AUS",
+    "awayTeamId": "EGY",
+    "date": "2026-07-04",
+    "kickoff": "2026-07-03T19:00:00Z",
+    "isLocked": false,
+    "stadium": "AT&T Stadium",
+    "city": "Arlington, Texas, USA",
+    "winnerTeamId": "EGY",
+    "completed": true,
+    "nextMatchId": "M95",
+    "nextSlot": "away",
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "extraTime": false,
+    "penalties": true,
+    "goals": [
+      {
+        "minute": "13",
+        "isHomeTeam": false,
+        "id": "1871bb20-bf8a-4863-88e0-06e9e4dfc4ba",
+        "playerName": "E ASHOUR"
+      },
+      {
+        "isHomeTeam": true,
+        "minute": "55",
+        "playerName": "M HANY",
+        "id": "371fe1aa-27a3-4c77-931d-afa61afbfa95",
+        "isOwnGoal": true
+      }
+    ],
+    "homeScore": 1,
+    "awayScore": 1,
+    "homePenaltyScore": 2,
+    "awayPenaltyScore": 4,
+    "highlightUrl": "video_fcfcf09a"
+  },
+  "M89": {
+    "stadium": "Lincoln Financial Field",
+    "loserNextSlot": null,
+    "id": "M89",
+    "nextMatchId": "M97",
+    "date": "2026-07-05",
+    "city": "Philadelphia, Pennsylvania, USA",
+    "kickoff": "2026-07-04T21:00:00Z",
+    "winnerTeamId": null,
+    "loserNextMatchId": null,
+    "completed": false,
+    "awayTeamId": "FRA",
+    "round": "Round of 16",
+    "nextSlot": "home",
+    "homeTeamId": "PAR"
+  },
+  "M90": {
+    "homeTeamId": "CAN",
+    "round": "Round of 16",
+    "nextSlot": "away",
+    "awayTeamId": "MAR",
+    "loserNextMatchId": null,
+    "kickoff": "2026-07-04T17:00:00Z",
+    "winnerTeamId": null,
+    "completed": false,
+    "nextMatchId": "M97",
+    "city": "Houston, Texas, USA",
+    "date": "2026-07-04",
+    "id": "M90",
+    "loserNextSlot": null,
+    "stadium": "NRG Stadium"
+  },
+  "M91": {
+    "nextSlot": "home",
+    "homeTeamId": "BRA",
+    "loserNextSlot": null,
+    "loserNextMatchId": null,
+    "stadium": "MetLife Stadium",
+    "nextMatchId": "M99",
+    "round": "Round of 16",
+    "kickoff": "2026-07-05T20:00:00Z",
+    "id": "M91",
+    "city": "East Rutherford, New Jersey, USA",
+    "completed": false,
+    "winnerTeamId": null,
+    "date": "2026-07-06",
+    "awayTeamId": "NOR"
+  },
+  "M92": {
+    "winnerTeamId": null,
+    "kickoff": "2026-07-06T00:00:00Z",
+    "loserNextSlot": null,
+    "homeTeamId": "MEX",
+    "id": "M92",
+    "date": "2026-07-06",
+    "nextMatchId": "M99",
+    "completed": false,
+    "loserNextMatchId": null,
+    "city": "Mexico City, Mexico",
+    "awayTeamId": "ENG",
+    "nextSlot": "away",
+    "round": "Round of 16",
+    "stadium": "Estadio Azteca"
+  },
+  "M93": {
+    "city": "Arlington, Texas, USA",
+    "round": "Round of 16",
+    "kickoff": "2026-07-06T19:00:00Z",
+    "id": "M93",
+    "date": "2026-07-07",
+    "loserNextSlot": null,
+    "awayTeamId": "ESP",
+    "completed": false,
+    "winnerTeamId": null,
+    "homeTeamId": "POR",
+    "stadium": "AT&T Stadium",
+    "nextSlot": "home",
+    "nextMatchId": "M98",
+    "loserNextMatchId": null
+  },
+  "M94": {
+    "nextSlot": "away",
+    "homeTeamId": "USA",
+    "city": "Seattle, Washington, USA",
+    "completed": false,
+    "winnerTeamId": null,
+    "loserNextMatchId": null,
+    "round": "Round of 16",
+    "id": "M94",
+    "kickoff": "2026-07-07T00:00:00Z",
+    "awayTeamId": "BEL",
+    "nextMatchId": "M98",
+    "stadium": "Lumen Field",
+    "loserNextSlot": null,
+    "date": "2026-07-07"
+  },
+  "M95": {
+    "completed": false,
+    "id": "M95",
+    "nextMatchId": "M100",
+    "kickoff": "2026-07-07T16:00:00Z",
+    "awayTeamId": "EGY",
+    "date": "2026-07-07",
+    "loserNextSlot": null,
+    "stadium": "Mercedes-Benz Stadium",
+    "round": "Round of 16",
+    "loserNextMatchId": null,
+    "homeTeamId": "ARG",
+    "city": "Atlanta, Georgia, USA",
+    "winnerTeamId": null,
+    "nextSlot": "home"
+  },
+  "M96": {
+    "homeTeamId": "SUI",
+    "stadium": "BC Place",
+    "city": "Vancouver, Canada",
+    "kickoff": "2026-07-07T20:00:00Z",
+    "completed": false,
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "id": "M96",
+    "nextSlot": "away",
+    "round": "Round of 16",
+    "date": "2026-07-08",
+    "awayTeamId": "COL",
+    "winnerTeamId": null,
+    "nextMatchId": "M100"
+  },
+  "M97": {
+    "id": "M97",
+    "round": "Quarter Finals",
+    "homeTeamId": null,
+    "awayTeamId": null,
+    "date": "2026-07-10",
+    "kickoff": "2026-07-09T20:00:00Z",
+    "completed": false,
+    "winnerTeamId": null,
+    "nextMatchId": "M101",
+    "nextSlot": "home",
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "city": "Foxborough, Massachusetts, USA",
+    "stadium": "Gillette Stadium"
+  },
+  "M98": {
+    "id": "M98",
+    "round": "Quarter Finals",
+    "homeTeamId": null,
+    "awayTeamId": null,
+    "date": "2026-07-11",
+    "kickoff": "2026-07-10T19:00:00Z",
+    "completed": false,
+    "winnerTeamId": null,
+    "nextMatchId": "M101",
+    "nextSlot": "away",
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "city": "Inglewood, California, USA",
+    "stadium": "SoFi Stadium"
+  },
+  "M99": {
+    "id": "M99",
+    "round": "Quarter Finals",
+    "homeTeamId": null,
+    "awayTeamId": null,
+    "date": "2026-07-12",
+    "kickoff": "2026-07-11T21:00:00Z",
+    "completed": false,
+    "winnerTeamId": null,
+    "nextMatchId": "M102",
+    "nextSlot": "home",
+    "loserNextMatchId": null,
+    "loserNextSlot": null,
+    "city": "Miami Gardens, Florida, USA",
+    "stadium": "Hard Rock Stadium"
+  }
+}
