@@ -5,46 +5,66 @@ import { AnimatedTransition } from '../components/AnimatedTransition';
 import { HighlightCard } from '../components/HighlightCard';
 import { VideoPlayerModal } from '../components/VideoPlayerModal';
 import { CardSkeleton } from '../components/Skeleton';
-import { fetchMatches, fetchTeams } from '../lib/services';
-import type { Match, Team } from '../types';
+import { fetchMatches, fetchTeams, fetchSettings } from '../lib/services';
+import type { Match, Team, TournamentSettings } from '../types';
+import { LiveStreamView } from '../components/player/LiveStreamView';
+import { collection, onSnapshot, query } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 export default function HighlightsPage() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
+  const [settings, setSettings] = useState<TournamentSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [selectedRound, setSelectedRound] = useState<string>('');
+  const [activeMainTab, setActiveMainTab] = useState<'highlights' | 'live'>('highlights');
 
   useEffect(() => {
+    let unsubscribeMatches: () => void;
+
     const loadData = async () => {
       try {
-        const [fetchedMatches, fetchedTeams] = await Promise.all([
-          fetchMatches(),
-          fetchTeams()
+        const [fetchedTeams, fetchedSettings] = await Promise.all([
+          fetchTeams(),
+          fetchSettings()
         ]);
         
-        // Sort chronologically by kickoff
-        const sortedMatches = fetchedMatches.sort((a, b) => 
-          new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
-        );
-        
-        setMatches(sortedMatches);
         setTeams(fetchedTeams);
+        setSettings(fetchedSettings);
         
-        // Auto-select the first available round if none is selected
-        const rounds = ['Round of 32', 'Round of 16', 'Quarter Finals', 'Semi Finals', 'Third Place', 'Final'];
-        const firstAvailable = rounds.find(r => sortedMatches.some(m => m.round === r));
-        if (firstAvailable) {
-          setSelectedRound(firstAvailable);
-        }
+        const q = query(collection(db, 'matches'));
+        unsubscribeMatches = onSnapshot(q, (snapshot) => {
+          const fetchedMatches = snapshot.docs.map(doc => doc.data() as Match);
+          const sortedMatches = fetchedMatches.sort((a, b) => 
+            new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime()
+          );
+          
+          setMatches(sortedMatches);
+          
+          setSelectedRound(prev => {
+            if (!prev) {
+              const rounds = ['Round of 32', 'Round of 16', 'Quarter Finals', 'Semi Finals', 'Third Place', 'Final'];
+              const firstAvailable = rounds.find(r => sortedMatches.some(m => m.round === r));
+              return firstAvailable || '';
+            }
+            return prev;
+          });
+          
+          setLoading(false);
+        });
+
       } catch (err) {
         console.error("Failed to fetch highlights data:", err);
-      } finally {
         setLoading(false);
       }
     };
     
     loadData();
+
+    return () => {
+      if (unsubscribeMatches) unsubscribeMatches();
+    };
   }, []);
 
   const handleWatch = (match: Match) => {
@@ -74,9 +94,42 @@ export default function HighlightsPage() {
 
   return (
     <AnimatedTransition className="min-h-screen bg-bg-primary pb-24">
-      {/* Sticky Round Selection */}
-      {matches.length > 0 && (
-        <div className="sticky top-0 z-40 w-full bg-bg-primary/90 backdrop-blur-md border-b border-[rgba(0,217,255,0.1)] px-4 py-3">
+      {/* Top Segmented Navigation */}
+      <div className="sticky top-0 z-50 w-full bg-bg-primary/90 backdrop-blur-md border-b border-[rgba(0,217,255,0.1)] px-4 py-3 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
+        <div className="flex bg-bg-secondary/80 rounded-xl p-1 max-w-sm mx-auto border border-white/5">
+          <button
+            onClick={() => setActiveMainTab('highlights')}
+            className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${
+              activeMainTab === 'highlights'
+                ? 'bg-cyan-primary text-navy-900 shadow-[0_0_15px_rgba(0,217,255,0.3)]'
+                : 'text-text-secondary hover:text-white'
+            }`}
+          >
+            Highlights
+          </button>
+          <button
+            onClick={() => setActiveMainTab('live')}
+            className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 ${
+              activeMainTab === 'live'
+                ? 'bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)]'
+                : 'text-text-secondary hover:text-white'
+            }`}
+          >
+            {activeMainTab === 'live' ? <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span> : <span>🔴</span>}
+            Live
+          </button>
+        </div>
+      </div>
+
+      {activeMainTab === 'live' ? (
+        <div className="max-w-5xl mx-auto p-4 md:p-8 pt-8">
+          <LiveStreamView matches={matches} teams={teams} settings={settings} />
+        </div>
+      ) : (
+        <>
+          {/* Sticky Round Selection */}
+          {matches.length > 0 && (
+            <div className="sticky top-[68px] z-40 w-full bg-bg-primary/90 backdrop-blur-md border-b border-[rgba(0,217,255,0.1)] px-4 py-3">
           <div className="flex gap-2 p-1 bg-bg-secondary/90 rounded-xl border border-[rgba(0,217,255,0.2)] w-full max-w-3xl mx-auto shadow-[0_4px_20px_rgba(0,0,0,0.4)] overflow-x-auto no-scrollbar">
             {['Round of 32', 'Round of 16', 'Quarter Finals', 'Semi Finals', 'Third Place', 'Final']
               .filter(r => matches.some(m => m.round === r))
@@ -139,6 +192,8 @@ export default function HighlightsPage() {
           </div>
         )}
       </div>
+        </>
+      )}
 
       <AnimatePresence>
         {selectedMatch && (

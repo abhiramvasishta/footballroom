@@ -15,6 +15,7 @@ import SuccessPage from './pages/SuccessPage';
 import MaintenancePage from './pages/MaintenancePage';
 import HighlightsPage from './pages/HighlightsPage';
 import AnalysisPage from './pages/AnalysisPage';
+import StreamTestPage from './pages/StreamTestPage';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { AppLayout } from './components/AppLayout';
 
@@ -90,6 +91,7 @@ function App() {
           </Route>
 
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/stream-test" element={<StreamTestPage />} />
         </Routes>
       </MaintenanceGuard>
     </BrowserRouter>

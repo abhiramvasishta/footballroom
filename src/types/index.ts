@@ -100,4 +100,13 @@ export interface TournamentSettings {
     champion: number;
     mvp: number;
   };
+  liveStream?: {
+    mode: 'Auto' | 'Live Now' | 'Countdown' | 'Offline';
+    streams: {
+      id: string;
+      name: string;
+      embedCode: string;
+      enabled: boolean;
+    }[];
+  };
 }

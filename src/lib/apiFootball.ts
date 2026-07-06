@@ -13,13 +13,23 @@ export const syncMatchesFromApi = async (
   const datesToFetch = new Set<string>();
   
   for (const localMatch of localMatches) {
+    const isMissingScore = localMatch.homeScore === undefined || localMatch.awayScore === undefined;
     const hasScoreButNoGoals = localMatch.completed && 
       ((localMatch.homeScore || 0) + (localMatch.awayScore || 0) > 0) &&
       (!localMatch.goals || localMatch.goals.length === 0);
 
-    if ((!localMatch.completed || hasScoreButNoGoals) && localMatch.homeTeamId && localMatch.awayTeamId && localMatch.date) {
+    if ((!localMatch.completed || isMissingScore || hasScoreButNoGoals) && localMatch.homeTeamId && localMatch.awayTeamId && localMatch.date) {
       // Convert 'YYYY-MM-DD' to 'YYYYMMDD' for ESPN
-      datesToFetch.add(localMatch.date.replace(/-/g, ''));
+      const baseDateStr = localMatch.date.replace(/-/g, '');
+      datesToFetch.add(baseDateStr);
+      
+      // Also fetch previous and next day due to ESPN timezone offsets (US Eastern)
+      const d = new Date(localMatch.date);
+      const prev = new Date(d); prev.setDate(prev.getDate() - 1);
+      const next = new Date(d); next.setDate(next.getDate() + 1);
+      
+      datesToFetch.add(prev.toISOString().split('T')[0].replace(/-/g, ''));
+      datesToFetch.add(next.toISOString().split('T')[0].replace(/-/g, ''));
     }
   }
 
@@ -46,11 +56,12 @@ export const syncMatchesFromApi = async (
   let updatedCount = 0;
 
   for (const localMatch of localMatches) {
+    const isMissingScore = localMatch.homeScore === undefined || localMatch.awayScore === undefined;
     const hasScoreButNoGoals = localMatch.completed && 
       ((localMatch.homeScore || 0) + (localMatch.awayScore || 0) > 0) &&
       (!localMatch.goals || localMatch.goals.length === 0);
 
-    if (localMatch.completed && !hasScoreButNoGoals) continue;
+    if (localMatch.completed && !isMissingScore && !hasScoreButNoGoals) continue;
     if (!localMatch.homeTeamId || !localMatch.awayTeamId) continue;
     
     const homeTeam = localTeams.find(t => t.id === localMatch.homeTeamId);
@@ -59,11 +70,18 @@ export const syncMatchesFromApi = async (
     if (!homeTeam || !awayTeam) continue;
 
     // Stable mapping by team names against the merged API fixtures
+    const normalizeName = (name: string) => {
+      let n = name.toLowerCase().trim();
+      if (n === 'usa') return 'united states';
+      if (n === 'bosnia & herzegovina') return 'bosnia and herzegovina';
+      return n;
+    };
+
     const apiMatch = allApiFixtures.find((f: any) => {
-      const apiHome = f.homeTeam.toLowerCase();
-      const apiAway = f.awayTeam.toLowerCase();
-      const localHome = homeTeam.name.toLowerCase();
-      const localAway = awayTeam.name.toLowerCase();
+      const apiHome = normalizeName(f.homeTeam);
+      const apiAway = normalizeName(f.awayTeam);
+      const localHome = normalizeName(homeTeam.name);
+      const localAway = normalizeName(awayTeam.name);
       
       return (apiHome === localHome && apiAway === localAway) || 
              (apiHome === localAway && apiAway === localHome);
