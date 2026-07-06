@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { LiveStreamPlayer } from './LiveStreamPlayer';
 import type { Match, Team, TournamentSettings } from '../../types';
-import { Calendar, Clock, MapPin, VideoOff, Play } from 'lucide-react';
+import { MapPin, VideoOff } from 'lucide-react';
 
 interface Props {
   matches: Match[];

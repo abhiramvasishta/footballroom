@@ -5,7 +5,7 @@ import { AnimatedTransition } from '../components/AnimatedTransition';
 import { HighlightCard } from '../components/HighlightCard';
 import { VideoPlayerModal } from '../components/VideoPlayerModal';
 import { CardSkeleton } from '../components/Skeleton';
-import { fetchMatches, fetchTeams, fetchSettings } from '../lib/services';
+import { fetchTeams, fetchSettings } from '../lib/services';
 import type { Match, Team, TournamentSettings } from '../types';
 import { LiveStreamView } from '../components/player/LiveStreamView';
 import { collection, onSnapshot, query } from 'firebase/firestore';
