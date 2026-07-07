@@ -65,6 +65,9 @@ export const Navigation = () => {
               >
                 {isSpecial ? (
                   <NavLink to={item.to} className="flex flex-col items-center justify-center absolute -top-6 left-1/2 -translate-x-1/2 group">
+                    <div className="absolute -top-3 bg-red-600 text-white text-[8px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap animate-pulse border border-white/20 shadow-[0_0_10px_rgba(220,38,38,0.8)] z-10">
+                      LIVE NOW
+                    </div>
                     <div className={cn(
                       "w-16 h-16 rounded-full flex flex-col items-center justify-center shadow-[0_0_20px_rgba(0,217,255,0.5)] transition-all duration-300",
                       isActive ? "bg-cyan-primary scale-125 text-white shadow-[0_0_30px_#00d9ff] border-2 border-white" : "bg-cyan-primary text-navy-900 group-hover:bg-white group-hover:text-cyan-primary group-hover:scale-110"
@@ -111,6 +114,7 @@ export const Navigation = () => {
         <div className="flex flex-col gap-8 w-full">
           {navItems.map((item, idx) => {
             const isActive = item.to !== '#' && location.pathname === item.to;
+            const isSpecial = (item as any).isSpecial;
             return (
               <button
                 key={idx}
@@ -123,7 +127,12 @@ export const Navigation = () => {
                   <div className="absolute left-0 top-0 bottom-0 w-1 bg-cyan-primary rounded-r-full shadow-[0_0_10px_rgba(0,217,255,0.8)]" />
                 )}
                 {item.to !== '#' ? (
-                  <NavLink to={item.to} className="flex flex-col items-center w-full group-hover:scale-110 transition-transform">
+                  <NavLink to={item.to} className="flex flex-col items-center w-full group-hover:scale-110 transition-transform relative">
+                    {isSpecial && (
+                      <div className="absolute -top-1 lg:right-2 right-1 bg-red-600 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap animate-pulse border border-white/20 shadow-[0_0_10px_rgba(220,38,38,0.8)] z-10">
+                        LIVE NOW
+                      </div>
+                    )}
                     {item.icon}
                     <span className="text-[10px] font-bold uppercase tracking-wider mt-2">{item.label}</span>
                   </NavLink>
