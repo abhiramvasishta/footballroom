@@ -9,6 +9,15 @@ const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
 const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
 let credential;
+let resolvedProjectId = projectId;
+
+if (clientEmail && clientEmail.includes('@') && clientEmail.includes('.iam.gserviceaccount.com')) {
+  const extractedProject = clientEmail.split('@')[1].split('.')[0];
+  if (projectId !== extractedProject) {
+    console.warn(`[Firestore] Warning: FIREBASE_PROJECT_ID (${projectId}) does not match the project in clientEmail (${extractedProject}). Using the extracted project ID.`);
+    resolvedProjectId = extractedProject;
+  }
+}
 
 if (process.env.FIREBASE_SERVICE_ACCOUNT || process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
   try {
@@ -16,6 +25,7 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT || process.env.FIREBASE_SERVICE_ACCOUNT
     const parsedSA = JSON.parse(jsonStr);
     console.log('[Firestore] Parsed FIREBASE_SERVICE_ACCOUNT keys:', Object.keys(parsedSA));
     credential = cert(parsedSA);
+    resolvedProjectId = parsedSA.project_id || resolvedProjectId;
     console.log('[Firestore] Initialized via FIREBASE_SERVICE_ACCOUNT JSON.');
   } catch (e) {
     console.error('[Firestore] Failed to parse FIREBASE_SERVICE_ACCOUNT JSON', e);
@@ -25,13 +35,14 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT || process.env.FIREBASE_SERVICE_ACCOUNT
     const parsedSA = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS);
     console.log('[Firestore] Parsed GOOGLE_APPLICATION_CREDENTIALS keys:', Object.keys(parsedSA));
     credential = cert(parsedSA);
+    resolvedProjectId = parsedSA.project_id || resolvedProjectId;
     console.log('[Firestore] Initialized via GOOGLE_APPLICATION_CREDENTIALS JSON string.');
   } catch (e) {
     console.error('[Firestore] Failed to parse GOOGLE_APPLICATION_CREDENTIALS JSON', e);
   }
 } else if (clientEmail && privateKey) {
   credential = cert({
-    projectId: process.env.FIREBASE_PROJECT_ID,
+    projectId: resolvedProjectId,
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
     privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
   });
@@ -41,19 +52,31 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT || process.env.FIREBASE_SERVICE_ACCOUNT
   credential = applicationDefault();
 }
 
+let app;
 if (getApps().length === 0 && credential) {
   try {
     const appOptions: any = { credential };
-    if (projectId) {
-      appOptions.projectId = projectId;
+    if (resolvedProjectId) {
+      appOptions.projectId = resolvedProjectId;
     }
-    initializeApp(appOptions);
+    app = initializeApp(appOptions);
+    console.log('[Firestore] initializeApp options projectId:', appOptions.projectId);
   } catch (e) {
     console.error('[Firestore] Failed to initialize Firebase Admin', e);
   }
+} else {
+  app = getApps()[0];
 }
 
-const db = getApps().length > 0 ? getFirestore() : null;
+const db = app ? getFirestore(app) : null;
+
+console.log('[Firestore] Debug Info (No Secrets):', {
+  env_project_id: projectId,
+  client_email: clientEmail,
+  resolved_project_id: resolvedProjectId,
+  app_project_id: app?.options.projectId,
+  firestore_project_id: db?.projectId
+});
 
 export interface TelegramVideoMetadata {
   videoId: string;
