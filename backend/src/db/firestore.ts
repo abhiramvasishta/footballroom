@@ -74,8 +74,7 @@ console.log('[Firestore] Debug Info (No Secrets):', {
   env_project_id: projectId,
   client_email: clientEmail,
   resolved_project_id: resolvedProjectId,
-  app_project_id: app?.options.projectId,
-  firestore_project_id: db?.projectId
+  app_project_id: app?.options.projectId
 });
 
 export interface TelegramVideoMetadata {
