@@ -13,23 +13,27 @@ let credential;
 if (process.env.FIREBASE_SERVICE_ACCOUNT || process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
   try {
     const jsonStr = process.env.FIREBASE_SERVICE_ACCOUNT || process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '';
-    credential = cert(JSON.parse(jsonStr));
+    const parsedSA = JSON.parse(jsonStr);
+    console.log('[Firestore] Parsed FIREBASE_SERVICE_ACCOUNT keys:', Object.keys(parsedSA));
+    credential = cert(parsedSA);
     console.log('[Firestore] Initialized via FIREBASE_SERVICE_ACCOUNT JSON.');
   } catch (e) {
     console.error('[Firestore] Failed to parse FIREBASE_SERVICE_ACCOUNT JSON', e);
   }
 } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS && process.env.GOOGLE_APPLICATION_CREDENTIALS.startsWith('{')) {
   try {
-    credential = cert(JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS));
+    const parsedSA = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+    console.log('[Firestore] Parsed GOOGLE_APPLICATION_CREDENTIALS keys:', Object.keys(parsedSA));
+    credential = cert(parsedSA);
     console.log('[Firestore] Initialized via GOOGLE_APPLICATION_CREDENTIALS JSON string.');
   } catch (e) {
     console.error('[Firestore] Failed to parse GOOGLE_APPLICATION_CREDENTIALS JSON', e);
   }
 } else if (clientEmail && privateKey) {
-  // Omit projectId from cert() to prevent CONSUMER_INVALID mismatch errors.
   credential = cert({
-    clientEmail,
-    privateKey,
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
   });
   console.log('[Firestore] Initialized via separated Service Account credentials.');
 } else {
