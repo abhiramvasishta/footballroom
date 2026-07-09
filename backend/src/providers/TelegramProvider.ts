@@ -64,6 +64,12 @@ export class TelegramProvider implements IStorageProvider {
       console.error('[TelegramProvider] Firestore lookup failed:', err);
     }
 
+    // If it's the new format and Firestore failed, do not fall back.
+    if (videoId.startsWith('video_')) {
+      console.error(`[TelegramProvider] Error: videoId ${videoId} is new format but Firestore lookup failed or returned null.`);
+      return null;
+    }
+
     // Fallback: old format "channelId_msgId"
     const parts = videoId.split('_');
     if (parts.length >= 2) {
@@ -110,6 +116,11 @@ export class TelegramProvider implements IStorageProvider {
       }
     } catch (err) {
       console.error('[TelegramProvider] Firestore metadata fetch error:', err);
+    }
+
+    // If it's the new format and Firestore failed, do not fall back.
+    if (videoId.startsWith('video_')) {
+      return { size: 100000000, mimeType: 'video/mp4' };
     }
 
     // Fallback legacy

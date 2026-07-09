@@ -8,26 +8,44 @@ const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
 // Fix private key formatting from env
 const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
-if (getApps().length === 0) {
-  if (projectId && clientEmail && privateKey) {
-    initializeApp({
-      credential: cert({
-        projectId,
-        clientEmail,
-        privateKey,
-      }),
-    });
-    console.log('[Firestore] Initialized via Service Account credentials.');
-  } else {
-    // Fallback to Application Default Credentials if env vars are missing
-    console.warn('[Firestore] Warning: Firebase Admin env vars missing. Attempting to use default credentials.');
-    try {
-      initializeApp({
-        credential: applicationDefault()
-      });
-    } catch (e) {
-      console.error('[Firestore] Failed to initialize Firebase Admin', e);
+let credential;
+
+if (process.env.FIREBASE_SERVICE_ACCOUNT || process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
+  try {
+    const jsonStr = process.env.FIREBASE_SERVICE_ACCOUNT || process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '';
+    credential = cert(JSON.parse(jsonStr));
+    console.log('[Firestore] Initialized via FIREBASE_SERVICE_ACCOUNT JSON.');
+  } catch (e) {
+    console.error('[Firestore] Failed to parse FIREBASE_SERVICE_ACCOUNT JSON', e);
+  }
+} else if (process.env.GOOGLE_APPLICATION_CREDENTIALS && process.env.GOOGLE_APPLICATION_CREDENTIALS.startsWith('{')) {
+  try {
+    credential = cert(JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS));
+    console.log('[Firestore] Initialized via GOOGLE_APPLICATION_CREDENTIALS JSON string.');
+  } catch (e) {
+    console.error('[Firestore] Failed to parse GOOGLE_APPLICATION_CREDENTIALS JSON', e);
+  }
+} else if (clientEmail && privateKey) {
+  // Omit projectId from cert() to prevent CONSUMER_INVALID mismatch errors.
+  credential = cert({
+    clientEmail,
+    privateKey,
+  });
+  console.log('[Firestore] Initialized via separated Service Account credentials.');
+} else {
+  console.warn('[Firestore] Warning: Firebase Admin env vars missing. Attempting to use default credentials.');
+  credential = applicationDefault();
+}
+
+if (getApps().length === 0 && credential) {
+  try {
+    const appOptions: any = { credential };
+    if (projectId) {
+      appOptions.projectId = projectId;
     }
+    initializeApp(appOptions);
+  } catch (e) {
+    console.error('[Firestore] Failed to initialize Firebase Admin', e);
   }
 }
 

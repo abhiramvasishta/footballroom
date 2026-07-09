@@ -41,11 +41,26 @@ export class EspnProvider {
     if (cached) return cached;
 
     const url = `${this.baseUrl}${endpoint}`;
+    console.log(`[EspnProvider] Fetching external URL: ${url}`);
+    
     const response = await fetch(url);
+    console.log(`[EspnProvider] HTTP Status: ${response.status}`);
+    
+    const contentType = response.headers.get('content-type') || '';
+    console.log(`[EspnProvider] Content-Type: ${contentType}`);
+    
+    const textBody = await response.text();
+    console.log(`[EspnProvider] Body (first 300 chars): ${textBody.substring(0, 300)}`);
+    
     if (!response.ok) {
       throw new Error(`ESPN API Error: ${response.status} ${response.statusText}`);
     }
-    const data = await response.json();
+    
+    if (contentType.toLowerCase().includes('text/html') || textBody.trim().startsWith('<')) {
+      throw new Error(`Upstream API returned HTML instead of JSON (Status: ${response.status})`);
+    }
+    
+    const data = JSON.parse(textBody);
     this.cache.set(endpoint, data);
     return data;
   }

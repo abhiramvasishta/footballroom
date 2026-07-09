@@ -203,6 +203,8 @@ fastify.get('/api/fifa/date/:date', async (request, reply) => {
   try {
     const { date } = request.params as { date: string };
     
+    console.log(`[server] Incoming request: ${request.method} ${request.url} from ${request.ip}`);
+    
     const cached = getCached(`date_${date}`);
     if (cached) return reply.send(cached);
 
@@ -240,6 +242,8 @@ fastify.get('/api/fifa/standings', async (request, reply) => {
     reply.status(500).send({ error: error.message || 'Failed to fetch standings' });
   }
 });
+
+console.log(fastify.printRoutes());
 
 const start = async () => {
   try {
