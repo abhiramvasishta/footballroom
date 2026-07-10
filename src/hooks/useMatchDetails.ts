@@ -85,13 +85,14 @@ export const useMatchDetails = (match: Match, homeTeam: Team | null, awayTeam: T
         ];
 
         let dateMatches: any[] = [];
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+        const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+        const cleanApiUrl = apiUrl.replace(/\/+$/, '');
         
-        console.log(`[useMatchDetails] Fetching dates from API: ${apiUrl}`, datesToTry);
+        console.log(`[useMatchDetails] Fetching dates from API: ${cleanApiUrl}`, datesToTry);
 
         const responses = await Promise.allSettled(
           datesToTry.map(async (d) => {
-            const url = `${apiUrl}/api/fifa/date/${d}`;
+            const url = `${cleanApiUrl}/api/fifa/date/${d}`;
             const res = await fetch(url);
             if (!res.ok) throw new Error(`HTTP ${res.status} at ${url}`);
             return res.json();
@@ -128,7 +129,7 @@ export const useMatchDetails = (match: Match, homeTeam: Team | null, awayTeam: T
         }
 
         // 3. Fetch full match details
-        const detailsRes = await fetch(`${apiUrl}/api/fifa/match/${espnMatch.id}`);
+        const detailsRes = await fetch(`${cleanApiUrl}/api/fifa/match/${espnMatch.id}`);
         if (!detailsRes.ok) throw new Error('Failed to fetch detailed match data');
         
         const detailsData = await detailsRes.json();

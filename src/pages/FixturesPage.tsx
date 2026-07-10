@@ -29,7 +29,7 @@ export default function FixturesPage() {
         const [m, tReq, sReq] = await Promise.all([
           fetchMatches(),
           fetchTeams(),
-          fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/fifa/standings`)
+          fetch(`${(import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001').replace(/\/+$/, '')}/api/fifa/standings`)
         ]);
         
         setMatches(m);

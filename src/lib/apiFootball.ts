@@ -6,7 +6,8 @@ export const syncMatchesFromApi = async (
   localMatches: Match[],
   localTeams: Team[]
 ): Promise<Match[]> => {
-  const apiUrl = import.meta.env.VITE_API_URL || '';
+  const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+  const cleanApiUrl = apiUrl.replace(/\/+$/, '');
   const updatedMatches: Match[] = [];
   
   // 1. Collect unique match dates from the incomplete (or missing goals) matches
@@ -39,7 +40,7 @@ export const syncMatchesFromApi = async (
   const allApiFixtures: any[] = [];
   for (const date of datesToFetch) {
     try {
-      const response = await fetch(`${apiUrl}/api/fifa/date/${date}`);
+      const response = await fetch(`${cleanApiUrl}/api/fifa/date/${date}`);
       if (response.ok) {
         const data = await response.json();
         console.log(`[ESPN Sync] Date ${date} returned ${data.length} ESPN matches.`);
@@ -140,7 +141,7 @@ export const syncMatchesFromApi = async (
       // Fetch match details to get goal events
       if (apiMatch.id) {
         try {
-          const detailRes = await fetch(`${apiUrl}/api/fifa/match/${apiMatch.id}`);
+          const detailRes = await fetch(`${cleanApiUrl}/api/fifa/match/${apiMatch.id}`);
           if (detailRes.ok) {
             const detailData = await detailRes.json();
             if (detailData && detailData.goals) {

@@ -204,10 +204,11 @@ export const MatchesManager = () => {
     setResolving(true);
     setResolveError('');
     try {
-      const apiUrl = import.meta.env.VITE_API_URL;
-      console.log('[handleResolve] API base URL:', apiUrl);
+      const apiUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+      const cleanApiUrl = apiUrl.replace(/\/+$/, '');
+      console.log('[handleResolve] API base URL:', cleanApiUrl);
       
-      const finalUrl = `${apiUrl}/api/telegram/resolve`;
+      const finalUrl = `${cleanApiUrl}/api/telegram/resolve`;
       console.log('[handleResolve] Final fetch URL:', finalUrl);
       
       const reqBody = { link: telegramLink };
@@ -357,7 +358,7 @@ export const MatchesManager = () => {
           {videoMetadata && (
             <div className="bg-bg-primary p-4 rounded border border-green-500/30 flex gap-4 items-start">
               {videoMetadata.thumbnail ? (
-                 <img src={`${import.meta.env.VITE_API_URL}${videoMetadata.thumbnail}`} alt="Thumbnail" className="w-32 h-20 object-cover rounded bg-black" />
+                 <img src={`${(import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001').replace(/\/+$/, '')}${videoMetadata.thumbnail.startsWith('/') ? '' : '/'}${videoMetadata.thumbnail}`} alt="Thumbnail" className="w-32 h-20 object-cover rounded bg-black" />
               ) : (
                  <div className="w-32 h-20 bg-white/5 rounded flex items-center justify-center text-xs text-text-muted">No Thumb</div>
               )}
