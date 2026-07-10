@@ -86,6 +86,7 @@ function App() {
             <Route path="/bracket" element={<BracketPage />} />
             <Route path="/fixtures" element={<FixturesPage />} />
             <Route path="/highlights" element={<HighlightsPage />} />
+            <Route path="/highlights/:videoId" element={<HighlightsPage />} />
             <Route path="/leaderboard" element={<LeaderboardPage />} />
             <Route path="/analysis" element={<AnalysisPage />} />
           </Route>

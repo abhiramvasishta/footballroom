@@ -1,11 +1,13 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { Trophy, PlaySquare, LayoutDashboard, GitCommit, CalendarDays, BarChart3 } from 'lucide-react';
 import { useUserStore } from '../store/useUserStore';
+import { useIsLive } from '../hooks/useIsLive';
 import { cn } from '../utils/cn';
 
 export const Navigation = () => {
   const { isRegistered } = useUserStore();
   const location = useLocation();
+  const isLive = useIsLive();
 
   const navItems = [
     ...(isRegistered ? [{
@@ -65,9 +67,11 @@ export const Navigation = () => {
               >
                 {isSpecial ? (
                   <NavLink to={item.to} className="flex flex-col items-center justify-center absolute -top-6 left-1/2 -translate-x-1/2 group">
-                    <div className="absolute -top-3 bg-red-600 text-white text-[8px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap animate-pulse border border-white/20 shadow-[0_0_10px_rgba(220,38,38,0.8)] z-10">
-                      LIVE NOW
-                    </div>
+                    {isLive && (
+                      <div className="absolute -top-3 bg-red-600 text-white text-[8px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap animate-pulse border border-white/20 shadow-[0_0_10px_rgba(220,38,38,0.8)] z-10">
+                        LIVE NOW
+                      </div>
+                    )}
                     <div className={cn(
                       "w-16 h-16 rounded-full flex flex-col items-center justify-center shadow-[0_0_20px_rgba(0,217,255,0.5)] transition-all duration-300",
                       isActive ? "bg-cyan-primary scale-125 text-white shadow-[0_0_30px_#00d9ff] border-2 border-white" : "bg-cyan-primary text-navy-900 group-hover:bg-white group-hover:text-cyan-primary group-hover:scale-110"
@@ -128,7 +132,7 @@ export const Navigation = () => {
                 )}
                 {item.to !== '#' ? (
                   <NavLink to={item.to} className="flex flex-col items-center w-full group-hover:scale-110 transition-transform relative">
-                    {isSpecial && (
+                    {isSpecial && isLive && (
                       <div className="absolute -top-1 lg:right-2 right-1 bg-red-600 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap animate-pulse border border-white/20 shadow-[0_0_10px_rgba(220,38,38,0.8)] z-10">
                         LIVE NOW
                       </div>

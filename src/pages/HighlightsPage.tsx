@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { Camera } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useIsLive } from '../hooks/useIsLive';
 import { AnimatedTransition } from '../components/AnimatedTransition';
 import { HighlightCard } from '../components/HighlightCard';
 import { VideoPlayerModal } from '../components/VideoPlayerModal';
@@ -19,6 +21,29 @@ export default function HighlightsPage() {
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
   const [selectedRound, setSelectedRound] = useState<string>('');
   const [activeMainTab, setActiveMainTab] = useState<'highlights' | 'live'>('highlights');
+
+  const { videoId } = useParams();
+  const navigate = useNavigate();
+  const isLive = useIsLive();
+
+  useEffect(() => {
+    if (videoId === 'live') {
+      setActiveMainTab('live');
+      setSelectedMatch(null);
+    } else if (videoId) {
+      setActiveMainTab('highlights');
+      if (matches.length > 0) {
+        const matchToWatch = matches.find(m => m.id === videoId);
+        if (matchToWatch) {
+          setSelectedMatch(matchToWatch);
+          setSelectedRound(matchToWatch.round);
+        }
+      }
+    } else {
+      setActiveMainTab('highlights');
+      setSelectedMatch(null);
+    }
+  }, [videoId, matches]);
 
   useEffect(() => {
     let unsubscribeMatches: () => void;
@@ -43,8 +68,10 @@ export default function HighlightsPage() {
           setMatches(sortedMatches);
           
           setSelectedRound(prev => {
-            if (!prev) {
-              const rounds = ['Round of 32', 'Round of 16', 'Quarter Finals', 'Semi Finals', 'Third Place', 'Final'];
+            if (!prev && !videoId) {
+              const rounds = ['Final', 'Third Place', 'Semi Finals', 'Quarter Finals', 'Round of 16', 'Round of 32'];
+              const firstAvailableCompleted = rounds.find(r => sortedMatches.some(m => m.round === r && m.completed));
+              if (firstAvailableCompleted) return firstAvailableCompleted;
               const firstAvailable = rounds.find(r => sortedMatches.some(m => m.round === r));
               return firstAvailable || '';
             }
@@ -68,7 +95,7 @@ export default function HighlightsPage() {
   }, []);
 
   const handleWatch = (match: Match) => {
-    setSelectedMatch(match);
+    navigate(`/highlights/${match.id}`);
   };
 
   const getTeam = (teamId: string | null) => {
@@ -98,7 +125,7 @@ export default function HighlightsPage() {
       <div className="sticky top-0 z-50 w-full bg-bg-primary/90 backdrop-blur-md border-b border-[rgba(0,217,255,0.1)] px-4 py-3 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
         <div className="flex bg-bg-secondary/80 rounded-xl p-1 max-w-sm mx-auto border border-white/5">
           <button
-            onClick={() => setActiveMainTab('highlights')}
+            onClick={() => navigate('/highlights')}
             className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${
               activeMainTab === 'highlights'
                 ? 'bg-cyan-primary text-navy-900 shadow-[0_0_15px_rgba(0,217,255,0.3)]'
@@ -108,14 +135,14 @@ export default function HighlightsPage() {
             Highlights
           </button>
           <button
-            onClick={() => setActiveMainTab('live')}
+            onClick={() => navigate('/highlights/live')}
             className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2 ${
               activeMainTab === 'live'
                 ? 'bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.4)]'
                 : 'text-text-secondary hover:text-white'
             }`}
           >
-            {activeMainTab === 'live' ? <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span> : <span>🔴</span>}
+            {isLive && (activeMainTab === 'live' ? <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span> : <span>🔴</span>)}
             Live
           </button>
         </div>
@@ -201,7 +228,10 @@ export default function HighlightsPage() {
             match={selectedMatch}
             homeTeam={getTeam(selectedMatch.homeTeamId)}
             awayTeam={getTeam(selectedMatch.awayTeamId)}
-            onClose={() => setSelectedMatch(null)}
+            onClose={() => {
+              setSelectedMatch(null);
+              navigate('/highlights');
+            }}
           />
         )}
       </AnimatePresence>
