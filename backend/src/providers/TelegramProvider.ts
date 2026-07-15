@@ -78,7 +78,19 @@ export class TelegramProvider implements IStorageProvider {
         if (!channelIdStr || !msgIdStr) return null;
 
         const channelId = channelIdStr.match(/^\d+$/) ? "-100" + channelIdStr : channelIdStr;
-        const channel = await this.client.getEntity(channelId);
+        let channel;
+        try {
+          channel = await this.client.getEntity(channelId);
+        } catch (err: any) {
+          if (err.message && err.message.includes('Could not find the input entity')) {
+            console.log(`[TelegramProvider] resolveLocation: Entity ${channelId} not found. Warming up cache...`);
+            await this.client.getDialogs({ limit: 500 });
+            channel = await this.client.getEntity(channelId);
+          } else {
+            throw err;
+          }
+        }
+
         const messages = await this.client.getMessages(channel, {
           ids: [parseInt(msgIdStr)],
         });
@@ -129,7 +141,18 @@ export class TelegramProvider implements IStorageProvider {
       try {
         const [channelIdStr, msgIdStr] = parts;
         const channelId = channelIdStr.match(/^\d+$/) ? "-100" + channelIdStr : channelIdStr;
-        const channel = await this.client.getEntity(channelId);
+        let channel;
+        try {
+          channel = await this.client.getEntity(channelId);
+        } catch (err: any) {
+          if (err.message && err.message.includes('Could not find the input entity')) {
+            console.log(`[TelegramProvider] getMetadata: Entity ${channelId} not found. Warming up cache...`);
+            await this.client.getDialogs({ limit: 500 });
+            channel = await this.client.getEntity(channelId);
+          } else {
+            throw err;
+          }
+        }
         const messages = await this.client.getMessages(channel, {
           ids: [parseInt(msgIdStr)],
         });
@@ -162,7 +185,18 @@ export class TelegramProvider implements IStorageProvider {
     const channelId = channelIdRaw.match(/^\d+$/) ? "-100" + channelIdRaw : channelIdRaw;
     
     console.log(`[TelegramProvider] Before await this.client.getEntity(${channelId})`);
-    const channel = await this.client.getEntity(channelId);
+    let channel;
+    try {
+      channel = await this.client.getEntity(channelId);
+    } catch (err: any) {
+      if (err.message && err.message.includes('Could not find the input entity')) {
+        console.log(`[TelegramProvider] resolveLink: Entity ${channelId} not found. Warming up cache...`);
+        await this.client.getDialogs({ limit: 500 });
+        channel = await this.client.getEntity(channelId);
+      } else {
+        throw err;
+      }
+    }
     console.log(`[TelegramProvider] After await this.client.getEntity()`);
     
     console.log(`[TelegramProvider] Before await this.client.getMessages() for msgId: ${msgId}`);

@@ -136,8 +136,40 @@ export const MatchesManager = () => {
         alert("No new completed matches found in the API to sync.");
       } else {
         // Save all updated matches
+        const matchesAfterSync = [...matches];
         for (const m of updatedMatches) {
           await saveMatch(m);
+          const idx = matchesAfterSync.findIndex(x => x.id === m.id);
+          if (idx >= 0) matchesAfterSync[idx] = m;
+          
+          if (m.completed && m.winnerTeamId) {
+            // Propagate official winner to next match if applicable
+            if (m.nextMatchId && m.nextSlot) {
+              const nextM = matchesAfterSync.find(x => x.id === m.nextMatchId);
+              if (nextM) {
+                const updatedNextMatch = { ...nextM };
+                if (m.nextSlot === 'home') updatedNextMatch.homeTeamId = m.winnerTeamId;
+                if (m.nextSlot === 'away') updatedNextMatch.awayTeamId = m.winnerTeamId;
+                await saveMatch(updatedNextMatch);
+                const nIdx = matchesAfterSync.findIndex(x => x.id === nextM.id);
+                if (nIdx >= 0) matchesAfterSync[nIdx] = updatedNextMatch;
+              }
+            }
+
+            // Propagate loser to next match if applicable
+            const loserTeamId = m.winnerTeamId === m.homeTeamId ? m.awayTeamId : m.homeTeamId;
+            if (m.loserNextMatchId && m.loserNextSlot && loserTeamId) {
+              const loserNextM = matchesAfterSync.find(x => x.id === m.loserNextMatchId);
+              if (loserNextM) {
+                const updatedLoserNextMatch = { ...loserNextM };
+                if (m.loserNextSlot === 'home') updatedLoserNextMatch.homeTeamId = loserTeamId;
+                if (m.loserNextSlot === 'away') updatedLoserNextMatch.awayTeamId = loserTeamId;
+                await saveMatch(updatedLoserNextMatch);
+                const lIdx = matchesAfterSync.findIndex(x => x.id === loserNextM.id);
+                if (lIdx >= 0) matchesAfterSync[lIdx] = updatedLoserNextMatch;
+              }
+            }
+          }
         }
         await recalculateAllScores();
         alert(`Successfully synced ${updatedMatches.length} matches and recalculated scores!`);
