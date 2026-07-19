@@ -25,22 +25,28 @@ export default function FixturesPage() {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
+      
+      // Load Matches and Teams from Firebase
       try {
-        const [m, tReq, sReq] = await Promise.all([
+        const [m, tReq] = await Promise.all([
           fetchMatches(),
-          fetchTeams(),
-          fetch(`${(import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001').replace(/\/+$/, '')}/api/fifa/standings`)
+          fetchTeams()
         ]);
-        
         setMatches(m);
         setTeams(tReq);
-        
+      } catch (err) {
+        console.error('Failed to load fixtures data from Firebase', err);
+      }
+
+      // Load Standings from Backend (fail gracefully)
+      try {
+        const sReq = await fetch(`${(import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001').replace(/\/+$/, '')}/api/fifa/standings`);
         if (sReq.ok) {
           const sData = await sReq.json();
           setStandingsData(sData);
         }
       } catch (err) {
-        console.error('Failed to load fixtures data', err);
+        console.warn('Failed to load standings data from backend', err);
       } finally {
         setLoading(false);
       }
