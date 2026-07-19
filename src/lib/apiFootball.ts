@@ -16,7 +16,7 @@ export const syncMatchesFromApi = async (
   for (const localMatch of localMatches) {
     const isMissingScore = localMatch.homeScore === undefined || localMatch.awayScore === undefined;
     const hasScoreButNoGoals = localMatch.completed && 
-      ((localMatch.homeScore || 0) + (localMatch.awayScore || 0) > 0) &&
+      (localMatch.homeScore !== undefined && localMatch.awayScore !== undefined) &&
       (!localMatch.goals || localMatch.goals.length === 0);
 
     if ((!localMatch.completed || isMissingScore || hasScoreButNoGoals) && localMatch.homeTeamId && localMatch.awayTeamId && localMatch.date) {
@@ -59,7 +59,7 @@ export const syncMatchesFromApi = async (
   for (const localMatch of localMatches) {
     const isMissingScore = localMatch.homeScore === undefined || localMatch.awayScore === undefined;
     const hasScoreButNoGoals = localMatch.completed && 
-      ((localMatch.homeScore || 0) + (localMatch.awayScore || 0) > 0) &&
+      (localMatch.homeScore !== undefined && localMatch.awayScore !== undefined) &&
       (!localMatch.goals || localMatch.goals.length === 0);
 
     if (localMatch.completed && !isMissingScore && !hasScoreButNoGoals) continue;
